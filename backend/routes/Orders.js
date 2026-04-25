@@ -1,9 +1,24 @@
 const express = require('express')
-const router = express.Router()
+const router  = express.Router()
 const { v4: uuidv4 } = require('uuid')
-const db = require('../db')
+const db      = require('../db')
 const authMiddleware = require('../middleware/auth')
-const notifRouter = require('./notifications')
+
+// Notifications safely load karo
+let notifRouter = null
+try {
+  notifRouter = require('./notifications')
+} catch(e) {
+  console.log('notifications module not loaded')
+}
+
+function sendNotification(userId, title, message, type) {
+  try {
+    if (notifRouter && notifRouter.createNotification) {
+      notifRouter.createNotification(userId, title, message, type)
+    }
+  } catch(e) {}
+}
 
 // POST /api/orders — place a new order
 router.post('/', authMiddleware, (req, res) => {
@@ -48,12 +63,7 @@ router.post('/', authMiddleware, (req, res) => {
 
     db.get('orders').push(order).write()
     // Seller ko notification bhejo
-    notifRouter.createNotification(
-        listing.userId,
-        'Naya Order Aaya! 🛒',
-        req.user.name + ' ne "' + listing.title + '" ke liye order kiya',
-        'order'
-    )
+    sendNotification(listing.userId, 'Naya Order! 🛒', '...', 'order')
     res.status(201).json(order)
   } catch (err) {
     res.status(500).json({ error: err.message })
