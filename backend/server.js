@@ -2,7 +2,8 @@ const express = require('express')
 const cors = require('cors')
 const path = require('path')
 const db = require('./db')
-
+// Pehli line pe add karo
+require('dotenv').config()
 const app = express()
 const PORT = process.env.PORT || 5000
 
