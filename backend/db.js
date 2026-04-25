@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://delhincr_admin:Delhi@2024@delhincr-cluster.xarvjbi.mongodb.net/delhincr?appName=delhincr-cluster'
-
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://delhincr_admin:Delhi%402024@delhincr-cluster.xarvjbi.mongodb.net/delhincr?appName=delhincr-cluster'
 mongoose.connect(MONGODB_URI)
   .then(function() { console.log('✅ MongoDB Connected!') })
   .catch(function(err) { console.log('❌ MongoDB Error:', err.message) })
