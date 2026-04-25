@@ -9,10 +9,8 @@ const PORT = process.env.PORT || 5000
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://delhincr-market.vercel.app',  // ← apna Vercel URL
-    /\.vercel\.app$/                         // ← sab vercel URLs allow
-  ],
-  credentials: true
+    'https://delhincr-market-git-main-harshkumar11222s-projects.vercel.app',
+  ]
 }))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
