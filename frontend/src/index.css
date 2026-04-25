@@ -201,3 +201,103 @@ select.form-control { appearance: none; }
   .grid-3 { grid-template-columns: 1fr 1fr; }
   .grid-4 { grid-template-columns: 1fr 1fr; }
 }
+
+
+
+/* ═══════════════════════════════════
+   MOBILE RESPONSIVE FIXES
+═══════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+  /* Container padding */
+  .container { padding: 0 12px; }
+
+  /* Hero section */
+  h1 { font-size: 26px !important; }
+
+  /* Service grid — 4 col → 2 col */
+  .section > div[style*="repeat(4"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Stats grid */
+  div[style*="repeat(3, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Detail page — 2 col → 1 col */
+  div[style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Checkout form grid */
+  div[style*="gridTemplateColumns: '1fr 1fr'"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Trust banner */
+  div[style*="repeat(3, 1fr)"][style*="linear-gradient"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Navbar logo text — chhota karo */
+  .logo-text { font-size: 14px !important; }
+
+  /* Hero search bar */
+  div[style*="maxWidth: 520"] {
+    margin: 0 8px !important;
+  }
+
+  /* Profile stats */
+  div[style*="repeat(3, 1fr)"][style*="marginBottom: 24"] {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  /* Dashboard stat cards — 3 col → 2 col */
+  div[style*="repeat(3, 1fr)"][style*="marginBottom: 24"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Order card flex */
+  div[style*="display: 'flex'"][style*="gap: 14"] {
+    flex-wrap: wrap !important;
+  }
+
+  /* Buttons full width on mobile */
+  .btn-lg { width: 100%; margin-bottom: 8px; }
+
+  /* Service card */
+  .card[style*="display: flex"] {
+    flex-direction: column !important;
+  }
+
+  /* Hide desktop nav links */
+  .hide-mobile { display: none !important; }
+
+  /* Bottom nav text size */
+  nav[style*="bottom: 0"] span[style*="fontSize: 10"] {
+    font-size: 9px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small phones */
+  .price { font-size: 18px !important; }
+  .section-title { font-size: 18px !important; }
+
+  /* Hero stats */
+  div[style*="gap: 32"][style*="marginTop: 28"] {
+    gap: 16px !important;
+  }
+
+  /* Listing grid — 2 col maintain */
+  div[style*="minmax(180px"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Post form */
+  div[style*="gridTemplateColumns: '1fr 1fr'"] {
+    grid-template-columns: 1fr !important;
+  }
+}
