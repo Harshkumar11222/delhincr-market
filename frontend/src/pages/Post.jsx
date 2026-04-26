@@ -40,33 +40,36 @@ export default function Post() {
 
   // ─── Image Upload ───────────────────────────────────────────
   const handleUpload = async (e) => {
-    const files = Array.from(e.target.files)
-    if (files.length === 0) return
-    if (images.length + files.length > 5) {
-      setError('Maximum 5 photos allowed')
-      return
-    }
-    setUploading(true)
-    setError('')
-    try {
-      const formData = new FormData()
-      files.forEach(f => formData.append('images', f))
-      const res  = await fetch('http://localhost:5000/api/upload/images', {
-        method: 'POST',
-        body:   formData,
-      })
-      const data = await res.json()
-      if (data.urls) {
-        setImages(prev => [...prev, ...data.urls])
-      } else {
-        setError('Upload failed — try again')
-      }
-    } catch {
-      setError('Image upload failed — backend chal raha hai?')
-    }
-    setUploading(false)
+  const files = Array.from(e.target.files)
+  if (files.length === 0) return
+  if (images.length + files.length > 5) {
+    setError('Maximum 5 photos allowed')
+    return
   }
-
+  setUploading(true)
+  setError('')
+  try {
+    const formData = new FormData()
+    files.forEach(f => formData.append('images', f))
+    
+    const res = await fetch(
+      (process.env.REACT_APP_API_URL || 'http://localhost:5000/api') + '/upload/images',
+      {
+        method: 'POST',
+        body: formData,
+      }
+    )
+    const data = await res.json()
+    if (data.urls) {
+      setImages(prev => [...prev, ...data.urls])
+    } else {
+      setError('Upload failed — try again')
+    }
+  } catch {
+    setError('Image upload failed — backend chal raha hai?')
+  }
+  setUploading(false)
+}
   const removeImage = (index) => {
     setImages(prev => prev.filter((_, i) => i !== index))
   }

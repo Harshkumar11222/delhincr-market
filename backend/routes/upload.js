@@ -1,51 +1,43 @@
-const express = require('express')
-const router  = express.Router()
-const multer  = require('multer')
-const path    = require('path')
-const { v4: uuidv4 } = require('uuid')
+const express    = require('express')
+const router     = express.Router()
+const multer     = require('multer')
+const cloudinary = require('cloudinary').v2
+const { CloudinaryStorage } = require('multer-storage-cloudinary')
 
-const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, path.join(__dirname, '../uploads'))
-  },
-  filename: function(req, file, cb) {
-    var ext = path.extname(file.originalname)
-    cb(null, uuidv4() + ext)
-  }
+// Cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key:    process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
 })
 
-const fileFilter = function(req, file, cb) {
-  var allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
-  if (allowed.indexOf(file.mimetype) !== -1) {
-    cb(null, true)
-  } else {
-    cb(new Error('Only JPG/PNG/WEBP allowed'), false)
-  }
-}
+// Multer storage — directly Cloudinary pe upload
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder:         'delhincr-market',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    transformation: [{ width: 800, height: 600, crop: 'limit', quality: 'auto' }],
+  },
+})
 
 const upload = multer({
   storage: storage,
-  fileFilter: fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }
+  limits: { fileSize: 5 * 1024 * 1024 },
 })
 
-// POST /api/upload/image
+// POST /api/upload/image — single image
 router.post('/image', upload.single('image'), function(req, res) {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No file uploaded' })
-  }
-  var imageUrl = 'http://localhost:5000/uploads/' + req.file.filename
-  res.json({ url: imageUrl, filename: req.file.filename })
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' })
+  res.json({ url: req.file.path })
 })
 
-// POST /api/upload/images (multiple — max 5)
+// POST /api/upload/images — multiple images (max 5)
 router.post('/images', upload.array('images', 5), function(req, res) {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ error: 'No files uploaded' })
   }
-  var urls = req.files.map(function(f) {
-    return 'http://localhost:5000/uploads/' + f.filename
-  })
+  var urls = req.files.map(function(f) { return f.path })
   res.json({ urls: urls })
 })
 
