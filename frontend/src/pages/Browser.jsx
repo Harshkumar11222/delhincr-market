@@ -87,7 +87,7 @@ export default function Browse() {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
           {listings.map(l => (
-            <div key={l.id} onClick={() => navigate(`/listing/${l.id}`)}
+            <div key={l._id} onClick={() => navigate(`/listing/${l._id}`)}
               style={{
                 background: 'white', borderRadius: 16, overflow: 'hidden', cursor: 'pointer',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #F3F4F6',

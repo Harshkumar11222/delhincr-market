@@ -164,7 +164,7 @@ export default function Dashboard() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
             {data.listings.slice(0, 6).map(function(l) {
               return (
-                <div key={l.id} onClick={function() { navigate('/listing/' + l.id) }}
+                <div key={l._id} onClick={function() { navigate('/listing/' + l._id) }}
                   style={{ background: 'white', borderRadius: 12, overflow: 'hidden', cursor: 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', border: '1px solid #F3F4F6' }}>
                   <div style={{ paddingTop: '65%', background: '#F3F4F6', position: 'relative' }}>
                     <img

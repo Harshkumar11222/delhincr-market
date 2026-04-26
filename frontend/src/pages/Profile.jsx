@@ -86,7 +86,7 @@ export default function Profile() {
                 <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>📍 {l.location} • 👁 {l.views} views</div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/listing/${l.id}`)}>View</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => navigate(`/listing/${l._id}`)}>View</button>
                 <button className="btn btn-sm" style={{ background: '#FEF2F2', color: '#DC2626', border: '1px solid #FCA5A5' }} onClick={() => handleDelete(l.id)}>Remove</button>
               </div>
             </div>
