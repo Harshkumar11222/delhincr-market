@@ -143,7 +143,7 @@ export default function Detail() {
     onClick={() => {
       const token = localStorage.getItem('token')
       if (!token) { navigate('/login'); return }
-      navigate(`/checkout/${listing.id}`)
+      navigate(`/checkout/${listing._id}`)
     }}
   >
     🛒 Buy Now — ₹{listing.price?.toLocaleString('en-IN')}
