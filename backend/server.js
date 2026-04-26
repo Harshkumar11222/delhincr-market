@@ -10,6 +10,12 @@ const PORT = process.env.PORT || 5000
 app.use(cors({
   origin: [
     'http://localhost:3000',
+    'https://delhincr-market.vercel.app',
+    'https://delhincr-market-git-main-harshkumar11222s-projects.vercel.app',
+  ]
+}))app.use(cors({
+  origin: [
+    'http://localhost:3000',
     'https://delhincr-market-git-main-harshkumar11222s-projects.vercel.app',
   ]
 }))
