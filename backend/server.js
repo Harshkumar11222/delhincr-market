@@ -25,6 +25,7 @@ app.use('/api/orders',   require('./routes/orders'))
 app.use('/api/upload', require('./routes/upload'))
 app.use('/api/reviews',       require('./routes/reviews'))
 app.use('/api/notifications', require('./routes/notifications'))
+app.use('/api/otp', require('./routes/otp'))
 
 // Categories
 app.get('/api/categories', (req, res) => {
