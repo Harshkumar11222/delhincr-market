@@ -47,6 +47,11 @@ export default function Login() {
             <label>Password</label>
             <input className="form-control" type="password" placeholder="Enter password" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} />
           </div>
+          <div style={{ textAlign: 'right', marginTop: -12, marginBottom: 16 }}>
+  <Link to="/forgot-password" style={{ fontSize: 13, color: '#FF6B35', fontWeight: 600 }}>
+    Forgot Password?
+  </Link>
+</div>
           <button type="submit" className="btn btn-primary btn-lg btn-full" disabled={loading}>
             {loading ? '⏳ Logging in...' : '🔐 Login'}
           </button>

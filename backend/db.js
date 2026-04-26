@@ -16,6 +16,8 @@ const userSchema = new mongoose.Schema({
   location:     { type: String, default: '' },
   area:         { type: String, default: '' },
   city:         { type: String, default: '' },
+  resetOtp:       { type: String, default: null },      // ← ADD
+  resetOtpExpiry: { type: Number, default: null }, 
 }, { timestamps: true })
 
 const listingSchema = new mongoose.Schema({

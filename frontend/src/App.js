@@ -14,6 +14,8 @@ import NotFound from './pages/NotFound'
 import Checkout from './pages/Checkout'
 import Orders from './pages/Orders'
 import Dashboard from './pages/Dashboard'
+import ForgotPassword from './pages/ForgotPassword'
+
 
 
 
@@ -37,6 +39,9 @@ function App() {
             <Route path="/checkout/:id" element={<Checkout />} />
             <Route path="/orders"       element={<Orders />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            // Routes mein add karo:
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+
 
           </Routes>
         </div>
