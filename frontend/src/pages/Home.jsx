@@ -216,7 +216,7 @@ export default function Home() {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
               {listings.map(l => (
-                <ListingCard key={l.id} listing={l} onClick={() => navigate(`/listing/${l.id}`)} />
+                <ListingCard key={l._id} listing={l} onClick={() => navigate(`/listing/${l._id}`)} />
               ))}
             </div>
           )}
