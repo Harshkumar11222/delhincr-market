@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api';
+import { useAuth } from '../context/AuthContext'
+
 
 export default function Detail() {
   const { id } = useParams();
@@ -9,6 +11,8 @@ export default function Detail() {
   const [loading, setLoading] = useState(true);
   const [activeImg, setActiveImg] = useState(0);
   const [reviews, setReviews] = useState([])
+  const { user } = useAuth()
+
 
   useEffect(() => {
     api.get(`/listings/${id}`)
