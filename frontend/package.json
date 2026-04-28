@@ -11,18 +11,9 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.30.3",
     "react-scripts": "^5.0.1",
-    "socket.io-client": "^4.8.3",
+    "socket.io-client": "^4.7.2",
     "web-vitals": "^2.1.4"
   },
-
-  "eslintConfig": {
-  "extends": ["react-app", "react-app/jest"],
-  "rules": {
-    "no-unused-vars": "off",
-    "react-hooks/exhaustive-deps": "off",
-    "react/jsx-no-comment-textnodes": "off"
-  }
-}
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -30,10 +21,7 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ],
+    "extends": ["react-app", "react-app/jest"],
     "rules": {
       "no-unused-vars": "off",
       "react-hooks/exhaustive-deps": "off",
@@ -41,16 +29,8 @@
     }
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "production": [">0.2%", "not dead", "not op_mini all"],
+    "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
   },
   "proxy": "http://localhost:5000"
 }
