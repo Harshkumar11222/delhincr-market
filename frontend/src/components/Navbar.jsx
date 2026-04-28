@@ -79,6 +79,8 @@ export default function Navbar() {
     { path: '/browse',  icon: '🔍', label: 'Browse' },
     { path: '/post',    icon: '➕', label: 'Sell' },
     { path: '/orders',  icon: '📦', label: 'Orders' },   // ← YEH ADD KARO
+    { path: '/messages',  icon: '💬', label: 'Chat' },    // ← ADD
+
     { path: user ? '/profile' : '/login', icon: '👤', label: user ? 'Profile' : 'Login' },
   ]
 

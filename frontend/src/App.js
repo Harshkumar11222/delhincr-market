@@ -15,6 +15,10 @@ import Checkout from './pages/Checkout'
 import Orders from './pages/Orders'
 import Dashboard from './pages/Dashboard'
 import ForgotPassword from './pages/ForgotPassword'
+import Chat from './pages/Chat'
+import Conversations from './pages/Conversations'
+
+
 
 
 
@@ -41,6 +45,8 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             // Routes mein add karo:
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/chat/:roomId" element={<Chat />} />
+            <Route path="/messages" element={<Conversations />} />
 
 
           </Routes>

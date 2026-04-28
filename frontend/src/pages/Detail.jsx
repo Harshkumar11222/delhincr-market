@@ -160,6 +160,18 @@ export default function Detail() {
               💬 WhatsApp
             </a>
           </div>
+          {/* Chat Button — seller info ke baad add karo */}
+<button
+  className="btn btn-secondary btn-lg"
+  style={{ flex: 1 }}
+  onClick={function() {
+    const token = localStorage.getItem('token')
+    if (!token) { navigate('/login'); return }
+    const roomId = listing._id + '_' + (user?.id || 'guest')
+    navigate('/chat/' + roomId)
+  }}>
+  💬 Chat with Seller
+</button>
 
           <div style={{ marginTop: 12, background: '#ECFDF5', borderRadius: 10, padding: '10px 14px', fontSize: 12, color: '#059669' }}>
             🔒 Safe Deal Tip: Always meet in a public place. Never pay in advance before seeing the item.

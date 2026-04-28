@@ -76,6 +76,19 @@ const orderSchema = new mongoose.Schema({
   status:         { type: String, default: 'pending' },
 }, { timestamps: true })
 
+const messageSchema = new mongoose.Schema({
+  roomId:       { type: String, required: true },
+  senderId:     { type: String, required: true },
+  senderName:   { type: String, default: '' },
+  receiverId:   { type: String, default: '' },
+  receiverName: { type: String, default: '' },
+  message:      { type: String, required: true },
+  listingId:    { type: String, default: '' },
+  read:         { type: Boolean, default: false },
+}, { timestamps: true })
+
+const Message = mongoose.model('Message', messageSchema)
+
 const reviewSchema = new mongoose.Schema({
   orderId:    { type: String, required: true, unique: true },
   listingId:  { type: String, required: true },
@@ -103,3 +116,4 @@ const Review       = mongoose.model('Review',       reviewSchema)
 const Notification = mongoose.model('Notification', notificationSchema)
 
 module.exports = { User, Listing, Service, Order, Review, Notification }
+module.exports = { User, Listing, Service, Order, Review, Notification, Message }
