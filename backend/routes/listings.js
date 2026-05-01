@@ -71,6 +71,20 @@ router.post('/', auth, async function(req, res) {
   } catch(err) {
     res.status(500).json({ error: err.message })
   }
+  // Price validation
+if (parseInt(price) < 1 || parseInt(price) > 10000000) {
+  return res.status(400).json({ error: 'Price ₹1 se ₹1 crore ke beech honi chahiye' })
+}
+
+// Title length check
+if (title.trim().length < 3 || title.trim().length > 100) {
+  return res.status(400).json({ error: 'Title 3 se 100 characters ka hona chahiye' })
+}
+
+// Description length check
+if (description && description.length > 2000) {
+  return res.status(400).json({ error: 'Description 2000 characters se zyada nahi ho sakta' })
+}
 })
 
 router.put('/:id', auth, async function(req, res) {
