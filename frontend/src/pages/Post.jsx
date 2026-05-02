@@ -21,16 +21,17 @@ export default function Post() {
   const navigate   = useNavigate()
 
   const [form, setForm] = useState({
-    title:        '',
-    description:  '',
-    price:        '',
-    isNegotiable: false,
-    category:     'electronics',
-    condition:    'Good',
-    location:     '',
-    area:         '',
-    city:         'Delhi',
-  })
+  title:        '',
+  description:  '',
+  price:        '',
+  isNegotiable: false,
+  category:     'electronics',
+  condition:    'Good',
+  location:     '',
+  area:         '',
+  city:         'Delhi',
+  phone:        '',   // ← ADD
+})
 
   const [images,    setImages]    = useState([])   // uploaded image URLs
   const [uploading, setUploading] = useState(false)
@@ -91,6 +92,10 @@ export default function Post() {
       setError('Location/Area required hai')
       return
     }
+    if (!form.phone || form.phone.length !== 10 || !/^[6-9]\d{9}$/.test(form.phone)) {
+      setError('Valid 10-digit Indian mobile number daalo (6-9 se shuru hona chahiye)')
+      return
+    }
 
     setLoading(true)
     try {
@@ -105,6 +110,8 @@ export default function Post() {
         area:         form.area.trim(),
         city:         form.city,
         images:       images,   // ← actual uploaded URLs
+        sellerPhone: form.phone,   // ← ADD
+
       }
 
       const res = await api.post('/listings', payload)
@@ -308,6 +315,36 @@ export default function Post() {
               JPG / PNG / WEBP • Max 5MB each • Up to 5 photos
             </div>
           </div>
+
+
+          {/* Phone Number */}
+<div className="form-group">
+  <label>Mobile Number * <span style={{ color: '#EF4444' }}>●</span></label>
+  <div style={{ position: 'relative' }}>
+    <span style={{
+      position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)',
+      color: '#6B7280', fontSize: 14, fontWeight: 600,
+    }}>+91</span>
+    <input
+      className="form-control"
+      type="tel"
+      placeholder="10-digit mobile number"
+      value={form.phone}
+      onChange={e => {
+        const val = e.target.value.replace(/\D/g, '')
+        if (val.length <= 10) set('phone', val)
+      }}
+      maxLength={10}
+      style={{ paddingLeft: 44 }}
+    />
+  </div>
+  {form.phone && form.phone.length === 10 && /^[6-9]\d{9}$/.test(form.phone) && (
+    <div style={{ fontSize: 12, color: '#10B981', marginTop: 4 }}>✓ Valid number</div>
+  )}
+  {form.phone && form.phone.length === 10 && !/^[6-9]\d{9}$/.test(form.phone) && (
+    <div style={{ fontSize: 12, color: '#EF4444', marginTop: 4 }}>✗ Invalid number — 6-9 se shuru hona chahiye</div>
+  )}
+</div>
 
           {/* City */}
           <div className="form-group">
