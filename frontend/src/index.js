@@ -1,34 +1,11 @@
-import axios from 'axios'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
 
-const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'https://delhincr-market-1.onrender.com/api',
-  timeout: 15000,
-  headers: {
-    'Content-Type': 'application/json',
-  }
-})
-
-api.interceptors.request.use(function(config) {
-  const token = localStorage.getItem('token')
-  if (token) config.headers.Authorization = 'Bearer ' + token
-
-  // Request size limit
-  if (config.data && JSON.stringify(config.data).length > 50000) {
-    return Promise.reject(new Error('Request too large'))
-  }
-  return config
-})
-
-api.interceptors.response.use(
-  function(res) { return res },
-  function(err) {
-    if (err.response?.status === 401 || err.response?.status === 403) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      window.location.href = '/login'
-    }
-    return Promise.reject(err)
-  }
-)
-
-export default api
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
