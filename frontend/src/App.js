@@ -17,6 +17,7 @@ import Dashboard from './pages/Dashboard'
 import ForgotPassword from './pages/ForgotPassword'
 import Chat from './pages/Chat'
 import Conversations from './pages/Conversations'
+import InstallPrompt from './components/InstallPrompt'
 
 
 
@@ -50,7 +51,25 @@ function App() {
 
 
           </Routes>
+          
         </div>
+        
+      </AuthProvider>
+    </BrowserRouter>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Navbar />
+        <div className="page-content">
+          <Routes>
+            {/* ... existing routes ... */}
+          </Routes>
+        </div>
+        <InstallPrompt />  {/* ← ADD */}
       </AuthProvider>
     </BrowserRouter>
   )
