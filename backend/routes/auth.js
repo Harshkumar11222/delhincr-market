@@ -142,4 +142,68 @@ router.get('/me', require('../middleware/auth'), async function(req, res) {
   }
 })
 
+const { OAuth2Client } = require('google-auth-library')
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+
+// POST /api/auth/google
+router.post('/google', async function(req, res) {
+  try {
+    var credential = req.body.credential
+    if (!credential) return res.status(400).json({ error: 'Google credential required' })
+
+    // Google token verify karo
+    var ticket = await googleClient.verifyIdToken({
+      idToken:  credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    })
+    var payload = ticket.getPayload()
+    var googleId = payload.sub
+    var email    = payload.email
+    var name     = payload.name
+    var avatar   = payload.picture
+
+    // Check karo user already hai
+    var user = await User.findOne({ email: email })
+
+    if (!user) {
+      // Naya user banao
+      var fakePassword = await bcrypt.hash(googleId + process.env.JWT_SECRET, 10)
+      user = await User.create({
+        name:         name,
+        email:        email,
+        phone:        'google_' + googleId,
+        passwordHash: fakePassword,
+        isVerified:   true,
+        avatar:       avatar,
+      })
+    } else {
+      // Avatar update karo
+      if (!user.avatar || user.avatar.includes('pravatar')) {
+        user.avatar = avatar
+        await user.save()
+      }
+    }
+
+    var token = jwt.sign(
+      { id: user._id, name: user.name, phone: user.phone },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    )
+
+    res.json({
+      token,
+      user: {
+        id:         user._id,
+        name:       user.name,
+        phone:      user.phone,
+        email:      user.email,
+        avatar:     user.avatar,
+        isVerified: user.isVerified,
+      }
+    })
+  } catch(err) {
+    res.status(500).json({ error: 'Google login failed: ' + err.message })
+  }
+})
+
 module.exports = router

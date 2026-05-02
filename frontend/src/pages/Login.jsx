@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { GoogleLogin } from '@react-oauth/google'
+
 
 export default function Login() {
   const { login } = useAuth();
@@ -22,6 +24,22 @@ export default function Login() {
     }
     setLoading(false);
   };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+  setError('')
+  setLoading(true)
+  try {
+    const res = await api.post('/auth/google', {
+      credential: credentialResponse.credential
+    })
+    localStorage.setItem('token', res.data.token)
+    localStorage.setItem('user', JSON.stringify(res.data.user))
+    window.location.href = '/'
+  } catch(err) {
+    setError(err.response?.data?.error || 'Google login failed')
+  }
+  setLoading(false)
+}
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%)', padding: 16 }}>
@@ -56,6 +74,27 @@ export default function Login() {
             {loading ? '⏳ Logging in...' : '🔐 Login'}
           </button>
         </form>
+
+        <div style={{ marginTop: 16 }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+    <div style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
+    <span style={{ fontSize: 13, color: '#9CA3AF', fontWeight: 500 }}>ya</span>
+    <div style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
+  </div>
+
+  <div style={{ display: 'flex', justifyContent: 'center' }}>
+    <GoogleLogin
+      onSuccess={handleGoogleSuccess}
+      onError={() => setError('Google login failed')}
+      theme="outline"
+      size="large"
+      width="100%"
+      text="signin_with"
+      shape="pill"
+      locale="en"
+    />
+  </div>
+</div>
 
         <p style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: '#6B7280' }}>
           New user? <Link to="/register" style={{ color: '#FF6B35', fontWeight: 700 }}>Create Account</Link>

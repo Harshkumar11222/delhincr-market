@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api from '../api'
+import { GoogleLogin } from '@react-oauth/google'
+
 
 export default function Register() {
   const { register } = useAuth()
@@ -54,6 +56,20 @@ export default function Register() {
     }
     setSending(false)
   }
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+  setError('')
+  try {
+    const res = await api.post('/auth/google', {
+      credential: credentialResponse.credential
+    })
+    localStorage.setItem('token', res.data.token)
+    localStorage.setItem('user', JSON.stringify(res.data.user))
+    window.location.href = '/'
+  } catch(err) {
+    setError(err.response?.data?.error || 'Google signup failed')
+  }
+}
 
   // Step 2 — Verify OTP
   const handleVerifyOtp = async (e) => {
@@ -225,6 +241,23 @@ export default function Register() {
             </div>
           </form>
         )}
+        <div style={{ marginTop: 16 }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+    <div style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
+    <span style={{ fontSize: 13, color: '#9CA3AF' }}>ya seedha</span>
+    <div style={{ flex: 1, height: 1, background: '#E5E7EB' }} />
+  </div>
+  <div style={{ display: 'flex', justifyContent: 'center' }}>
+    <GoogleLogin
+      onSuccess={handleGoogleSuccess}
+      onError={() => setError('Google signup failed')}
+      theme="outline"
+      size="large"
+      text="signup_with"
+      shape="pill"
+    />
+  </div>
+</div>
 
         <p style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: '#6B7280' }}>
           Already account hai? <Link to="/login" style={{ color: '#FF6B35', fontWeight: 700 }}>Login</Link>
