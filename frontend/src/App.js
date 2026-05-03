@@ -17,7 +17,11 @@ import Checkout from './pages/Checkout'
 import Orders from './pages/Orders'
 import ForgotPassword from './pages/ForgotPassword'
 import Chat from './pages/Chat'
+import Browse from './pages/Browse'  // ← sahi
 import Conversations from './pages/Conversations'
+import Rentals from './pages/Rentals'
+
+
 
 function App() {
   return (
@@ -40,7 +44,9 @@ function App() {
             <Route path="/forgot-password"   element={<ForgotPassword />} />
             <Route path="/chat/:roomId"      element={<Chat />} />
             <Route path="/messages"          element={<Conversations />} />
-            <Route path="*"                  element={<NotFound />} />
+            <Route path="*"                  element={<NotFound />} />  
+            // Routes mein:
+            <Route path="/rentals" element={<Rentals />} />
           </Routes>
         </div>
         <InstallPrompt />

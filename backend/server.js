@@ -86,6 +86,7 @@ try { app.use('/api/reviews',       require('./routes/reviews'))       } catch(e
 try { app.use('/api/notifications', require('./routes/notifications')) } catch(e) { console.log('notifications error:', e.message) }
 try { app.use('/api/otp',           require('./routes/otp'))           } catch(e) { console.log('otp error:', e.message) }
 try { app.use('/api/chat',          require('./routes/chat'))          } catch(e) { console.log('chat error:', e.message) }
+try { app.use('/api/rentals', require('./routes/rentals')) } catch(e) { console.log('rentals error:', e.message) }
 
 app.get('/api/categories', function(req, res) {
   res.json([

@@ -76,6 +76,30 @@ const orderSchema = new mongoose.Schema({
   status:         { type: String, default: 'pending' },
 }, { timestamps: true })
 
+const rentalSchema = new mongoose.Schema({
+  userId:       { type: String, required: true },
+  title:        { type: String, required: true },
+  type:         { type: String, required: true }, // bike/car/scooty/cycle
+  brand:        { type: String, default: '' },
+  model:        { type: String, default: '' },
+  year:         { type: Number, default: 2020 },
+  description:  { type: String, default: '' },
+  pricePerDay:  { type: Number, required: true },
+  pricePerHour: { type: Number, default: 0 },
+  images:       [String],
+  location:     { type: String, default: '' },
+  area:         { type: String, default: '' },
+  city:         { type: String, default: '' },
+  ownerName:    { type: String, default: '' },
+  ownerPhone:   { type: String, default: '' },
+  isVerified:   { type: Boolean, default: false },
+  isAvailable:  { type: Boolean, default: true },
+  features:     [String], // AC, GPS, Helmet included etc
+  views:        { type: Number, default: 0 },
+}, { timestamps: true })
+
+const Rental = mongoose.model('Rental', rentalSchema)
+
 const messageSchema = new mongoose.Schema({
   roomId:       { type: String, required: true },
   senderId:     { type: String, required: true },
@@ -117,3 +141,4 @@ const Notification = mongoose.model('Notification', notificationSchema)
 
 module.exports = { User, Listing, Service, Order, Review, Notification }
 module.exports = { User, Listing, Service, Order, Review, Notification, Message }
+module.exports = { User, Listing, Service, Order, Review, Notification, Message, Rental }

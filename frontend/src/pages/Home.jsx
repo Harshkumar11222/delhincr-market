@@ -368,6 +368,56 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Quick Actions — 3 Main Sections */}
+<div style={{
+  display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12,
+  margin: '-24px 0 32px', position: 'relative', zIndex: 10,
+}}>
+  {[
+    {
+      icon: '🛍️', title: 'Buy & Sell',
+      sub: 'Used items nearby',
+      path: '/browse',
+      color: '#1E3A8A', bg: '#EFF6FF',
+      desc: 'Laptops, phones, furniture & more'
+    },
+    {
+      icon: '🔧', title: 'Services',
+      sub: 'Hire local pros',
+      path: '/services',
+      color: '#10B981', bg: '#ECFDF5',
+      desc: 'Plumber, electrician, carpenter'
+    },
+    {
+      icon: '🚗', title: 'Rentals',
+      sub: 'Rent vehicles',
+      path: '/rentals',
+      color: '#FF6B35', bg: '#FFF0EB',
+      desc: 'Car, bike, scooty, cycle'
+    },
+  ].map(function(item) {
+    return (
+      <div key={item.title}
+        onClick={function() { navigate(item.path) }}
+        style={{
+          background: item.bg, borderRadius: 20, padding: '20px 16px',
+          textAlign: 'center', cursor: 'pointer',
+          border: '2px solid transparent',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+          transition: 'all 0.2s',
+        }}
+        onMouseEnter={function(e) { e.currentTarget.style.borderColor = item.color; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(0,0,0,0.12)' }}
+        onMouseLeave={function(e) { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)' }}
+      >
+        <div style={{ fontSize: 36, marginBottom: 8 }}>{item.icon}</div>
+        <div style={{ fontWeight: 800, color: item.color, fontSize: 16, fontFamily: 'Baloo 2, cursive', marginBottom: 2 }}>{item.title}</div>
+        <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 4 }}>{item.sub}</div>
+        <div style={{ fontSize: 11, color: '#9CA3AF' }}>{item.desc}</div>
+      </div>
+    )
+  })}
+</div>
+
         {/* ── CTA ── */}
         <div style={{
           background: 'linear-gradient(135deg, #FF6B35, #E55A26)',

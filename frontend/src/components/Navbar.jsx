@@ -78,6 +78,7 @@ export default function Navbar() {
     { path: '/',        icon: '🏠', label: 'Home' },
     { path: '/browse',  icon: '🔍', label: 'Browse' },
     { path: '/post',    icon: '➕', label: 'Sell' },
+    { path: '/rentals',  icon: '🚗', label: 'Rentals' },
     { path: '/orders',  icon: '📦', label: 'Orders' },   // ← YEH ADD KARO
     { path: '/messages',  icon: '💬', label: 'Chat' },    // ← ADD
 
@@ -118,6 +119,7 @@ export default function Navbar() {
             <Link to="/services" style={{ ...styles.navLink }} className="hide-mobile">Services</Link>
             <Link to="/dashboard" style={{ ...styles.navLink }} className="hide-mobile">Dashboard</Link>
             <button style={styles.sellBtn} onClick={() => navigate('/post')}>
+            <Link to="/rentals" style={{ ...styles.navLink }} className="hide-mobile">Rentals</Link>
               ＋ Sell
               <NotificationBell />
             </button>
