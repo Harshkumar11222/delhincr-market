@@ -119,7 +119,8 @@ export default function Navbar() {
             <Link to="/services" style={{ ...styles.navLink }} className="hide-mobile">Services</Link>
             <Link to="/dashboard" style={{ ...styles.navLink }} className="hide-mobile">Dashboard</Link>
             <button style={styles.sellBtn} onClick={() => navigate('/post')}>
-            <Link to="/rentals" style={{ ...styles.navLink }} className="hide-mobile">Rentals</Link>
+            // actions div mein Sell button se pehle Rentals link add karo:
+            <Link to="/rentals" style={{ ...styles.navLink }} className="hide-mobile">🚗 Rentals</Link>
               ＋ Sell
               <NotificationBell />
             </button>

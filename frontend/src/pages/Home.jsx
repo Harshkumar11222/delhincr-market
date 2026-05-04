@@ -1,444 +1,343 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import api from '../api'
-
-const categories = [
-  { id: 'all',         name: 'All',         icon: '🛍️' },
-  { id: 'electronics', name: 'Electronics', icon: '📱' },
-  { id: 'vehicles',    name: 'Vehicles',    icon: '🚗' },
-  { id: 'furniture',   name: 'Furniture',   icon: '🛋️' },
-  { id: 'appliances',  name: 'Appliances',  icon: '🏠' },
-  { id: 'books',       name: 'Books',       icon: '📚' },
-  { id: 'clothing',    name: 'Clothing',    icon: '👗' },
-  { id: 'sports',      name: 'Sports',      icon: '⚽' },
-]
-
-const cities = ['All NCR', 'Delhi', 'Noida', 'Gurugram', 'Ghaziabad', 'Faridabad']
-
-const services = [
-  { icon: '🔧', name: 'Plumber',     price: '₹299',    cat: 'plumber' },
-  { icon: '⚡', name: 'Electrician', price: '₹199',    cat: 'electrician' },
-  { icon: '🔨', name: 'Carpenter',   price: '₹399',    cat: 'carpenter' },
-  { icon: '❄️', name: 'AC Repair',   price: '₹499',    cat: 'ac_repair' },
-  { icon: '🎨', name: 'Painter',     price: '₹8/sqft', cat: 'painter' },
-  { icon: '🧹', name: 'Cleaning',    price: '₹799',    cat: 'cleaning' },
-  { icon: '📦', name: 'Shifting',    price: '₹999',    cat: 'shifting' },
-  { icon: '🐛', name: 'Pest Control',price: '₹599',    cat: 'pest_control' },
-]
-
-function ListingCard({ listing, onClick }) {
-  const [imgError, setImgError] = useState(false)
-  const timeAgo = (date) => {
-    const diff = Date.now() - new Date(date)
-    const days = Math.floor(diff / 86400000)
-    if (days === 0) return 'Today'
-    if (days === 1) return 'Yesterday'
-    return days + 'd ago'
-  }
-
-  return (
-    <div
-      onClick={onClick}
-      style={{
-        background: 'white', borderRadius: 16, overflow: 'hidden',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.08)', cursor: 'pointer',
-        border: '1px solid #F3F4F6', transition: 'all 0.25s ease',
-        position: 'relative',
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.transform = 'translateY(-6px)'
-        e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.14)'
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.transform = 'translateY(0)'
-        e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.08)'
-      }}
-    >
-      {/* Image */}
-      <div style={{ position: 'relative', paddingTop: '68%', background: 'linear-gradient(135deg, #F3F4F6, #E5E7EB)', overflow: 'hidden' }}>
-        <img
-          src={(!imgError && listing.images?.[0]) ? listing.images[0] : 'https://placehold.co/300x200?text=No+Image'}
-          alt={listing.title}
-          onError={() => setImgError(true)}
-          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
-        />
-        {/* Badges */}
-        <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', gap: 4, flexDirection: 'column' }}>
-          {listing.isVerified && (
-            <span style={{ background: '#10B981', color: 'white', fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 99, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-              ✓ Verified
-            </span>
-          )}
-          {listing.condition === 'Like New' && (
-            <span style={{ background: '#1E3A8A', color: 'white', fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 99 }}>
-              Like New
-            </span>
-          )}
-        </div>
-        {listing.isNegotiable && (
-          <span style={{ position: 'absolute', top: 8, right: 8, background: '#FFF7ED', color: '#F59E0B', fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 99, border: '1px solid #FED7AA' }}>
-            Nego
-          </span>
-        )}
-      </div>
-
-      {/* Info */}
-      <div style={{ padding: '14px 12px 12px' }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {listing.title}
-        </div>
-        <div style={{ fontSize: 20, fontWeight: 800, color: '#FF6B35', fontFamily: 'Baloo 2, cursive', marginBottom: 8, lineHeight: 1 }}>
-          ₹{(listing.price || 0).toLocaleString('en-IN')}
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, color: '#6B7280', display: 'flex', alignItems: 'center', gap: 3 }}>
-            📍 {listing.location || 'Delhi NCR'}
-          </span>
-          <span style={{ fontSize: 11, color: '#9CA3AF' }}>
-            {timeAgo(listing.createdAt)}
-          </span>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 export default function Home() {
   const navigate = useNavigate()
-  const [listings, setListings]         = useState([])
-  const [loading, setLoading]           = useState(true)
-  const [activeCategory, setActiveCategory] = useState('all')
-  const [activeCity, setActiveCity]     = useState('All NCR')
-  const [search, setSearch]             = useState('')
   const [statsVisible, setStatsVisible] = useState(false)
+  const [search, setSearch] = useState('')
 
-  useEffect(() => {
-    setTimeout(() => setStatsVisible(true), 500)
-    fetchListings()
-  }, [activeCategory, activeCity])
+  useEffect(function() {
+    setTimeout(function() { setStatsVisible(true) }, 400)
+  }, [])
 
-  const fetchListings = async () => {
-    setLoading(true)
-    try {
-      const params = {}
-      if (activeCategory !== 'all') params.category = activeCategory
-      if (activeCity !== 'All NCR') params.city = activeCity
-      const res = await api.get('/listings', { params })
-      setListings(res.data.listings || [])
-    } catch { setListings([]) }
-    setLoading(false)
-  }
-
-  const handleSearch = (e) => {
-    if (e.key === 'Enter' && search.trim()) {
-      navigate('/browse?search=' + encodeURIComponent(search.trim()))
-    }
-  }
+  var sections = [
+    {
+      icon: '🛍️',
+      title: 'Buy & Sell',
+      titleHindi: 'खरीदो और बेचो',
+      desc: 'Delhi NCR mein used items buy aur sell karo — laptops, phones, furniture, bikes aur bahut kuch. Safe, verified aur local.',
+      features: ['📱 Electronics', '🚗 Vehicles', '🛋️ Furniture', '📚 Books', '👗 Clothing'],
+      color: '#1E3A8A',
+      gradient: 'linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%)',
+      bg: '#EFF6FF',
+      path: '/browse',
+      btnText: 'Browse Listings →',
+      stats: '500+ Active Listings',
+      badge: '🔥 Most Popular',
+    },
+    {
+      icon: '🔧',
+      title: 'Local Services',
+      titleHindi: 'लोकल सर्विसेज़',
+      desc: 'Verified local professionals dhundho — plumber, electrician, carpenter, painter aur AC repair. Ghar baithe booking karo.',
+      features: ['🔧 Plumber', '⚡ Electrician', '🔨 Carpenter', '🎨 Painter', '❄️ AC Repair'],
+      color: '#059669',
+      gradient: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
+      bg: '#ECFDF5',
+      path: '/services',
+      btnText: 'Find Professionals →',
+      stats: '200+ Verified Pros',
+      badge: '✅ Verified Only',
+    },
+    {
+      icon: '🚗',
+      title: 'Vehicle Rentals',
+      titleHindi: 'वाहन किराये पर',
+      desc: 'Car, bike, scooty aur cycle rent karo Delhi NCR mein. Hourly aur daily rates. Travel karo apne budget mein.',
+      features: ['🚗 Cars', '🏍️ Bikes', '🛵 Scooty', '🚲 Cycles', '🚐 Vans'],
+      color: '#DC2626',
+      gradient: 'linear-gradient(135deg, #DC2626 0%, #EF4444 100%)',
+      bg: '#FEF2F2',
+      path: '/rentals',
+      btnText: 'Rent a Vehicle →',
+      stats: 'Best Rates in NCR',
+      badge: '🆕 New Section',
+    },
+    {
+      icon: '➕',
+      title: 'Post Free Ad',
+      titleHindi: 'फ्री में बेचो',
+      desc: 'Apna koi bhi item ya service list karo bilkul free mein. Lakho buyers tak pahuncho. Easy aur fast listing process.',
+      features: ['📸 Photo Upload', '✅ Free Listing', '📍 Local Reach', '💬 Direct Chat', '🔒 Safe & Secure'],
+      color: '#7C3AED',
+      gradient: 'linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%)',
+      bg: '#F5F3FF',
+      path: '/post',
+      btnText: 'Post Your Ad →',
+      stats: '100% Free Forever',
+      badge: '💰 Earn Money',
+    },
+  ]
 
   return (
-    <div style={{ background: '#F8FAFC' }}>
+    <div style={{ background: '#F8FAFC', minHeight: '100vh' }}>
 
       {/* ── HERO ── */}
       <div style={{
         background: 'linear-gradient(135deg, #0F2167 0%, #1E3A8A 40%, #1D4ED8 70%, #FF6B35 100%)',
-        padding: '72px 16px 56px', textAlign: 'center', position: 'relative', overflow: 'hidden',
+        padding: '80px 16px 100px', textAlign: 'center', position: 'relative', overflow: 'hidden',
       }}>
-        {/* Decorative circles */}
-        <div style={{ position: 'absolute', top: -60, right: -60, width: 240, height: 240, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
-        <div style={{ position: 'absolute', bottom: -40, left: -40, width: 180, height: 180, borderRadius: '50%', background: 'rgba(255,107,53,0.15)' }} />
+        {/* Decorative */}
+        <div style={{ position: 'absolute', top: -80, right: -80, width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
+        <div style={{ position: 'absolute', bottom: -60, left: -60, width: 240, height: 240, borderRadius: '50%', background: 'rgba(255,107,53,0.12)' }} />
+        <div style={{ position: 'absolute', top: '40%', left: '10%', width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,0.03)' }} />
 
-        <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: 700, margin: '0 auto' }}>
+          {/* Badge */}
           <div style={{
             display: 'inline-block', background: 'rgba(255,255,255,0.15)',
-            backdropFilter: 'blur(8px)', borderRadius: 99, padding: '6px 16px',
-            fontSize: 13, color: 'rgba(255,255,255,0.9)', marginBottom: 16,
+            backdropFilter: 'blur(8px)', borderRadius: 99, padding: '6px 18px',
+            fontSize: 13, color: 'rgba(255,255,255,0.9)', marginBottom: 20,
             border: '1px solid rgba(255,255,255,0.2)',
           }}>
-            🚀 Delhi NCR ka #1 Marketplace
+            🚀 Delhi NCR ka #1 Trusted Marketplace
           </div>
 
+          {/* Title */}
           <h1 style={{
-            fontFamily: 'Baloo 2, cursive', fontSize: 'clamp(28px, 5vw, 48px)',
-            fontWeight: 800, color: 'white', marginBottom: 12, lineHeight: 1.2,
+            fontFamily: 'Baloo 2, cursive', fontSize: 'clamp(32px, 6vw, 56px)',
+            fontWeight: 800, color: 'white', marginBottom: 16, lineHeight: 1.15,
           }}>
-            अपना शहर, अपना बाज़ार
+            अपना शहर,<br />अपना बाज़ार
           </h1>
-          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: 16, marginBottom: 32, maxWidth: 500, margin: '0 auto 32px' }}>
-            Buy • Sell • Services — verified aur safe, sirf Delhi NCR mein
+
+          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: 17, marginBottom: 36, lineHeight: 1.7 }}>
+            Buy • Sell • Services • Rentals<br />
+            <span style={{ fontSize: 14, opacity: 0.7 }}>Verified, Safe aur 100% Local — Sirf Delhi NCR ke liye</span>
           </p>
 
-          {/* Search Bar */}
+          {/* Search */}
           <div style={{
-            maxWidth: 560, margin: '0 auto 32px', display: 'flex',
+            maxWidth: 560, margin: '0 auto 40px', display: 'flex',
             background: 'white', borderRadius: 99,
-            boxShadow: '0 8px 40px rgba(0,0,0,0.2)', overflow: 'hidden',
+            boxShadow: '0 8px 40px rgba(0,0,0,0.25)', overflow: 'hidden',
           }}>
             <span style={{ padding: '0 16px', fontSize: 20, display: 'flex', alignItems: 'center' }}>🔍</span>
             <input
               value={search}
-              onChange={e => setSearch(e.target.value)}
-              onKeyDown={handleSearch}
-              placeholder="Laptop, plumber, sofa..."
-              style={{
-                flex: 1, border: 'none', outline: 'none', fontSize: 15,
-                fontFamily: 'Nunito, sans-serif', padding: '14px 0',
-                background: 'transparent',
-              }}
+              onChange={function(e) { setSearch(e.target.value) }}
+              onKeyDown={function(e) { if (e.key === 'Enter' && search.trim()) navigate('/browse?search=' + encodeURIComponent(search.trim())) }}
+              placeholder="Laptop, plumber, car rental..."
+              style={{ flex: 1, border: 'none', outline: 'none', fontSize: 15, fontFamily: 'Nunito, sans-serif', padding: '16px 0', background: 'transparent' }}
             />
             <button
-              onClick={() => search.trim() && navigate('/browse?search=' + encodeURIComponent(search.trim()))}
-              style={{
-                background: '#FF6B35', color: 'white', border: 'none',
-                padding: '0 28px', fontWeight: 700, fontSize: 15, cursor: 'pointer',
-                fontFamily: 'Nunito, sans-serif',
-              }}>
+              onClick={function() { if (search.trim()) navigate('/browse?search=' + encodeURIComponent(search.trim())) }}
+              style={{ background: '#FF6B35', color: 'white', border: 'none', padding: '0 28px', fontWeight: 700, fontSize: 15, cursor: 'pointer', fontFamily: 'Nunito, sans-serif' }}>
               Search
             </button>
           </div>
 
           {/* Stats */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 'clamp(16px, 4vw, 48px)', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 'clamp(20px, 5vw, 56px)', flexWrap: 'wrap' }}>
             {[
               { num: '1000+', label: 'Listings' },
               { num: '500+',  label: 'Verified Sellers' },
               { num: '200+',  label: 'Service Pros' },
               { num: '6',     label: 'NCR Cities' },
-            ].map(s => (
-              <div key={s.label} style={{
-                textAlign: 'center', opacity: statsVisible ? 1 : 0,
-                transform: statsVisible ? 'translateY(0)' : 'translateY(20px)',
-                transition: 'all 0.6s ease',
-              }}>
-                <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 26, fontWeight: 800, color: '#FF6B35' }}>{s.num}</div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>{s.label}</div>
-              </div>
-            ))}
+            ].map(function(s) {
+              return (
+                <div key={s.label} style={{
+                  textAlign: 'center',
+                  opacity: statsVisible ? 1 : 0,
+                  transform: statsVisible ? 'translateY(0)' : 'translateY(20px)',
+                  transition: 'all 0.6s ease',
+                }}>
+                  <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 800, color: '#FF6B35' }}>{s.num}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>{s.label}</div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
 
-      {/* ── QUICK ACTIONS ── */}
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 16px' }}>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12,
-          margin: '-24px 0 32px', position: 'relative', zIndex: 10,
-        }}>
-          {[
-            { icon: '🛒', title: 'Buy',      sub: 'Used items nearby',    path: '/browse',   color: '#1E3A8A', bg: '#EFF6FF' },
-            { icon: '💰', title: 'Sell',     sub: 'Post free listing',    path: '/post',     color: '#FF6B35', bg: '#FFF0EB' },
-            { icon: '🔧', title: 'Services', sub: 'Hire local pros',      path: '/services', color: '#10B981', bg: '#ECFDF5' },
-          ].map(item => (
-            <div key={item.title}
-              onClick={() => navigate(item.path)}
-              style={{
-                background: item.bg, borderRadius: 16, padding: '20px 16px',
-                textAlign: 'center', cursor: 'pointer', border: '2px solid transparent',
-                boxShadow: '0 4px 16px rgba(0,0,0,0.08)', transition: 'all 0.2s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = item.color; e.currentTarget.style.transform = 'translateY(-3px)' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.transform = 'translateY(0)' }}
-            >
-              <div style={{ fontSize: 32, marginBottom: 8 }}>{item.icon}</div>
-              <div style={{ fontWeight: 700, color: item.color, fontSize: 15, fontFamily: 'Baloo 2, cursive' }}>{item.title}</div>
-              <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>{item.sub}</div>
-            </div>
-          ))}
+      {/* ── SECTION CARDS ── */}
+      <div className="container" style={{ marginTop: -40, paddingBottom: 60 }}>
+
+        {/* Section heading */}
+        <div style={{ textAlign: 'center', marginBottom: 32, paddingTop: 20 }}>
+          <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
+            Kya dhundh rahe ho? 🎯
+          </div>
+          <div style={{ fontSize: 15, color: '#6B7280' }}>
+            Apna section choose karo — sab kuch ek jagah
+          </div>
         </div>
 
-        {/* ── SERVICES ── */}
-        <div style={{ marginBottom: 40 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
-            <div>
-              <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 22, fontWeight: 700, color: '#111827' }}>Popular Services</div>
-              <div style={{ fontSize: 13, color: '#6B7280' }}>Verified professionals near you</div>
-            </div>
-            <button onClick={() => navigate('/services')} style={{ background: 'none', border: 'none', color: '#FF6B35', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>
-              View All →
-            </button>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-            {services.map(s => (
-              <div key={s.name}
-                onClick={() => navigate('/services')}
+        {/* 4 Section Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, marginBottom: 60 }}>
+          {sections.map(function(section) {
+            return (
+              <div key={section.title}
+                onClick={function() { navigate(section.path) }}
                 style={{
-                  background: 'white', borderRadius: 14, padding: '18px 12px',
-                  textAlign: 'center', cursor: 'pointer', border: '1.5px solid #F3F4F6',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)', transition: 'all 0.2s',
+                  background: 'white', borderRadius: 24, overflow: 'hidden',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.08)', cursor: 'pointer',
+                  border: '2px solid transparent', transition: 'all 0.3s ease',
+                  position: 'relative',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#FF6B35'; e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(255,107,53,0.15)' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#F3F4F6'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)' }}
+                onMouseEnter={function(e) {
+                  e.currentTarget.style.transform = 'translateY(-8px)'
+                  e.currentTarget.style.boxShadow = '0 20px 48px rgba(0,0,0,0.15)'
+                  e.currentTarget.style.borderColor = section.color
+                }}
+                onMouseLeave={function(e) {
+                  e.currentTarget.style.transform = 'translateY(0)'
+                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'
+                  e.currentTarget.style.borderColor = 'transparent'
+                }}
               >
-                <div style={{ fontSize: 28, marginBottom: 6 }}>{s.icon}</div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 3 }}>{s.name}</div>
-                <div style={{ fontSize: 11, color: '#FF6B35', fontWeight: 600 }}>from {s.price}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+                {/* Top colored section */}
+                <div style={{
+                  background: section.gradient,
+                  padding: '28px 28px 20px',
+                  position: 'relative', overflow: 'hidden',
+                }}>
+                  {/* Decorative circle */}
+                  <div style={{ position: 'absolute', top: -20, right: -20, width: 120, height: 120, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
+                  <div style={{ position: 'absolute', bottom: -30, left: '40%', width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
 
-        {/* ── LISTINGS ── */}
-        <div style={{ marginBottom: 40 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
-            <div>
-              <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 22, fontWeight: 700, color: '#111827' }}>Latest Listings</div>
-              <div style={{ fontSize: 13, color: '#6B7280' }}>Fresh deals near you</div>
-            </div>
-            <button onClick={() => navigate('/browse')} style={{ background: 'none', border: 'none', color: '#FF6B35', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>
-              View All →
-            </button>
-          </div>
+                  {/* Badge */}
+                  <div style={{
+                    display: 'inline-block', background: 'rgba(255,255,255,0.2)',
+                    borderRadius: 99, padding: '4px 12px', fontSize: 11,
+                    fontWeight: 700, color: 'white', marginBottom: 16,
+                    border: '1px solid rgba(255,255,255,0.3)',
+                  }}>
+                    {section.badge}
+                  </div>
 
-          {/* City Filter */}
-          <div className="chip-row" style={{ marginBottom: 12 }}>
-            {cities.map(city => (
-              <span key={city} className={'tag' + (activeCity === city ? ' active' : '')} onClick={() => setActiveCity(city)}>
-                {city}
-              </span>
-            ))}
-          </div>
-
-          {/* Category Filter */}
-          <div className="chip-row" style={{ marginBottom: 20 }}>
-            {categories.map(cat => (
-              <span key={cat.id} className={'tag' + (activeCategory === cat.id ? ' active' : '')} onClick={() => setActiveCategory(cat.id)}>
-                {cat.icon} {cat.name}
-              </span>
-            ))}
-          </div>
-
-          {loading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
-              {[1,2,3,4,5,6,7,8].map(i => (
-                <div key={i} style={{ background: 'white', borderRadius: 16, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-                  <div style={{ paddingTop: '68%', background: 'linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite' }} />
-                  <div style={{ padding: 12 }}>
-                    <div style={{ height: 14, background: '#F3F4F6', borderRadius: 4, marginBottom: 8 }} />
-                    <div style={{ height: 20, background: '#FEE2E2', borderRadius: 4, width: '60%' }} />
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ fontSize: 48, marginBottom: 8 }}>{section.icon}</div>
+                      <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 26, fontWeight: 800, color: 'white', lineHeight: 1.1, marginBottom: 4 }}>
+                        {section.title}
+                      </div>
+                      <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>
+                        {section.titleHindi}
+                      </div>
+                    </div>
+                    <div style={{
+                      background: 'rgba(255,255,255,0.15)', borderRadius: 12,
+                      padding: '8px 14px', textAlign: 'center',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                    }}>
+                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>{section.stats}</div>
+                    </div>
                   </div>
                 </div>
-              ))}
-              <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
-            </div>
-          ) : listings.length === 0 ? (
-            <div className="empty-state">
-              <div className="icon">📭</div>
-              <h3>Koi listing nahi mili</h3>
-              <p>Doosra category ya city try karo</p>
-              <button className="btn btn-primary" style={{ marginTop: 16 }} onClick={() => { setActiveCategory('all'); setActiveCity('All NCR') }}>
-                Reset Filters
-              </button>
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
-              {listings.map(l => (
-                <ListingCard key={l._id} listing={l} onClick={() => navigate('/listing/' + l._id)} />
-              ))}
-            </div>
-          )}
+
+                {/* Bottom content */}
+                <div style={{ padding: '20px 28px 24px', background: section.bg }}>
+                  {/* Description */}
+                  <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.7, marginBottom: 16 }}>
+                    {section.desc}
+                  </p>
+
+                  {/* Feature tags */}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 20 }}>
+                    {section.features.map(function(f) {
+                      return (
+                        <span key={f} style={{
+                          fontSize: 12, padding: '4px 10px', borderRadius: 99,
+                          background: 'white', color: section.color,
+                          fontWeight: 600, border: '1.5px solid ' + section.color + '33',
+                        }}>
+                          {f}
+                        </span>
+                      )
+                    })}
+                  </div>
+
+                  {/* CTA Button */}
+                  <button style={{
+                    width: '100%', padding: '14px', borderRadius: 99,
+                    background: section.gradient, color: 'white',
+                    border: 'none', fontWeight: 700, fontSize: 15,
+                    cursor: 'pointer', fontFamily: 'Nunito, sans-serif',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                    transition: 'all 0.2s',
+                  }}>
+                    {section.btnText}
+                  </button>
+                </div>
+              </div>
+            )
+          })}
         </div>
 
-        {/* ── TRUST BANNER ── */}
+        {/* ── TRUST SECTION ── */}
         <div style={{
           background: 'linear-gradient(135deg, #0F2167, #1E3A8A)',
-          borderRadius: 24, padding: '32px 24px', marginBottom: 40,
+          borderRadius: 24, padding: '36px 28px', marginBottom: 40,
         }}>
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 4 }}>
-              Why DelhiNCR Market?
+          <div style={{ textAlign: 'center', marginBottom: 28 }}>
+            <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 24, fontWeight: 700, color: 'white', marginBottom: 4 }}>
+              Why DelhiNCR Market? 🏆
             </div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>
-              Delhi NCR ka sabse trusted local marketplace
+              Delhi NCR ka sabse trusted local platform
             </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, textAlign: 'center' }}>
             {[
-              { icon: '✅', title: 'Verified Sellers',  desc: 'Aadhaar-linked profiles' },
-              { icon: '🔒', title: 'Safe Payments',     desc: 'UPI escrow protection' },
-              { icon: '📍', title: 'Truly Local',       desc: 'Within 5km radius only' },
-            ].map(item => (
-              <div key={item.title} style={{
-                background: 'rgba(255,255,255,0.08)', borderRadius: 16,
-                padding: '20px 16px', border: '1px solid rgba(255,255,255,0.1)',
-              }}>
-                <div style={{ fontSize: 32, marginBottom: 8 }}>{item.icon}</div>
-                <div style={{ color: 'white', fontWeight: 700, fontSize: 14, marginBottom: 4 }}>{item.title}</div>
-                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>{item.desc}</div>
-              </div>
-            ))}
+              { icon: '✅', title: 'Verified Sellers',   desc: 'Har seller verified hai — safe deal guaranteed' },
+              { icon: '🔒', title: 'Secure Payments',    desc: 'UPI escrow — pehle item dekho phir pay karo' },
+              { icon: '📍', title: 'Hyper Local',        desc: 'Sirf 5km radius — truly local marketplace' },
+              { icon: '💬', title: 'Direct Chat',        desc: 'Buyer-seller directly baat karo — no middleman' },
+              { icon: '🚀', title: 'Free Listing',       desc: 'Item list karo bilkul free — koi hidden charges nahi' },
+              { icon: '⭐', title: 'Trusted Reviews',    desc: 'Real reviews — real users se — fake nahi' },
+            ].map(function(item) {
+              return (
+                <div key={item.title} style={{
+                  background: 'rgba(255,255,255,0.08)', borderRadius: 16,
+                  padding: '20px 14px', border: '1px solid rgba(255,255,255,0.1)',
+                  transition: 'all 0.2s',
+                }}>
+                  <div style={{ fontSize: 28, marginBottom: 8 }}>{item.icon}</div>
+                  <div style={{ color: 'white', fontWeight: 700, fontSize: 13, marginBottom: 6 }}>{item.title}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, lineHeight: 1.5 }}>{item.desc}</div>
+                </div>
+              )
+            })}
           </div>
         </div>
 
-        {/* Quick Actions — 3 Main Sections */}
-<div style={{
-  display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12,
-  margin: '-24px 0 32px', position: 'relative', zIndex: 10,
-}}>
-  {[
-    {
-      icon: '🛍️', title: 'Buy & Sell',
-      sub: 'Used items nearby',
-      path: '/browse',
-      color: '#1E3A8A', bg: '#EFF6FF',
-      desc: 'Laptops, phones, furniture & more'
-    },
-    {
-      icon: '🔧', title: 'Services',
-      sub: 'Hire local pros',
-      path: '/services',
-      color: '#10B981', bg: '#ECFDF5',
-      desc: 'Plumber, electrician, carpenter'
-    },
-    {
-      icon: '🚗', title: 'Rentals',
-      sub: 'Rent vehicles',
-      path: '/rentals',
-      color: '#FF6B35', bg: '#FFF0EB',
-      desc: 'Car, bike, scooty, cycle'
-    },
-  ].map(function(item) {
-    return (
-      <div key={item.title}
-        onClick={function() { navigate(item.path) }}
-        style={{
-          background: item.bg, borderRadius: 20, padding: '20px 16px',
-          textAlign: 'center', cursor: 'pointer',
-          border: '2px solid transparent',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-          transition: 'all 0.2s',
-        }}
-        onMouseEnter={function(e) { e.currentTarget.style.borderColor = item.color; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(0,0,0,0.12)' }}
-        onMouseLeave={function(e) { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)' }}
-      >
-        <div style={{ fontSize: 36, marginBottom: 8 }}>{item.icon}</div>
-        <div style={{ fontWeight: 800, color: item.color, fontSize: 16, fontFamily: 'Baloo 2, cursive', marginBottom: 2 }}>{item.title}</div>
-        <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 4 }}>{item.sub}</div>
-        <div style={{ fontSize: 11, color: '#9CA3AF' }}>{item.desc}</div>
-      </div>
-    )
-  })}
-</div>
-
-        {/* ── CTA ── */}
+        {/* ── CTA BANNER ── */}
         <div style={{
           background: 'linear-gradient(135deg, #FF6B35, #E55A26)',
-          borderRadius: 24, padding: '32px 24px', marginBottom: 40, textAlign: 'center',
+          borderRadius: 24, padding: '36px 28px', textAlign: 'center', marginBottom: 40,
         }}>
-          <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 24, fontWeight: 800, color: 'white', marginBottom: 8 }}>
-            Kuch Sell Karna Hai? 🚀
+          <div style={{ fontSize: 40, marginBottom: 12 }}>🚀</div>
+          <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 26, fontWeight: 800, color: 'white', marginBottom: 8 }}>
+            Aaj Hi Shuru Karo!
           </div>
-          <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: 14, marginBottom: 20 }}>
-            Free mein listing daalo — lakho buyers tak pahuncho
+          <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: 15, marginBottom: 24, lineHeight: 1.7 }}>
+            Free mein listing daalo — lakho buyers tak pahuncho<br />
+            <span style={{ fontSize: 13, opacity: 0.8 }}>No hidden charges • No commission • 100% Free</span>
           </div>
-          <button
-            onClick={() => navigate('/post')}
-            style={{
-              background: 'white', color: '#FF6B35', border: 'none',
-              padding: '14px 36px', borderRadius: 99, fontWeight: 800,
-              fontSize: 16, cursor: 'pointer', fontFamily: 'Nunito, sans-serif',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-            }}>
-            + Post Free Ad
-          </button>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button
+              onClick={function() { navigate('/post') }}
+              style={{
+                background: 'white', color: '#FF6B35', border: 'none',
+                padding: '14px 32px', borderRadius: 99, fontWeight: 800,
+                fontSize: 15, cursor: 'pointer', fontFamily: 'Nunito, sans-serif',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+              }}>
+              ➕ Post Free Ad
+            </button>
+            <button
+              onClick={function() { navigate('/browse') }}
+              style={{
+                background: 'rgba(255,255,255,0.2)', color: 'white',
+                border: '2px solid rgba(255,255,255,0.5)',
+                padding: '14px 32px', borderRadius: 99, fontWeight: 700,
+                fontSize: 15, cursor: 'pointer', fontFamily: 'Nunito, sans-serif',
+              }}>
+              🔍 Browse Listings
+            </button>
+          </div>
         </div>
 
       </div>
