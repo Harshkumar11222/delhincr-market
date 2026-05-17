@@ -7,35 +7,36 @@ import NotificationBell from './NotificationBell'
 const styles = {
   nav: {
     position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
-    background: 'linear-gradient(135deg, #1E3A8A 0%, #1e40af 100%)',
-    boxShadow: '0 2px 12px rgba(30,58,138,0.3)',
+    background: 'linear-gradient(135deg, #3B0764 0%, #6B21A8 100%)',
+    boxShadow: '0 2px 20px rgba(107,33,168,0.4)',
   },
   inner: {
     maxWidth: 1200, margin: '0 auto', padding: '0 16px',
-    display: 'flex', alignItems: 'center', height: 60, gap: 16,
+    display: 'flex', alignItems: 'center', height: 64, gap: 16,
   },
   logo: {
-    display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none',
-    flexShrink: 0,
+    display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', flexShrink: 0,
   },
   logoIcon: {
-    width: 36, height: 36, background: '#FF6B35', borderRadius: 10,
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: 20, fontWeight: 800, color: 'white', fontFamily: 'Baloo 2, cursive',
+    width: 40, height: 40,
+    background: 'linear-gradient(135deg, #F59E0B, #D97706)',
+    borderRadius: 12, display: 'flex', alignItems: 'center',
+    justifyContent: 'center', fontSize: 20,
   },
   logoText: {
-    fontFamily: 'Baloo 2, cursive', fontWeight: 800, fontSize: 18,
+    fontFamily: 'Baloo 2, cursive', fontWeight: 800, fontSize: 20,
     color: 'white', lineHeight: 1,
   },
-  logoSub: { fontSize: 10, color: 'rgba(255,255,255,0.7)', fontWeight: 400 },
+  logoSub: { fontSize: 10, color: 'rgba(255,255,255,0.6)', fontWeight: 400 },
   searchBar: {
     flex: 1, display: 'flex', alignItems: 'center',
-    background: 'rgba(255,255,255,0.15)', borderRadius: 9999,
-    padding: '0 14px', gap: 8, maxWidth: 400,
+    background: 'rgba(255,255,255,0.12)', borderRadius: 9999,
+    padding: '0 14px', gap: 8, maxWidth: 420,
+    border: '1px solid rgba(255,255,255,0.2)',
   },
   searchInput: {
     background: 'transparent', border: 'none', outline: 'none',
-    color: 'white', fontSize: 14, flex: 1, padding: '8px 0',
+    color: 'white', fontSize: 14, flex: 1, padding: '9px 0',
     fontFamily: 'Nunito, sans-serif',
   },
   actions: { display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto' },
@@ -45,25 +46,26 @@ const styles = {
     textDecoration: 'none',
   },
   sellBtn: {
-    background: '#FF6B35', color: 'white', padding: '8px 16px',
+    background: 'linear-gradient(135deg, #F59E0B, #D97706)',
+    color: 'white', padding: '8px 18px',
     borderRadius: 9999, fontSize: 14, fontWeight: 700, border: 'none',
     cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
     fontFamily: 'Nunito, sans-serif',
+    boxShadow: '0 4px 12px rgba(245,158,11,0.4)',
   },
   avatar: {
-    width: 32, height: 32, borderRadius: '50%', objectFit: 'cover',
-    border: '2px solid rgba(255,255,255,0.4)',
+    width: 36, height: 36, borderRadius: '50%', objectFit: 'cover',
+    border: '2px solid rgba(245,158,11,0.6)', cursor: 'pointer',
   },
   bottomNav: {
     position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1000,
     background: 'white', borderTop: '1px solid #E5E7EB',
-    display: 'flex', boxShadow: '0 -4px 12px rgba(0,0,0,0.08)',
+    display: 'flex', boxShadow: '0 -4px 20px rgba(107,33,168,0.1)',
   },
   navItem: {
     flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
     justifyContent: 'center', padding: '8px 0', textDecoration: 'none',
-    color: '#6B7280', fontSize: 10, fontWeight: 600, gap: 2,
-    transition: 'color 0.2s',
+    color: '#6B7280', fontSize: 10, fontWeight: 600, gap: 2, transition: 'color 0.2s',
   },
   navIcon: { fontSize: 22 },
 }
@@ -96,12 +98,12 @@ export default function Navbar() {
       <nav style={styles.nav}>
         <div style={styles.inner}>
           <Link to="/" style={styles.logo}>
-            <div style={styles.logoIcon}>D</div>
-            <div>
-              <div style={styles.logoText}>DelhiNCR</div>
-              <div style={styles.logoSub}>Apna Shehar, Apna Bazaar</div>
-            </div>
-          </Link>
+  <div style={styles.logoIcon}>🏪</div>
+  <div>
+    <div style={styles.logoText}>NukkadMarket</div>
+    <div style={styles.logoSub}>Apna Nukkad, Apna Bazaar</div>
+  </div>
+</Link>
 
           <div style={styles.searchBar} className="hide-mobile">
             <span style={{ fontSize: 16 }}>🔍</span>
@@ -149,8 +151,7 @@ export default function Navbar() {
             to={item.path}
             style={{
               ...styles.navItem,
-              color: location.pathname === item.path ? '#FF6B35' : '#6B7280',
-            }}
+color: location.pathname === item.path ? '#6B21A8' : '#6B7280',            }}
           >
             <span style={styles.navIcon}>{item.icon}</span>
             <span>{item.label}</span>
