@@ -19,6 +19,7 @@ import Chat from './pages/Chat'
 import Browse from './pages/Browse'  // ← sahi
 import Conversations from './pages/Conversations'
 import Rentals from './pages/Rentals'
+import Admin from './pages/Admin'
 
 
 
@@ -46,6 +47,8 @@ function App() {
             <Route path="*"                  element={<NotFound />} />  
             // Routes mein:
             <Route path="/rentals" element={<Rentals />} />
+            <Route path="/admin" element={<Admin />} />
+
           </Routes>
         </div>
         <InstallPrompt />

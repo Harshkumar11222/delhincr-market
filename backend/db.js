@@ -16,6 +16,8 @@ const userSchema = new mongoose.Schema({
   location:     { type: String, default: '' },
   area:         { type: String, default: '' },
   city:         { type: String, default: '' },
+  isAdmin:        { type: Boolean, default: false },
+  isBanned:       { type: Boolean, default: false },
   resetOtp:       { type: String, default: null },      // ← ADD
   resetOtpExpiry: { type: Number, default: null }, 
 }, { timestamps: true })
