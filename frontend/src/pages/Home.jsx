@@ -204,17 +204,28 @@ export default function Home() {
       <div className="container" style={{ marginTop: -48, paddingBottom: 60 }}>
 
         {/* Section heading */}
-        <div style={{ textAlign: 'center', marginBottom: 32, paddingTop: 24 }}>
-          <div style={{
-            fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 700,
-            color: '#111827', marginBottom: 8,
-          }}>
-            Kya dhundh rahe ho? 🎯
-          </div>
-          <div style={{ fontSize: 15, color: '#6B7280' }}>
-            Apna section choose karo — sab kuch ek jagah
-          </div>
-        </div>
+<div style={{
+  textAlign: 'center', marginBottom: 32, paddingTop: 32,
+  paddingBottom: 8,
+  background: 'white',
+  borderRadius: 20,
+  padding: '24px 20px 16px',
+  marginTop: 8,
+  boxShadow: '0 2px 12px rgba(107,33,168,0.06)',
+  border: '1px solid rgba(107,33,168,0.08)',
+}}>
+  <div style={{
+    fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 700,
+    background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
+    WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+    marginBottom: 6,
+  }}>
+    Kya dhundh rahe ho? 🎯
+  </div>
+  <div style={{ fontSize: 14, color: '#6B7280' }}>
+    Apna section choose karo — sab kuch ek jagah
+  </div>
+</div>
 
         {/* 4 Section Cards — 2x2 grid */}
         <div style={{
