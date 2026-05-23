@@ -133,6 +133,19 @@ const notificationSchema = new mongoose.Schema({
   read:     { type: Boolean, default: false },
 }, { timestamps: true })
 
+
+
+// Sabse neeche add karo
+async function connectDB() {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://delhincr_admin:Delhi%402024@delhincr-cluster.xarvjbi.mongodb.net/delhincr?appName=delhincr-cluster')
+    console.log('✅ MongoDB Connected!')
+  } catch(err) {
+    console.error('❌ MongoDB Error:', err.message)
+  }
+}
+
+module.exports = { User, Listing, Service, Order, Review, Notification, Message, Rental, connectDB }
 // ─── Models ─────────────────────────────────────────────
 const User         = mongoose.model('User',         userSchema)
 const Listing      = mongoose.model('Listing',      listingSchema)

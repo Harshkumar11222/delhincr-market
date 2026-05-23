@@ -1,12 +1,13 @@
-const express      = require('express')
-const cors         = require('cors')
-const path         = require('path')
-const http         = require('http')
-const { Server }   = require('socket.io')
-const helmet       = require('helmet')
-const rateLimit    = require('express-rate-limit')
-const xss          = require('xss-clean')
-const hpp          = require('hpp')
+const express       = require('express')
+const cors          = require('cors')
+const path          = require('path')
+const http          = require('http')
+const { Server }    = require('socket.io')
+const helmet        = require('helmet')
+const rateLimit     = require('express-rate-limit')
+const slowDown      = require('express-slow-down')
+const xss           = require('xss-clean')
+const hpp           = require('hpp')
 const mongoSanitize = require('express-mongo-sanitize')
 
 const app    = express()
@@ -16,67 +17,182 @@ const io     = new Server(server, {
 })
 const PORT = process.env.PORT || 5000
 
-// ═══════════════════════════════════════
-// SECURITY MIDDLEWARE
-// ═══════════════════════════════════════
-
-// 1. Helmet — HTTP headers secure karo
+// ═══════════════════════════════════════════
+// 1. HELMET — Secure HTTP Headers
+// ═══════════════════════════════════════════
 app.use(helmet({
   contentSecurityPolicy: false,
   crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
 }))
 
+// ═══════════════════════════════════════════
 // 2. CORS
-app.use(cors({ origin: '*' }))
+// ═══════════════════════════════════════════
+app.use(cors({
+  origin: ['https://delhincr-market.vercel.app', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}))
 
-// 3. Rate Limiting — DDoS protection
-const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200,
-  message: { error: 'Bahut zyada requests! 15 minute baad try karo.' },
-  standardHeaders: true,
-  legacyHeaders: false,
-})
-app.use('/api/', globalLimiter)
+// Preflight
+app.options('*', cors())
 
-// Auth routes ke liye strict limit
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  message: { error: 'Bahut zyada login attempts! 15 minute baad try karo.' },
-})
-app.use('/api/auth/login', authLimiter)
-app.use('/api/auth/register', authLimiter)
-app.use('/api/otp/send', authLimiter)
+// ═══════════════════════════════════════════
+// 3. TRUST PROXY (Render ke liye)
+// ═══════════════════════════════════════════
+app.set('trust proxy', 1)
 
-// OTP ke liye extra strict
-const otpLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5,
-  message: { error: 'OTP limit exceed! 1 ghante baad try karo.' },
-})
-app.use('/api/auth/forgot-password', otpLimiter)
-
-// 4. Body Parser
+// ═══════════════════════════════════════════
+// 4. BODY SIZE LIMIT — Large payload attack
+// ═══════════════════════════════════════════
 app.use(express.json({ limit: '10kb' }))
 app.use(express.urlencoded({ extended: true, limit: '10kb' }))
 
-// 5. XSS Protection — HTML injection rokta hai
+// ═══════════════════════════════════════════
+// 5. XSS PROTECTION
+// ═══════════════════════════════════════════
 app.use(xss())
 
-// 6. MongoDB Injection Protection
-app.use(mongoSanitize())
+// ═══════════════════════════════════════════
+// 6. NOSQL INJECTION PROTECTION
+// ═══════════════════════════════════════════
+app.use(mongoSanitize({
+  replaceWith: '_',
+  onSanitize: ({ req, key }) => {
+    console.warn(`⚠️ NoSQL injection attempt blocked: ${key}`)
+  }
+}))
 
-// 7. HTTP Parameter Pollution Protection
-app.use(hpp())
+// ═══════════════════════════════════════════
+// 7. HTTP PARAMETER POLLUTION
+// ═══════════════════════════════════════════
+app.use(hpp({
+  whitelist: ['sort', 'page', 'limit', 'category', 'city', 'type']
+}))
 
-// 8. Static files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+// ═══════════════════════════════════════════
+// 8. RATE LIMITING — DDoS/DoS Protection
+// ═══════════════════════════════════════════
 
-// ═══════════════════════════════════════
+// Global limit — 200 req per 15 min
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: function(req, res) {
+    console.warn('🚨 Rate limit hit:', req.ip)
+    res.status(429).json({
+      error: 'Bahut zyada requests! 15 minute baad try karo.',
+      retryAfter: Math.ceil(15 * 60),
+    })
+  }
+})
+app.use('/api/', globalLimiter)
+
+// Auth routes — strict (10 req per 15 min)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  handler: function(req, res) {
+    console.warn('🚨 Auth rate limit hit:', req.ip)
+    res.status(429).json({ error: 'Bahut zyada login attempts! 15 minute baad try karo.' })
+  }
+})
+app.use('/api/auth/login', authLimiter)
+app.use('/api/auth/register', authLimiter)
+
+// OTP — very strict (5 per hour)
+const otpLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  handler: function(req, res) {
+    res.status(429).json({ error: 'OTP limit exceed! 1 ghante baad try karo.' })
+  }
+})
+app.use('/api/otp/send', otpLimiter)
+app.use('/api/auth/forgot-password', otpLimiter)
+
+// Upload — limit (20 per hour)
+const uploadLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 20,
+  handler: function(req, res) {
+    res.status(429).json({ error: 'Upload limit exceed! 1 ghante baad try karo.' })
+  }
+})
+app.use('/api/upload', uploadLimiter)
+
+// ═══════════════════════════════════════════
+// 9. SLOW DOWN — DDoS Mitigation
+// ═══════════════════════════════════════════
+const speedLimiter = slowDown({
+  windowMs: 15 * 60 * 1000,
+  delayAfter: 100, // 100 requests ke baad slow karo
+  delayMs: function(used) {
+    const delayAfter = 100
+    return (used - delayAfter) * 100 // har extra req pe 100ms delay
+  },
+  maxDelayMs: 5000, // max 5 sec delay
+})
+app.use('/api/', speedLimiter)
+
+// ═══════════════════════════════════════════
+// 10. SECURITY HEADERS MIDDLEWARE
+// ═══════════════════════════════════════════
+app.use(function(req, res, next) {
+  // Block suspicious User Agents
+  var ua = req.headers['user-agent'] || ''
+  var blockedAgents = ['sqlmap', 'nikto', 'nmap', 'masscan', 'zgrab', 'gobuster', 'dirbuster']
+  if (blockedAgents.some(function(b) { return ua.toLowerCase().includes(b) })) {
+    console.warn('🚨 Blocked suspicious agent:', ua, 'IP:', req.ip)
+    return res.status(403).json({ error: 'Access denied' })
+  }
+
+  // Remove server info
+  res.removeHeader('X-Powered-By')
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  res.setHeader('X-Frame-Options', 'DENY')
+  res.setHeader('X-XSS-Protection', '1; mode=block')
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()')
+
+  next()
+})
+
+// ═══════════════════════════════════════════
+// 11. REQUEST LOGGER (suspicious activity)
+// ═══════════════════════════════════════════
+app.use(function(req, res, next) {
+  var suspicious = [
+    'select', 'insert', 'update', 'delete', 'drop', 'union',
+    'script', 'onclick', 'onload', 'eval(', '../', '..\\',
+    'etc/passwd', 'cmd=', 'exec(',
+  ]
+  var url = req.url.toLowerCase()
+  var body = JSON.stringify(req.body).toLowerCase()
+
+  if (suspicious.some(function(s) { return url.includes(s) || body.includes(s) })) {
+    console.warn('🚨 Suspicious request from:', req.ip, '| URL:', req.url)
+    return res.status(400).json({ error: 'Invalid request' })
+  }
+
+  next()
+})
+
+// ═══════════════════════════════════════════
+// 12. STATIC FILES
+// ═══════════════════════════════════════════
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+  maxAge: '1d',
+  etag: true,
+}))
+
+// ═══════════════════════════════════════════
 // ROUTES
-// ═══════════════════════════════════════
-
+// ═══════════════════════════════════════════
 try { app.use('/api/auth',          require('./routes/auth'))          } catch(e) { console.log('auth error:', e.message) }
 try { app.use('/api/listings',      require('./routes/listings'))      } catch(e) { console.log('listings error:', e.message) }
 try { app.use('/api/services',      require('./routes/services'))      } catch(e) { console.log('services error:', e.message) }
@@ -86,8 +202,8 @@ try { app.use('/api/reviews',       require('./routes/reviews'))       } catch(e
 try { app.use('/api/notifications', require('./routes/notifications')) } catch(e) { console.log('notifications error:', e.message) }
 try { app.use('/api/otp',           require('./routes/otp'))           } catch(e) { console.log('otp error:', e.message) }
 try { app.use('/api/chat',          require('./routes/chat'))          } catch(e) { console.log('chat error:', e.message) }
-try { app.use('/api/rentals', require('./routes/rentals')) } catch(e) { console.log('rentals error:', e.message) }
-try { app.use('/api/admin', require('./routes/admin')) } catch(e) { console.log('admin error:', e.message) }
+try { app.use('/api/rentals',       require('./routes/rentals'))       } catch(e) { console.log('rentals error:', e.message) }
+try { app.use('/api/admin',         require('./routes/admin'))         } catch(e) { console.log('admin error:', e.message) }
 
 app.get('/api/categories', function(req, res) {
   res.json([
@@ -102,9 +218,13 @@ app.get('/api/categories', function(req, res) {
   ])
 })
 
-// Health check
 app.get('/api/health', function(req, res) {
-  res.json({ status: 'ok', message: 'DelhiNCR Market API running 🚀' })
+  res.json({
+    status: 'ok',
+    message: 'NukkadMarket API running 🏪',
+    timestamp: new Date().toISOString(),
+    security: 'enabled ✅',
+  })
 })
 
 // 404 handler
@@ -115,46 +235,75 @@ app.use('/api/*', function(req, res) {
 // Global error handler
 app.use(function(err, req, res, next) {
   console.error('Error:', err.message)
-  res.status(err.status || 500).json({
-    error: process.env.NODE_ENV === 'production'
-      ? 'Something went wrong'
-      : err.message
-  })
+
+  // Dont leak error details in production
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(err.status || 500).json({ error: 'Something went wrong' })
+  }
+  res.status(err.status || 500).json({ error: err.message })
 })
 
-// ═══════════════════════════════════════
-// SOCKET.IO
-// ═══════════════════════════════════════
-
+// ═══════════════════════════════════════════
+// SOCKET.IO — Real-time Chat
+// ═══════════════════════════════════════════
 var onlineUsers = {}
+var messageCount = {}  // Rate limit for chat
 
 io.on('connection', function(socket) {
+  console.log('User connected:', socket.id)
+
   socket.on('user_online', function(userId) {
     onlineUsers[userId] = socket.id
     socket.userId = userId
   })
+
   socket.on('join_room', function(roomId) {
     socket.join(roomId)
   })
+
   socket.on('send_message', function(data) {
+    // Chat rate limit — max 30 messages per minute
+    var now = Date.now()
+    var key = socket.userId || socket.id
+    if (!messageCount[key]) messageCount[key] = { count: 0, resetAt: now + 60000 }
+    if (now > messageCount[key].resetAt) {
+      messageCount[key] = { count: 0, resetAt: now + 60000 }
+    }
+    messageCount[key].count++
+    if (messageCount[key].count > 30) {
+      socket.emit('error', { message: 'Too many messages! Wait a minute.' })
+      return
+    }
+
+    // Sanitize message
+    var msg = (data.message || '').substring(0, 1000)
     var msgData = {
       id:         Date.now().toString(),
       senderId:   data.senderId,
       senderName: data.senderName,
-      message:    data.message,
+      message:    msg,
       roomId:     data.roomId,
       listingId:  data.listingId,
       createdAt:  new Date().toISOString(),
     }
     io.to(data.roomId).emit('receive_message', msgData)
   })
+
   socket.on('disconnect', function() {
     if (socket.userId) delete onlineUsers[socket.userId]
+    console.log('User disconnected:', socket.id)
   })
 })
 
+// ═══════════════════════════════════════════
+// START SERVER
+// ═══════════════════════════════════════════
+const { connectDB } = require('./db')
+connectDB()
+
 server.listen(PORT, function() {
-  console.log('\n🚀 DelhiNCR Market Backend running on port ' + PORT)
-  console.log('🔒 Security middleware active!')
-  console.log('💬 Socket.io Chat ready!')
+  console.log('\n🏪 NukkadMarket Backend running on port ' + PORT)
+  console.log('🔒 Security: Helmet + Rate Limit + Slow Down + XSS + NoSQL Protection')
+  console.log('🛡️  DDoS Protection: ENABLED')
+  console.log('💬 Socket.io: READY')
 })
