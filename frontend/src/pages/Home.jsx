@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { POPULAR_CITIES } from '../data/india'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -15,50 +16,50 @@ export default function Home() {
       icon: '🛍️',
       title: 'Buy & Sell',
       titleHindi: 'खरीदो और बेचो',
-      desc: 'Delhi NCR mein used items buy aur sell karo — laptops, phones, furniture, bikes aur bahut kuch. Safe, verified aur local.',
-      features: ['📱 Electronics', '🚗 Vehicles', '🛋️ Furniture', '📚 Books', '👗 Clothing'],
+      desc: 'Poore India mein used items buy aur sell karo — 100+ cities mein. Laptops, phones, cars, furniture aur bahut kuch.',
+      features: ['📱 Electronics', '🚗 Vehicles', '🛋️ Furniture', '🏡 Property', '💼 Jobs'],
       color: '#6B21A8',
       gradient: 'linear-gradient(135deg, #6B21A8 0%, #7C3AED 100%)',
       bg: '#F5F3FF',
       path: '/browse',
       btnText: 'Browse Listings →',
-      stats: '500+ Active Listings',
+      stats: '50,000+ Listings',
       badge: '🔥 Most Popular',
     },
     {
       icon: '🔧',
       title: 'Local Services',
       titleHindi: 'लोकल सर्विसेज़',
-      desc: 'Verified local professionals dhundho — plumber, electrician, carpenter, painter aur AC repair. Ghar baithe booking karo.',
-      features: ['🔧 Plumber', '⚡ Electrician', '🔨 Carpenter', '🎨 Painter', '❄️ AC Repair'],
+      desc: 'Verified professionals dhundho — plumber, electrician, carpenter. 100+ cities mein available. Ghar baithe booking karo.',
+      features: ['🔧 Plumber', '⚡ Electrician', '👨‍🍳 Cook', '📖 Tutor', '💇 Salon'],
       color: '#059669',
       gradient: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
       bg: '#ECFDF5',
       path: '/services',
       btnText: 'Find Professionals →',
-      stats: '200+ Verified Pros',
+      stats: '10,000+ Pros',
       badge: '✅ Verified Only',
     },
     {
       icon: '🚗',
       title: 'Vehicle Rentals',
       titleHindi: 'वाहन किराये पर',
-      desc: 'Car, bike, scooty aur cycle rent karo Delhi NCR mein. Hourly aur daily rates. Travel karo apne budget mein.',
+      desc: 'Car, bike, scooty aur cycle rent karo. Hourly aur daily rates. Poore India mein best prices guaranteed.',
       features: ['🚗 Cars', '🏍️ Bikes', '🛵 Scooty', '🚲 Cycles', '🚐 Vans'],
       color: '#DC2626',
       gradient: 'linear-gradient(135deg, #DC2626 0%, #EF4444 100%)',
       bg: '#FEF2F2',
       path: '/rentals',
       btnText: 'Rent a Vehicle →',
-      stats: 'Best Rates in NCR',
+      stats: 'Best Rates in India',
       badge: '🆕 New Section',
     },
     {
       icon: '➕',
       title: 'Post Free Ad',
       titleHindi: 'फ्री में बेचो',
-      desc: 'Apna koi bhi item ya service list karo bilkul free mein. Lakho buyers tak pahuncho. Easy aur fast listing process.',
-      features: ['📸 Photo Upload', '✅ Free Listing', '📍 Local Reach', '💬 Direct Chat', '🔒 Safe & Secure'],
+      desc: 'Apna item list karo bilkul free mein. Crores of buyers tak pahuncho. 2 minute mein listing live!',
+      features: ['📸 Photo Upload', '✅ Free Forever', '📍 India-wide', '💬 Direct Chat', '🔒 Safe & Secure'],
       color: '#D97706',
       gradient: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
       bg: '#FFFBEB',
@@ -70,12 +71,12 @@ export default function Home() {
   ]
 
   var trustPoints = [
-    { icon: '✅', title: 'Verified Sellers',  desc: 'Har seller verified hai — safe deal guaranteed' },
-    { icon: '🔒', title: 'Secure Payments',   desc: 'UPI escrow — pehle item dekho phir pay karo' },
-    { icon: '📍', title: 'Hyper Local',       desc: 'Sirf 5km radius — truly local marketplace' },
-    { icon: '💬', title: 'Direct Chat',       desc: 'Buyer-seller directly baat karo — no middleman' },
-    { icon: '🚀', title: 'Free Listing',      desc: 'Item list karo bilkul free — koi hidden charges nahi' },
-    { icon: '⭐', title: 'Trusted Reviews',   desc: 'Real reviews — real users se — fake nahi' },
+    { icon: '🇮🇳', title: '100+ Cities',      desc: 'Delhi se Mumbai, Bangalore se Kolkata — har shehar mein' },
+    { icon: '✅',  title: 'Verified Sellers', desc: 'Aadhaar-linked profiles — fake sellers zero tolerance' },
+    { icon: '🔒',  title: 'Secure Platform',  desc: 'Bank-grade security — aapka data safe hai' },
+    { icon: '📍',  title: 'Hyper Local',      desc: 'Apne mohalle mein hi milega — delivery nahi, meetup' },
+    { icon: '🚀',  title: '100% Free',        desc: 'Listing daalo free mein — koi commission nahi kabhi' },
+    { icon: '💬',  title: 'Direct Chat',      desc: 'Buyer-seller directly baat karo — no middleman ever' },
   ]
 
   return (
@@ -89,27 +90,21 @@ export default function Home() {
         position: 'relative',
         overflow: 'hidden',
       }}>
-        {/* Decorative circles */}
         <div style={{ position: 'absolute', top: -80, right: -80, width: 320, height: 320, borderRadius: '50%', background: 'rgba(245,158,11,0.08)' }} />
         <div style={{ position: 'absolute', bottom: -60, left: -60, width: 260, height: 260, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
         <div style={{ position: 'absolute', top: '30%', right: '15%', width: 120, height: 120, borderRadius: '50%', background: 'rgba(245,158,11,0.06)' }} />
-        <div style={{ position: 'absolute', top: '60%', left: '8%', width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 700, margin: '0 auto' }}>
-
-          {/* Top Badge */}
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             background: 'rgba(245,158,11,0.2)', backdropFilter: 'blur(8px)',
             borderRadius: 99, padding: '6px 18px', fontSize: 13,
             color: '#FCD34D', marginBottom: 24,
-            border: '1px solid rgba(245,158,11,0.3)',
-            fontWeight: 600,
+            border: '1px solid rgba(245,158,11,0.3)', fontWeight: 600,
           }}>
-            🏪 Delhi NCR ka #1 Nukkad Marketplace
+            🇮🇳 India ka #1 Hyperlocal Marketplace
           </div>
 
-          {/* Main Title */}
           <h1 style={{
             fontFamily: 'Baloo 2, cursive',
             fontSize: 'clamp(36px, 7vw, 60px)',
@@ -125,17 +120,17 @@ export default function Home() {
             background: 'linear-gradient(135deg, #FCD34D, #F59E0B)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>
-            Apna Nukkad, Apna Bazaar
+            Apna Shehar, Apna Bazaar
           </h2>
 
           <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 16, marginBottom: 36, lineHeight: 1.8 }}>
             Buy • Sell • Services • Rentals<br />
             <span style={{ fontSize: 13, opacity: 0.7 }}>
-              Verified, Safe aur 100% Local — Sirf Delhi NCR ke liye
+              Verified, Safe aur 100% Local — Har Shehar, Har Nukkad
             </span>
           </p>
 
-          {/* Search Bar */}
+          {/* Search */}
           <div style={{
             maxWidth: 580, margin: '0 auto 44px',
             display: 'flex', background: 'white', borderRadius: 99,
@@ -151,7 +146,7 @@ export default function Home() {
                   navigate('/browse?search=' + encodeURIComponent(search.trim()))
                 }
               }}
-              placeholder="Laptop, plumber, bike rental..."
+              placeholder="Laptop, plumber, bike rental, property..."
               style={{
                 flex: 1, border: 'none', outline: 'none',
                 fontSize: 15, fontFamily: 'Nunito, sans-serif',
@@ -175,10 +170,10 @@ export default function Home() {
           {/* Stats */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: 'clamp(20px, 5vw, 56px)', flexWrap: 'wrap' }}>
             {[
-              { num: '1000+', label: 'Listings' },
-              { num: '500+',  label: 'Verified Sellers' },
-              { num: '200+',  label: 'Service Pros' },
-              { num: '6',     label: 'NCR Cities' },
+              { num: '50,000+', label: 'Listings' },
+              { num: '10,000+', label: 'Verified Sellers' },
+              { num: '500+',    label: 'Service Pros' },
+              { num: '100+',    label: 'Cities' },
             ].map(function(s) {
               return (
                 <div key={s.label} style={{
@@ -200,39 +195,32 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ══ MAIN CONTENT ══ */}
       <div className="container" style={{ marginTop: -48, paddingBottom: 60 }}>
 
         {/* Section heading */}
-<div style={{
-  textAlign: 'center', marginBottom: 32, paddingTop: 32,
-  paddingBottom: 8,
-  background: 'white',
-  borderRadius: 20,
-  padding: '24px 20px 16px',
-  marginTop: 8,
-  boxShadow: '0 2px 12px rgba(107,33,168,0.06)',
-  border: '1px solid rgba(107,33,168,0.08)',
-}}>
-  <div style={{
-    fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 700,
-    background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
-    WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-    marginBottom: 6,
-  }}>
-    Kya dhundh rahe ho? 🎯
-  </div>
-  <div style={{ fontSize: 14, color: '#6B7280' }}>
-    Apna section choose karo — sab kuch ek jagah
-  </div>
-</div>
-
-        {/* 4 Section Cards — 2x2 grid */}
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: 24, marginBottom: 64,
+          textAlign: 'center', marginBottom: 32,
+          background: 'white', borderRadius: 20,
+          padding: '24px 20px 16px',
+          marginTop: 8,
+          boxShadow: '0 2px 12px rgba(107,33,168,0.06)',
+          border: '1px solid rgba(107,33,168,0.08)',
         }}>
+          <div style={{
+            fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 700,
+            background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            marginBottom: 6,
+          }}>
+            Kya dhundh rahe ho? 🎯
+          </div>
+          <div style={{ fontSize: 14, color: '#6B7280' }}>
+            Apna section choose karo — sab kuch ek jagah
+          </div>
+        </div>
+
+        {/* 4 Section Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24, marginBottom: 48 }}>
           {sections.map(function(section) {
             return (
               <div key={section.title}
@@ -254,23 +242,20 @@ export default function Home() {
                   e.currentTarget.style.borderColor = 'transparent'
                 }}
               >
-                {/* Colored Top Section */}
+                {/* Top */}
                 <div style={{
                   background: section.gradient,
                   padding: '28px 28px 24px',
                   position: 'relative', overflow: 'hidden',
                 }}>
-                  {/* Decorative */}
                   <div style={{ position: 'absolute', top: -30, right: -30, width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
                   <div style={{ position: 'absolute', bottom: -40, left: '45%', width: 90, height: 90, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
 
-                  {/* Badge */}
                   <div style={{
-                    display: 'inline-block',
-                    background: 'rgba(255,255,255,0.2)',
-                    borderRadius: 99, padding: '4px 14px',
-                    fontSize: 11, fontWeight: 700, color: 'white',
-                    marginBottom: 18, border: '1px solid rgba(255,255,255,0.3)',
+                    display: 'inline-block', background: 'rgba(255,255,255,0.2)',
+                    borderRadius: 99, padding: '4px 14px', fontSize: 11,
+                    fontWeight: 700, color: 'white', marginBottom: 18,
+                    border: '1px solid rgba(255,255,255,0.3)',
                   }}>
                     {section.badge}
                   </div>
@@ -286,9 +271,9 @@ export default function Home() {
                       </div>
                     </div>
                     <div style={{
-                      background: 'rgba(255,255,255,0.15)',
-                      borderRadius: 14, padding: '10px 16px',
-                      textAlign: 'center', border: '1px solid rgba(255,255,255,0.2)',
+                      background: 'rgba(255,255,255,0.15)', borderRadius: 14,
+                      padding: '10px 16px', textAlign: 'center',
+                      border: '1px solid rgba(255,255,255,0.2)',
                     }}>
                       <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.9)', fontWeight: 700, whiteSpace: 'nowrap' }}>
                         {section.stats}
@@ -297,13 +282,11 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Bottom Content */}
+                {/* Bottom */}
                 <div style={{ padding: '22px 28px 28px', background: section.bg }}>
                   <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.75, marginBottom: 18 }}>
                     {section.desc}
                   </p>
-
-                  {/* Feature Tags */}
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 22 }}>
                     {section.features.map(function(f) {
                       return (
@@ -318,17 +301,13 @@ export default function Home() {
                       )
                     })}
                   </div>
-
-                  {/* CTA Button */}
                   <button style={{
-                    width: '100%', padding: '14px',
-                    borderRadius: 99, background: section.gradient,
-                    color: 'white', border: 'none', fontWeight: 700,
-                    fontSize: 15, cursor: 'pointer',
+                    width: '100%', padding: '14px', borderRadius: 99,
+                    background: section.gradient, color: 'white', border: 'none',
+                    fontWeight: 700, fontSize: 15, cursor: 'pointer',
                     fontFamily: 'Nunito, sans-serif',
                     boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-                    transition: 'all 0.2s',
-                    letterSpacing: '0.3px',
+                    transition: 'all 0.2s', letterSpacing: '0.3px',
                   }}
                     onMouseEnter={function(e) { e.currentTarget.style.transform = 'scale(1.02)' }}
                     onMouseLeave={function(e) { e.currentTarget.style.transform = 'scale(1)' }}
@@ -341,7 +320,54 @@ export default function Home() {
           })}
         </div>
 
-        {/* ══ TRUST SECTION ══ */}
+        {/* Popular Cities */}
+        <div style={{ marginBottom: 48 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 20 }}>
+            <div>
+              <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 24, fontWeight: 700, color: '#111827' }}>
+                Popular Cities 🏙️
+              </div>
+              <div style={{ fontSize: 13, color: '#6B7280' }}>Apne shehar mein browse karo</div>
+            </div>
+            <button onClick={function() { navigate('/browse') }}
+              style={{ background: 'none', border: 'none', color: '#6B21A8', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>
+              View All →
+            </button>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: 12 }}>
+            {POPULAR_CITIES.slice(0, 12).map(function(item) {
+              return (
+                <div key={item.city}
+                  onClick={function() { navigate('/browse?city=' + item.city) }}
+                  style={{
+                    background: 'white', borderRadius: 16, padding: '16px 10px',
+                    textAlign: 'center', cursor: 'pointer',
+                    border: '2px solid transparent',
+                    boxShadow: '0 2px 8px rgba(107,33,168,0.06)',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={function(e) {
+                    e.currentTarget.style.borderColor = '#6B21A8'
+                    e.currentTarget.style.transform = 'translateY(-4px)'
+                    e.currentTarget.style.boxShadow = '0 8px 20px rgba(107,33,168,0.15)'
+                  }}
+                  onMouseLeave={function(e) {
+                    e.currentTarget.style.borderColor = 'transparent'
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(107,33,168,0.06)'
+                  }}
+                >
+                  <div style={{ fontSize: 28, marginBottom: 6 }}>{item.emoji}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{item.city}</div>
+                  <div style={{ fontSize: 10, color: '#9CA3AF' }}>{item.state}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Trust Section */}
         <div style={{
           background: 'linear-gradient(135deg, #1E0533 0%, #3B0764 50%, #6B21A8 100%)',
           borderRadius: 28, padding: '40px 28px', marginBottom: 40,
@@ -359,7 +385,7 @@ export default function Home() {
               background: 'linear-gradient(135deg, #FCD34D, #F59E0B)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             }}>
-              Delhi NCR ka sabse trusted nukkad
+              India ka sabse trusted hyperlocal platform
             </div>
           </div>
 
@@ -372,8 +398,14 @@ export default function Home() {
                   border: '1px solid rgba(255,255,255,0.1)',
                   textAlign: 'center', transition: 'all 0.2s',
                 }}
-                  onMouseEnter={function(e) { e.currentTarget.style.background = 'rgba(245,158,11,0.12)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.3)' }}
-                  onMouseLeave={function(e) { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
+                  onMouseEnter={function(e) {
+                    e.currentTarget.style.background = 'rgba(245,158,11,0.12)'
+                    e.currentTarget.style.borderColor = 'rgba(245,158,11,0.3)'
+                  }}
+                  onMouseLeave={function(e) {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.07)'
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
+                  }}
                 >
                   <div style={{ fontSize: 30, marginBottom: 10 }}>{item.icon}</div>
                   <div style={{ color: 'white', fontWeight: 700, fontSize: 13, marginBottom: 6 }}>{item.title}</div>
@@ -384,7 +416,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ══ CTA BANNER ══ */}
+        {/* CTA Banner */}
         <div style={{
           background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
           borderRadius: 28, padding: '40px 28px',
@@ -401,12 +433,11 @@ export default function Home() {
               Aaj Hi Apne Nukkad Pe Becho!
             </div>
             <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: 15, marginBottom: 28, lineHeight: 1.7 }}>
-              Free mein listing daalo — lakho buyers tak pahuncho<br />
+              Free mein listing daalo — crores of buyers tak pahuncho<br />
               <span style={{ fontSize: 13, opacity: 0.85 }}>No hidden charges • No commission • 100% Free</span>
             </div>
             <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <button
-                onClick={function() { navigate('/post') }}
+              <button onClick={function() { navigate('/post') }}
                 style={{
                   background: 'white', color: '#D97706', border: 'none',
                   padding: '14px 36px', borderRadius: 99, fontWeight: 800,
@@ -415,8 +446,7 @@ export default function Home() {
                 }}>
                 ➕ Post Free Ad
               </button>
-              <button
-                onClick={function() { navigate('/browse') }}
+              <button onClick={function() { navigate('/browse') }}
                 style={{
                   background: 'rgba(255,255,255,0.2)', color: 'white',
                   border: '2px solid rgba(255,255,255,0.5)',

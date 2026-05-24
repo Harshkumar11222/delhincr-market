@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api from '../api'
+import { INDIA_CITIES, CATEGORIES } from '../data/india'
+
 
 const categories = [
   { id: 'electronics', name: 'Electronics 📱' },
@@ -348,11 +350,18 @@ export default function Post() {
 
           {/* City */}
           <div className="form-group">
-            <label>City *</label>
-            <select className="form-control" value={form.city} onChange={e => set('city', e.target.value)}>
-              {cities.map(c => <option key={c}>{c}</option>)}
-            </select>
-          </div>
+  <label>City *</label>
+  <input
+    className="form-control"
+    list="cities-list"
+    placeholder="Type your city..."
+    value={form.city}
+    onChange={e => set('city', e.target.value)}
+  />
+  <datalist id="cities-list">
+    {INDIA_CITIES.map(c => <option key={c} value={c} />)}
+  </datalist>
+</div>
 
           {/* Location */}
           <div className="form-group">
