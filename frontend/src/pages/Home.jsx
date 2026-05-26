@@ -424,6 +424,8 @@ export default function Home() {
           position: 'relative', overflow: 'hidden',
           boxShadow: '0 8px 32px rgba(245,158,11,0.3)',
         }}>
+
+
           <div style={{ position: 'absolute', top: -30, left: -30, width: 160, height: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
           <div style={{ position: 'absolute', bottom: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
 
@@ -458,6 +460,59 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Support Banner */}
+<div style={{
+  background: 'white', borderRadius: 24, padding: '28px',
+  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+  flexWrap: 'wrap', gap: 16, marginBottom: 40,
+  boxShadow: '0 4px 20px rgba(107,33,168,0.08)',
+  border: '2px solid rgba(107,33,168,0.08)',
+}}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+    <div style={{
+      width: 56, height: 56, background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
+      borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: 28, flexShrink: 0,
+    }}>🤝</div>
+    <div>
+      <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, color: '#111827' }}>
+        Koi problem? Hum yahan hain!
+      </div>
+      <div style={{ fontSize: 13, color: '#6B7280' }}>
+        📞 +91 70552 52609 &nbsp;|&nbsp; 📧 nukkadmarket25@gmail.com
+      </div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', gap: 10 }}>
+    <a href="tel:+917055252609"
+      style={{
+        background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
+        color: 'white', borderRadius: 99, padding: '10px 20px',
+        fontWeight: 700, fontSize: 13, textDecoration: 'none',
+        display: 'flex', alignItems: 'center', gap: 6,
+      }}>
+      📞 Call
+    </a>
+    <a href="https://wa.me/917055252609" target="_blank" rel="noopener noreferrer"
+      style={{
+        background: 'linear-gradient(135deg, #059669, #10B981)',
+        color: 'white', borderRadius: 99, padding: '10px 20px',
+        fontWeight: 700, fontSize: 13, textDecoration: 'none',
+        display: 'flex', alignItems: 'center', gap: 6,
+      }}>
+      💬 WhatsApp
+    </a>
+    <button onClick={function() { navigate('/support') }}
+      style={{
+        background: 'white', color: '#6B21A8', border: '2px solid #6B21A8',
+        borderRadius: 99, padding: '10px 20px', fontWeight: 700,
+        fontSize: 13, cursor: 'pointer', fontFamily: 'Nunito, sans-serif',
+      }}>
+      Help Center
+    </button>
+  </div>
+</div>
 
       </div>
     </div>

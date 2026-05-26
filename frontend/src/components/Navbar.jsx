@@ -123,9 +123,10 @@ export default function Navbar() {
               }}>
                 Dashboard
               </Link>
+              
             )}
           </div>
-
+            
           {/* Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto' }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -196,7 +197,11 @@ export default function Navbar() {
             }}>
               <span style={{ fontSize: 20, filter: isActive ? 'none' : 'grayscale(0.3)' }}>{item.icon}</span>
               <span>{item.label}</span>
+              <Link to="/support" style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600, padding: '6px 14px', borderRadius: 8, textDecoration: 'none' }}>
+  Support
+</Link>
             </Link>
+            
           )
         })}
       </nav>

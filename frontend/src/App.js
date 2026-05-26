@@ -20,6 +20,8 @@ import Browse from './pages/Browse'  // ← sahi
 import Conversations from './pages/Conversations'
 import Rentals from './pages/Rentals'
 import Admin from './pages/Admin'
+import Support from './pages/Support'
+
 
 
 
@@ -48,6 +50,8 @@ function App() {
             // Routes mein:
             <Route path="/rentals" element={<Rentals />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/support" element={<Support />} />
+
 
           </Routes>
         </div>
