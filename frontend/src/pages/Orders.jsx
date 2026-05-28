@@ -4,241 +4,235 @@ import { useAuth } from '../context/AuthContext'
 import api from '../api'
 
 const statusConfig = {
-  pending:   { label: 'Pending',   color: '#F59E0B', bg: '#FFFBEB', icon: '⏳' },
-  confirmed: { label: 'Confirmed', color: '#2563EB', bg: '#EFF6FF', icon: '✅' },
-  completed: { label: 'Completed', color: '#10B981', bg: '#ECFDF5', icon: '🎉' },
-  cancelled: { label: 'Cancelled', color: '#EF4444', bg: '#FEF2F2', icon: '❌' },
-}
-
-function timeAgo(date) {
-  var diff = Date.now() - new Date(date)
-  var hrs  = Math.floor(diff / 3600000)
-  var days = Math.floor(diff / 86400000)
-  if (hrs < 1)  return 'Just now'
-  if (hrs < 24) return hrs + 'h ago'
-  return days + 'd ago'
-}
-
-function buildWaUrl(order, isSeller) {
-  var phone = isSeller ? order.buyerPhone : order.sellerPhone
-  var text  = 'Hi, regarding order ' + order.id.slice(0, 8).toUpperCase() + ' for ' + order.listingTitle
-  return 'https://wa.me/91' + (phone || '') + '?text=' + encodeURIComponent(text)
-}
-
-function OrderCard(props) {
-  var order           = props.order
-  var role            = props.role
-  var onStatusChange  = props.onStatusChange
-  var isSeller        = role === 'sold'
-  var cfg             = statusConfig[order.status] || statusConfig.pending
-  var showWhatsApp    = order.status === 'pending' || order.status === 'confirmed'
-  var waUrl           = buildWaUrl(order, isSeller)
-  var whoLabel        = isSeller ? ('👤 Buyer: ' + order.buyerName) : ('🏪 Seller: ' + order.sellerName)
-
-  return (
-    <div style={{ background: 'white', borderRadius: 16, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.07)', border: '1px solid #F3F4F6', marginBottom: 14 }}>
-
-      <div style={{ padding: '14px 16px', borderBottom: '1px solid #F9FAFB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <span style={{ fontSize: 11, color: '#9CA3AF' }}>Order ID: </span>
-          <span style={{ fontSize: 11, color: '#6B7280' }}>{order.id.slice(0, 8).toUpperCase()}</span>
-          <span style={{ fontSize: 11, color: '#9CA3AF', marginLeft: 12 }}>{timeAgo(order.createdAt)}</span>
-        </div>
-        <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 99, background: cfg.bg, color: cfg.color }}>
-          {cfg.icon} {cfg.label}
-        </span>
-      </div>
-
-      <div style={{ padding: '14px 16px', display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-        <img
-          src={order.listingImage || 'https://placehold.co/72x72?text=Item'}
-          alt="item"
-          style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 10, flexShrink: 0 }}
-          onError={function(e){ e.target.src = 'https://placehold.co/72x72?text=Item' }}
-        />
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 4 }}>{order.listingTitle}</div>
-          <div style={{ fontSize: 20, fontWeight: 800, color: '#FF6B35', fontFamily: 'Baloo 2, cursive', marginBottom: 8 }}>
-            ₹{order.listingPrice ? order.listingPrice.toLocaleString('en-IN') : '0'}
-          </div>
-          <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 3 }}>{whoLabel}</div>
-          <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 3 }}>💳 {order.paymentMethod}</div>
-          <div style={{ fontSize: 12, color: '#6B7280' }}>📍 {order.address}</div>
-          {order.note ? (
-            <div style={{ fontSize: 12, color: '#374151', marginTop: 6, background: '#F9FAFB', padding: '6px 10px', borderRadius: 8 }}>
-              💬 {order.note}
-            </div>
-          ) : null}
-        </div>
-      </div>
-
-      <div style={{ padding: '12px 16px', borderTop: '1px solid #F9FAFB', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-
-        {isSeller && order.status === 'pending' ? (
-          <React.Fragment>
-            <button
-              className="btn btn-green btn-sm"
-              onClick={function(){ onStatusChange(order.id, 'confirmed') }}>
-              ✅ Confirm Order
-            </button>
-            <button
-              className="btn btn-sm"
-              style={{ background: '#FEF2F2', color: '#DC2626', border: '1px solid #FCA5A5' }}
-              onClick={function(){ onStatusChange(order.id, 'cancelled') }}>
-              ❌ Cancel
-            </button>
-          </React.Fragment>
-        ) : null}
-
-        {!isSeller && order.status === 'completed' ? (
-  <button
-    className="btn btn-sm"
-    style={{ background: '#FFFBEB', color: '#92400E', border: '1px solid #FCD34D' }}
-    onClick={function() {
-      var rating  = window.prompt('Rating do (1-5):')
-      var comment = window.prompt('Review likho:')
-      if (!rating) return
-      api.post('/reviews', {
-        orderId:   order.id,
-        listingId: order.listingId,
-        rating:    parseInt(rating),
-        comment:   comment || ''
-      }).then(function() {
-        alert('Review submit ho gaya! ⭐')
-      }).catch(function(err) {
-        alert(err.response?.data?.error || 'Review submit nahi hua')
-      })
-    }}>
-    ⭐ Write Review
-  </button>
-) : null}
-
-        {!isSeller && order.status === 'pending' ? (
-          <button
-            className="btn btn-sm"
-            style={{ background: '#FEF2F2', color: '#DC2626', border: '1px solid #FCA5A5' }}
-            onClick={function(){ onStatusChange(order.id, 'cancelled') }}>
-            ❌ Cancel Order
-          </button>
-        ) : null}
-
-        {showWhatsApp ? (
-          <button
-            href={waUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="btn btn-sm"
-            style={{ background: '#ECFDF5', color: '#065F46', border: '1px solid #A7F3D0', textDecoration: 'none' }}>
-            💬 WhatsApp {isSeller ? 'Buyer' : 'Seller'}
-          </button>
-        ) : null}
-
-      </div>
-    </div>
-  )
+  pending:   { color: '#D97706', bg: '#FFFBEB', border: '#FDE68A', icon: '⏳', label: 'Pending' },
+  confirmed: { color: '#2563EB', bg: '#EFF6FF', border: '#BFDBFE', icon: '✅', label: 'Confirmed' },
+  completed: { color: '#059669', bg: '#ECFDF5', border: '#A7F3D0', icon: '🎉', label: 'Completed' },
+  cancelled: { color: '#DC2626', bg: '#FEF2F2', border: '#FECACA', icon: '❌', label: 'Cancelled' },
 }
 
 export default function Orders() {
-  var auth      = useAuth()
-  var user      = auth.user
-  var navigate  = useNavigate()
-  var stateArr  = useState([])
-  var bought    = stateArr[0]
-  var setBought = stateArr[1]
-  var stateArr2 = useState([])
-  var sold      = stateArr2[0]
-  var setSold   = stateArr2[1]
-  var stateArr3 = useState(true)
-  var loading   = stateArr3[0]
-  var setLoading= stateArr3[1]
-  var stateArr4 = useState('bought')
-  var tab       = stateArr4[0]
-  var setTab    = stateArr4[1]
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const [orders, setOrders] = useState({ bought: [], sold: [] })
+  const [loading, setLoading] = useState(true)
+  const [tab, setTab] = useState('bought')
+  const [filter, setFilter] = useState('all')
+  const [toast, setToast] = useState('')
 
   useEffect(function() {
     if (!user) { navigate('/login'); return }
-    api.get('/orders/my')
-      .then(function(res) {
-        setBought(res.data.bought || [])
-        setSold(res.data.sold || [])
-      })
-      .finally(function() { setLoading(false) })
+    fetchOrders()
   }, [user])
 
-  function handleStatusChange(orderId, status) {
-    api.patch('/orders/' + orderId + '/status', { status: status })
-      .then(function() {
-        return api.get('/orders/my')
-      })
-      .then(function(res) {
-        setBought(res.data.bought || [])
-        setSold(res.data.sold || [])
-      })
-      .catch(function() {
-        alert('Status update failed')
-      })
+  async function fetchOrders() {
+    setLoading(true)
+    try {
+      var res = await api.get('/orders/my')
+      setOrders(res.data)
+    } catch(e) { setOrders({ bought: [], sold: [] }) }
+    setLoading(false)
+  }
+
+  function showToast(msg) { setToast(msg); setTimeout(() => setToast(''), 3000) }
+
+  async function updateStatus(id, status) {
+    try {
+      await api.patch('/orders/' + id + '/status', { status })
+      showToast('✅ Status updated!')
+      fetchOrders()
+    } catch(e) { showToast('❌ Failed') }
   }
 
   if (!user) return null
 
-  var currentList = tab === 'bought' ? bought : sold
+  var list = (tab === 'bought' ? orders.bought : orders.sold).filter(function(o) {
+    if (filter === 'all') return true
+    return o.status === filter
+  })
 
   return (
-    <div className="container" style={{ paddingTop: 80 }}>
-      <div style={{ paddingTop: 20 }}>
-        <h2 style={{ fontFamily: 'Baloo 2, cursive', fontSize: 26, marginBottom: 4 }}>My Orders</h2>
-        <p style={{ color: '#6B7280', fontSize: 14, marginBottom: 20 }}>Track your buys and sales</p>
+    <div style={{ background: '#F8FAFC', minHeight: '100vh', paddingTop: 60 }}>
 
-        <div style={{ display: 'flex', gap: 0, marginBottom: 24, background: '#F3F4F6', borderRadius: 12, padding: 4 }}>
-          <button
-            onClick={function(){ setTab('bought') }}
-            style={{
-              flex: 1, padding: '10px 0', border: 'none', borderRadius: 10, cursor: 'pointer',
-              fontFamily: 'Nunito, sans-serif', fontSize: 14, fontWeight: 700, transition: 'all 0.2s',
-              background: tab === 'bought' ? 'white' : 'transparent',
-              color: tab === 'bought' ? '#FF6B35' : '#6B7280',
-              boxShadow: tab === 'bought' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
-            }}>
-            🛒 Bought ({bought.length})
-          </button>
-          <button
-            onClick={function(){ setTab('sold') }}
-            style={{
-              flex: 1, padding: '10px 0', border: 'none', borderRadius: 10, cursor: 'pointer',
-              fontFamily: 'Nunito, sans-serif', fontSize: 14, fontWeight: 700, transition: 'all 0.2s',
-              background: tab === 'sold' ? 'white' : 'transparent',
-              color: tab === 'sold' ? '#FF6B35' : '#6B7280',
-              boxShadow: tab === 'sold' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
-            }}>
-            🏪 Selling ({sold.length})
-          </button>
+      {toast && (
+        <div style={{ position: 'fixed', top: 80, right: 20, zIndex: 9999, background: '#1F2937', color: 'white', padding: '12px 20px', borderRadius: 12, fontSize: 14, fontWeight: 600, boxShadow: '0 8px 24px rgba(0,0,0,0.2)' }}>
+          {toast}
+        </div>
+      )}
+
+      {/* Header */}
+      <div style={{ background: 'linear-gradient(135deg, #1E0533, #3B0764, #6B21A8)', padding: '28px 16px 40px' }}>
+        <div className="container">
+          <h2 style={{ fontFamily: 'Baloo 2, cursive', fontSize: 26, fontWeight: 800, color: 'white', marginBottom: 4 }}>📦 My Orders</h2>
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>Track aur manage karo apne orders</p>
+
+          {/* Stats */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginTop: 20 }}>
+            {[
+              { icon: '🛒', label: 'Bought', value: orders.bought.length, color: '#A78BFA' },
+              { icon: '🏪', label: 'Sold', value: orders.sold.length, color: '#FCD34D' },
+              { icon: '⏳', label: 'Pending', value: [...orders.bought, ...orders.sold].filter(o => o.status === 'pending').length, color: '#FCD34D' },
+              { icon: '✅', label: 'Completed', value: [...orders.bought, ...orders.sold].filter(o => o.status === 'completed').length, color: '#6EE7B7' },
+            ].map(function(s) {
+              return (
+                <div key={s.label} style={{ background: 'rgba(255,255,255,0.1)', borderRadius: 14, padding: '14px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.15)' }}>
+                  <div style={{ fontSize: 22, marginBottom: 4 }}>{s.icon}</div>
+                  <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 22, fontWeight: 800, color: s.color }}>{s.value}</div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>{s.label}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div className="container" style={{ marginTop: -16, paddingBottom: 40 }}>
+
+        {/* Tabs */}
+        <div style={{ background: 'white', borderRadius: 16, padding: 6, display: 'flex', gap: 4, marginBottom: 20, boxShadow: '0 4px 16px rgba(107,33,168,0.08)' }}>
+          {[
+            { id: 'bought', icon: '🛒', label: 'Purchased (' + orders.bought.length + ')' },
+            { id: 'sold',   icon: '🏪', label: 'Sold (' + orders.sold.length + ')' },
+          ].map(function(t) {
+            return (
+              <button key={t.id} onClick={() => setTab(t.id)} style={{
+                flex: 1, padding: '12px', borderRadius: 12, border: 'none', cursor: 'pointer',
+                fontFamily: 'Nunito, sans-serif', fontSize: 14, fontWeight: 700,
+                background: tab === t.id ? 'linear-gradient(135deg, #6B21A8, #7C3AED)' : 'transparent',
+                color: tab === t.id ? 'white' : '#6B7280',
+                transition: 'all 0.2s',
+                boxShadow: tab === t.id ? '0 4px 12px rgba(107,33,168,0.3)' : 'none',
+              }}>
+                {t.icon} {t.label}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Status Filter */}
+        <div className="chip-row" style={{ marginBottom: 20 }}>
+          {['all', 'pending', 'confirmed', 'completed', 'cancelled'].map(function(s) {
+            var sc = statusConfig[s]
+            return (
+              <span key={s} onClick={() => setFilter(s)} style={{
+                padding: '6px 16px', borderRadius: 99, fontSize: 13, fontWeight: 700,
+                cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s',
+                background: filter === s ? '#6B21A8' : 'white',
+                color: filter === s ? 'white' : '#374151',
+                border: '2px solid ' + (filter === s ? '#6B21A8' : '#E5E7EB'),
+                boxShadow: filter === s ? '0 4px 12px rgba(107,33,168,0.3)' : 'none',
+              }}>
+                {s === 'all' ? '📋 All' : sc.icon + ' ' + sc.label}
+              </span>
+            )
+          })}
         </div>
 
         {loading ? (
-          <div className="loader">⏳</div>
-        ) : currentList.length === 0 ? (
+          <div className="loader"><div className="spinner" /></div>
+        ) : list.length === 0 ? (
           <div className="empty-state">
             <div className="icon">{tab === 'bought' ? '🛒' : '🏪'}</div>
-            <h3>{tab === 'bought' ? 'Koi purchase nahi ki abhi tak' : 'Koi order nahi aaya abhi tak'}</h3>
-            <p style={{ marginBottom: 16 }}>
-              {tab === 'bought' ? 'Browse karo aur kharido!' : 'Listing post karo aur orders ka wait karo.'}
-            </p>
-            <button
-              className="btn btn-primary"
-              onClick={function(){ navigate(tab === 'bought' ? '/browse' : '/post') }}>
-              {tab === 'bought' ? '🔍 Browse Listings' : '➕ Post Listing'}
+            <h3>{tab === 'bought' ? 'Koi purchase nahi' : 'Koi sale nahi'}</h3>
+            <p>{tab === 'bought' ? 'Koi bhi item browse karo aur order karo!' : 'Apna item list karo aur sales shuru karo!'}</p>
+            <button className="btn btn-primary" style={{ marginTop: 16 }} onClick={() => navigate(tab === 'bought' ? '/browse' : '/post')}>
+              {tab === 'bought' ? '🔍 Browse Items' : '➕ Post Ad'}
             </button>
           </div>
         ) : (
-          <div style={{ paddingBottom: 32 }}>
-            {currentList.map(function(order) {
+          <div style={{ display: 'grid', gap: 16 }}>
+            {list.map(function(order) {
+              var sc = statusConfig[order.status] || statusConfig.pending
+              var isBuyer = tab === 'bought'
+
               return (
-                <OrderCard
-                  key={order.id}
-                  order={order}
-                  role={tab}
-                  onStatusChange={handleStatusChange}
-                />
+                <div key={order._id} style={{
+                  background: 'white', borderRadius: 20, overflow: 'hidden',
+                  boxShadow: '0 4px 16px rgba(107,33,168,0.06)',
+                  border: '2px solid ' + sc.border,
+                  transition: 'all 0.2s',
+                }}>
+                  {/* Status Bar */}
+                  <div style={{ background: sc.bg, padding: '12px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 18 }}>{sc.icon}</span>
+                      <span style={{ fontSize: 14, fontWeight: 800, color: sc.color }}>{sc.label}</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: '#9CA3AF' }}>
+                      {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </div>
+                  </div>
+
+                  <div style={{ padding: '20px' }}>
+                    <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+                      <img
+                        src={order.listingImage || 'https://placehold.co/80x80?text=Item'}
+                        alt={order.listingTitle}
+                        style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 12, flexShrink: 0, border: '2px solid #F3F4F6' }}
+                        onError={function(e) { e.target.src = 'https://placehold.co/80x80?text=Item' }}
+                      />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 6 }}>{order.listingTitle}</div>
+                        <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 22, fontWeight: 800, color: '#6B21A8', marginBottom: 6 }}>
+                          ₹{(order.listingPrice || 0).toLocaleString('en-IN')}
+                        </div>
+                        <div style={{ display: 'flex', gap: 12, fontSize: 12, color: '#6B7280' }}>
+                          <span>💳 {order.paymentMethod}</span>
+                          <span>📍 {order.listingLocation}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Buyer/Seller Info */}
+                    <div style={{ background: '#F9FAFB', borderRadius: 14, padding: '14px 16px', marginBottom: 16 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                        <div>
+                          <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 2 }}>🛒 Buyer</div>
+                          <div style={{ fontSize: 14, fontWeight: 700 }}>{order.buyerName}</div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 2 }}>🏪 Seller</div>
+                          <div style={{ fontSize: 14, fontWeight: 700 }}>{order.sellerName}</div>
+                        </div>
+                        <div style={{ gridColumn: '1 / -1' }}>
+                          <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 2 }}>📍 Delivery Address</div>
+                          <div style={{ fontSize: 13, color: '#374151' }}>{order.address}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    {!isBuyer && order.status === 'pending' && (
+                      <div style={{ display: 'flex', gap: 10 }}>
+                        <button onClick={() => updateStatus(order._id, 'confirmed')} className="btn btn-primary" style={{ flex: 1 }}>
+                          ✅ Confirm Order
+                        </button>
+                        <button onClick={() => updateStatus(order._id, 'cancelled')} className="btn btn-ghost" style={{ flex: 1, color: '#DC2626', borderColor: '#FECACA' }}>
+                          ❌ Cancel
+                        </button>
+                      </div>
+                    )}
+                    {!isBuyer && order.status === 'confirmed' && (
+                      <button onClick={() => updateStatus(order._id, 'completed')} className="btn btn-green btn-full">
+                        🎉 Mark as Completed
+                      </button>
+                    )}
+                    {isBuyer && order.status === 'pending' && (
+                      <button onClick={() => updateStatus(order._id, 'cancelled')} className="btn btn-ghost btn-full" style={{ color: '#DC2626', borderColor: '#FECACA' }}>
+                        ❌ Cancel Order
+                      </button>
+                    )}
+                    {order.sellerPhone && (
+                      <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
+                        <a href={'tel:' + order.sellerPhone} className="btn btn-outline-primary" style={{ flex: 1, textDecoration: 'none', justifyContent: 'center' }}>
+                          📞 Call {isBuyer ? 'Seller' : 'Buyer'}
+                        </a>
+                        <a href={'https://wa.me/91' + order.sellerPhone} target="_blank" rel="noopener noreferrer" className="btn btn-green" style={{ flex: 1, textDecoration: 'none', justifyContent: 'center' }}>
+                          💬 WhatsApp
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )
             })}
           </div>
