@@ -145,6 +145,40 @@ router.get('/me', require('../middleware/auth'), async function(req, res) {
 const { OAuth2Client } = require('google-auth-library')
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
+
+// PATCH /api/auth/profile
+router.patch('/profile', auth, async function(req, res) {
+  try {
+    var { name, email, city, location, avatar } = req.body
+    var user = await User.findById(req.user.id)
+    if (!user) return res.status(404).json({ error: 'User not found' })
+    if (name)     user.name     = name
+    if (email)    user.email    = email
+    if (city)     user.city     = city
+    if (location) user.location = location
+    if (avatar)   user.avatar   = avatar
+    await user.save()
+    var token = require('jsonwebtoken').sign(
+      { id: user._id, name: user.name, phone: user.phone },
+      process.env.JWT_SECRET || 'delhincr_market_secret_2024',
+      { expiresIn: '7d' }
+    )
+    res.json({
+      token,
+      user: {
+        id:         user._id,
+        name:       user.name,
+        phone:      user.phone,
+        email:      user.email,
+        avatar:     user.avatar,
+        city:       user.city,
+        location:   user.location,
+        isVerified: user.isVerified,
+        isAdmin:    user.isAdmin,
+      }
+    })
+  } catch(err) { res.status(500).json({ error: err.message }) }
+})
 // POST /api/auth/google
 router.post('/google', async function(req, res) {
   try {

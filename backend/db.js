@@ -35,7 +35,10 @@ const listingSchema = new mongoose.Schema({
   sellerPhone:  { type: String, default: '' },
   isVerified:   { type: Boolean, default: false },
   views:        { type: Number, default: 0 },
-  isActive:     { type: Boolean, default: true },
+  isActive:     { type: Boolean, default: true },  // ... existing fields ...
+  isFeatured:   { type: Boolean, default: false },
+  reports:      [{ userId: String, reason: String, createdAt: Date }],
+  savedBy:      [{ type: String }],
 }, { timestamps: true })
 
 const serviceSchema = new mongoose.Schema({

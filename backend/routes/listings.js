@@ -51,6 +51,52 @@ router.get('/:id', async function(req, res) {
   }
 })
 
+// Wishlist toggle
+router.post('/:id/wishlist', auth, async function(req, res) {
+  try {
+    var user = await User.findById(req.user.id)
+    if (!user) return res.status(404).json({ error: 'User not found' })
+    var idx = user.wishlist.indexOf(req.params.id)
+    if (idx === -1) {
+      user.wishlist.push(req.params.id)
+    } else {
+      user.wishlist.splice(idx, 1)
+    }
+    await user.save()
+    res.json({ wishlisted: idx === -1, total: user.wishlist.length })
+  } catch(err) { res.status(500).json({ error: err.message }) }
+})
+
+// Get wishlist
+router.get('/my/wishlist', auth, async function(req, res) {
+  try {
+    var user = await User.findById(req.user.id)
+    if (!user) return res.status(404).json({ wishlist: [] })
+    var listings = await Listing.find({
+      _id: { $in: user.wishlist },
+      isActive: true
+    })
+    res.json({ wishlist: listings })
+  } catch(err) { res.status(500).json({ wishlist: [] }) }
+})
+
+// Report listing
+router.post('/:id/report', auth, async function(req, res) {
+  try {
+    var { reason } = req.body
+    var listing = await Listing.findById(req.params.id)
+    if (!listing) return res.status(404).json({ error: 'Not found' })
+    if (!listing.reports) listing.reports = []
+    listing.reports.push({
+      userId: req.user.id,
+      reason: reason || 'Inappropriate',
+      createdAt: new Date()
+    })
+    await listing.save()
+    res.json({ message: 'Report submitted. Hum 24 ghante mein review karenge.' })
+  } catch(err) { res.status(500).json({ error: err.message }) }
+})
+
 router.post('/', auth, async function(req, res) {
   try {
     var { title, description, price, isNegotiable, category, condition, images, location, area, city } = req.body

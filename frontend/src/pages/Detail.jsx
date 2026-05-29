@@ -12,7 +12,10 @@ export default function Detail() {
   const [activeImg, setActiveImg] = useState(0);
   const [reviews, setReviews] = useState([])
   const { user } = useAuth()
-
+  const [wishlisted, setWishlisted] = useState(false)
+const [reporting, setReporting]   = useState(false)
+const [reportReason, setReportReason] = useState('')
+const [shareToast, setShareToast] = useState(false)
 
   useEffect(() => {
     api.get(`/listings/${id}`)
@@ -164,6 +167,89 @@ export default function Detail() {
               💬 WhatsApp
             </a>
           </div>
+          {/* Wishlist + Share + Report buttons */}
+<div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
+  {/* Wishlist */}
+  <button
+    onClick={async function() {
+      if (!user) { navigate('/login'); return }
+      try {
+        var res = await api.post('/listings/' + listing._id + '/wishlist')
+        setWishlisted(res.data.wishlisted)
+      } catch(e) {}
+    }}
+    style={{
+      flex: 1, padding: '12px', borderRadius: 12,
+      background: wishlisted ? '#FEF2F2' : '#F9FAFB',
+      border: '2px solid ' + (wishlisted ? '#FECACA' : '#E5E7EB'),
+      cursor: 'pointer', display: 'flex', alignItems: 'center',
+      justifyContent: 'center', gap: 6,
+      fontSize: 14, fontWeight: 700,
+      color: wishlisted ? '#DC2626' : '#6B7280',
+    }}>
+    {wishlisted ? '❤️' : '🤍'} {wishlisted ? 'Saved' : 'Save'}
+  </button>
+
+  {/* Share */}
+  <button
+    onClick={function() {
+      if (navigator.share) {
+        navigator.share({ title: listing.title, text: '₹' + listing.price + ' - ' + listing.title, url: window.location.href })
+      } else {
+        navigator.clipboard.writeText(window.location.href)
+        setShareToast(true)
+        setTimeout(function() { setShareToast(false) }, 2000)
+      }
+    }}
+    style={{ flex: 1, padding: '12px', borderRadius: 12, background: '#F0F9FF', border: '2px solid #BAE6FD', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: '#0284C7' }}>
+    📤 {shareToast ? 'Copied!' : 'Share'}
+  </button>
+
+  {/* Report */}
+  <button
+    onClick={function() { setReporting(true) }}
+    style={{ padding: '12px 16px', borderRadius: 12, background: '#FFF7ED', border: '2px solid #FED7AA', cursor: 'pointer', fontSize: 14, fontWeight: 700, color: '#D97706' }}>
+    🚨
+  </button>
+</div>
+
+{/* Report Modal */}
+{reporting && (
+  <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+    onClick={function() { setReporting(false) }}>
+    <div style={{ background: 'white', borderRadius: 24, padding: '28px', maxWidth: 400, width: '100%' }}
+      onClick={function(e) { e.stopPropagation() }}>
+      <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 20, fontWeight: 800, marginBottom: 16 }}>🚨 Report Listing</div>
+      <div style={{ display: 'grid', gap: 8, marginBottom: 16 }}>
+        {['Fake/Spam listing', 'Wrong price', 'Item already sold', 'Offensive content', 'Fraud seller', 'Other'].map(function(r) {
+          return (
+            <label key={r} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, border: '2px solid ' + (reportReason === r ? '#DC2626' : '#E5E7EB'), cursor: 'pointer', background: reportReason === r ? '#FEF2F2' : 'white' }}>
+              <input type="radio" name="reason" value={r} checked={reportReason === r} onChange={() => setReportReason(r)} style={{ display: 'none' }} />
+              <div style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid ' + (reportReason === r ? '#DC2626' : '#D1D5DB'), background: reportReason === r ? '#DC2626' : 'white' }} />
+              <span style={{ fontSize: 14, fontWeight: 600, color: reportReason === r ? '#DC2626' : '#374151' }}>{r}</span>
+            </label>
+          )
+        })}
+      </div>
+      <div style={{ display: 'flex', gap: 10 }}>
+        <button onClick={function() { setReporting(false) }} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
+        <button
+          onClick={async function() {
+            if (!reportReason) return
+            try {
+              await api.post('/listings/' + listing._id + '/report', { reason: reportReason })
+              setReporting(false)
+              setReportReason('')
+            } catch(e) { setReporting(false) }
+          }}
+          style={{ flex: 2, background: '#DC2626', color: 'white', border: 'none', borderRadius: 99, padding: '12px', fontWeight: 700, cursor: 'pointer' }}
+          disabled={!reportReason}>
+          🚨 Submit Report
+        </button>
+      </div>
+    </div>
+  </div>
+)}
           {/* Chat Button — seller info ke baad add karo */}
 
 
