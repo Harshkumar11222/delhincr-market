@@ -28,6 +28,8 @@ export default function Navbar() {
     { path: '/browse',   label: 'Browse',   icon: '🛍️' },
     { path: '/services', label: 'Services',  icon: '🔧' },
     { path: '/rentals',  label: 'Rentals',   icon: '🚗' },
+    { path: '/about',    label: 'About',     icon: 'ℹ️' },  // ← ADD
+
   ]
 
   var bottomNav = [

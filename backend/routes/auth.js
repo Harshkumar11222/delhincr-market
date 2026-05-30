@@ -180,61 +180,40 @@ router.patch('/profile', auth, async function(req, res) {
   } catch(err) { res.status(500).json({ error: err.message }) }
 })
 // POST /api/auth/google
+// const { OAuth2Client } = require('google-auth-library')
+// const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+
 router.post('/google', async function(req, res) {
   try {
     var credential = req.body.credential
     if (!credential) return res.status(400).json({ error: 'Google credential required' })
-
-    // Google token verify karo
     var ticket = await googleClient.verifyIdToken({
-      idToken:  credential,
+      idToken: credential,
       audience: process.env.GOOGLE_CLIENT_ID,
     })
     var payload = ticket.getPayload()
+    var email   = payload.email
+    var name    = payload.name
+    var avatar  = payload.picture
     var googleId = payload.sub
-    var email    = payload.email
-    var name     = payload.name
-    var avatar   = payload.picture
 
-    // Check karo user already hai
     var user = await User.findOne({ email: email })
-
     if (!user) {
-      // Naya user banao
-      var fakePassword = await bcrypt.hash(googleId + process.env.JWT_SECRET, 10)
+      var bcrypt = require('bcryptjs')
+      var fakeHash = await bcrypt.hash(googleId + 'nukkad', 10)
       user = await User.create({
-        name:         name,
-        email:        email,
-        phone:        'google_' + googleId,
-        passwordHash: fakePassword,
-        isVerified:   true,
-        avatar:       avatar,
+        name, email, phone: 'g_' + googleId.slice(0, 10),
+        passwordHash: fakeHash, isVerified: true, avatar,
       })
     } else {
-      // Avatar update karo
-      if (!user.avatar || user.avatar.includes('pravatar')) {
-        user.avatar = avatar
-        await user.save()
-      }
+      if (!user.avatar) { user.avatar = avatar; await user.save() }
     }
 
     var token = jwt.sign(
       { id: user._id, name: user.name, phone: user.phone },
-      JWT_SECRET,
-      { expiresIn: '7d' }
+      JWT_SECRET, { expiresIn: '7d' }
     )
-
-    res.json({
-      token,
-      user: {
-        id:         user._id,
-        name:       user.name,
-        phone:      user.phone,
-        email:      user.email,
-        avatar:     user.avatar,
-        isVerified: user.isVerified,
-      }
-    })
+    res.json({ token, user: { id: user._id, name: user.name, phone: user.phone, email: user.email, avatar: user.avatar, isVerified: user.isVerified, isAdmin: user.isAdmin } })
   } catch(err) {
     res.status(500).json({ error: 'Google login failed: ' + err.message })
   }
