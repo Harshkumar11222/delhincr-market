@@ -200,6 +200,9 @@ export default function Navbar() {
               <Link to="/support" style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600, padding: '6px 14px', borderRadius: 8, textDecoration: 'none' }}>
   Support
 </Link>
+<Link to="/about" style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600, padding: '6px 14px', borderRadius: 8, textDecoration: 'none' }}>
+  About
+</Link>
             </Link>
             
           )

@@ -21,6 +21,7 @@ import Conversations from './pages/Conversations'
 import Rentals from './pages/Rentals'
 import Admin from './pages/Admin'
 import Support from './pages/Support'
+import About from './pages/About'
 
 
 
@@ -51,6 +52,8 @@ function App() {
             <Route path="/rentals" element={<Rentals />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/about" element={<About />} />
+
 
 
           </Routes>
