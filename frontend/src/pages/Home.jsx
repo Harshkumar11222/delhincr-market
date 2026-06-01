@@ -462,53 +462,38 @@ export default function Home() {
         </div>
 
         {/* Support Banner */}
+{/* Support Banner */}
 <div style={{
-  background: 'white', borderRadius: 24, padding: '28px',
+  background: 'white', borderRadius: 16, padding: '16px 20px',  // ← 28px se 16px kiya
   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-  flexWrap: 'wrap', gap: 16, marginBottom: 40,
-  boxShadow: '0 4px 20px rgba(107,33,168,0.08)',
-  border: '2px solid rgba(107,33,168,0.08)',
+  flexWrap: 'wrap', gap: 12, marginBottom: 24,  // ← gap aur margin bhi kam kiya
+  boxShadow: '0 2px 12px rgba(107,33,168,0.06)',
+  border: '1.5px solid rgba(107,33,168,0.08)',
 }}>
-  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
     <div style={{
-      width: 56, height: 56, background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
-      borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: 28, flexShrink: 0,
+      width: 44, height: 44,  // ← 56 se 44 kiya
+      background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
+      borderRadius: 12, display: 'flex', alignItems: 'center',
+      justifyContent: 'center', fontSize: 22, flexShrink: 0,
     }}>🤝</div>
     <div>
-      <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, color: '#111827' }}>
+      <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 15, fontWeight: 800, color: '#111827' }}>
         Koi problem? Hum yahan hain!
       </div>
-      <div style={{ fontSize: 13, color: '#6B7280' }}>
+      <div style={{ fontSize: 12, color: '#6B7280' }}>
         📞 +91 70552 52609 &nbsp;|&nbsp; 📧 nukkadmarket25@gmail.com
       </div>
     </div>
   </div>
-  <div style={{ display: 'flex', gap: 10 }}>
-    <a href="tel:+917055252609"
-      style={{
-        background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
-        color: 'white', borderRadius: 99, padding: '10px 20px',
-        fontWeight: 700, fontSize: 13, textDecoration: 'none',
-        display: 'flex', alignItems: 'center', gap: 6,
-      }}>
+  <div style={{ display: 'flex', gap: 8 }}>
+    <a href="tel:+917055252609" style={{ background: 'linear-gradient(135deg, #6B21A8, #7C3AED)', color: 'white', borderRadius: 99, padding: '8px 16px', fontWeight: 700, fontSize: 12, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
       📞 Call
     </a>
-    <a href="https://wa.me/917055252609" target="_blank" rel="noopener noreferrer"
-      style={{
-        background: 'linear-gradient(135deg, #059669, #10B981)',
-        color: 'white', borderRadius: 99, padding: '10px 20px',
-        fontWeight: 700, fontSize: 13, textDecoration: 'none',
-        display: 'flex', alignItems: 'center', gap: 6,
-      }}>
+    <a href="https://wa.me/917055252609" target="_blank" rel="noopener noreferrer" style={{ background: 'linear-gradient(135deg, #059669, #10B981)', color: 'white', borderRadius: 99, padding: '8px 16px', fontWeight: 700, fontSize: 12, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
       💬 WhatsApp
     </a>
-    <button onClick={function() { navigate('/support') }}
-      style={{
-        background: 'white', color: '#6B21A8', border: '2px solid #6B21A8',
-        borderRadius: 99, padding: '10px 20px', fontWeight: 700,
-        fontSize: 13, cursor: 'pointer', fontFamily: 'Nunito, sans-serif',
-      }}>
+    <button onClick={function() { navigate('/support') }} style={{ background: 'white', color: '#6B21A8', border: '1.5px solid #6B21A8', borderRadius: 99, padding: '8px 14px', fontWeight: 700, fontSize: 12, cursor: 'pointer', fontFamily: 'Nunito, sans-serif' }}>
       Help Center
     </button>
   </div>
