@@ -461,7 +461,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Support Banner */}
 {/* Support Banner */}
 <div style={{
   background: 'white', borderRadius: 16, padding: '16px 20px',  // ← 28px se 16px kiya
