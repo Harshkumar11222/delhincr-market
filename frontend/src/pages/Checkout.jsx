@@ -3,286 +3,228 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api from '../api'
 
-const paymentMethods = [
-  { id: 'cash_meetup', label: 'Cash on Meetup', icon: '🤝', desc: 'Seller se milke cash dena' },
-  { id: 'upi',         label: 'UPI Transfer',   icon: '📱', desc: 'GPay / PhonePe / Paytm' },
-  { id: 'escrow',      label: 'Safe Escrow',     icon: '🔒', desc: 'Paise hold hote hain — safe deal' },
+var paymentMethods = [
+  { id: 'cash_meetup',  icon: '💵', label: 'Cash on Meetup',   desc: 'Milke payment karo — safest option', recommended: true },
+  { id: 'upi',          icon: '📱', label: 'UPI Transfer',      desc: 'GPay, PhonePe, Paytm' },
+  { id: 'bank',         icon: '🏦', label: 'Bank Transfer',     desc: 'NEFT/IMPS/RTGS' },
+  { id: 'cod',          icon: '📦', label: 'Cash on Delivery',  desc: 'Only for trusted sellers' },
 ]
 
 export default function Checkout() {
-  const { id } = useParams()
+  const { id }   = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
 
   const [listing, setListing] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [placing, setPlacing] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [orderId, setOrderId] = useState(null)
+  const [ordering, setOrdering] = useState(false)
+  const [ordered, setOrdered] = useState(false)
+  const [orderId, setOrderId] = useState('')
   const [error, setError] = useState('')
+  const [form, setForm] = useState({ address: '', paymentMethod: 'cash_meetup', note: '' })
 
-  const [form, setForm] = useState({
-    name: user?.name || '',
-    phone: user?.phone || '',
-    address: '',
-    city: '',
-    pincode: '',
-    paymentMethod: 'cash_meetup',
-    note: '',
-  })
-
-  useEffect(() => {
+  useEffect(function() {
     if (!user) { navigate('/login'); return }
-    api.get(`/listings/${id}`)
-      .then(res => setListing(res.data))
-      .catch(() => navigate('/'))
-      .finally(() => setLoading(false))
-  }, [id])
+    fetchListing()
+  }, [id, user])
 
-  const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
-
-  const handleOrder = async (e) => {
-    e.preventDefault()
-    setError('')
-    if (!form.address || !form.city) {
-      setError('Address aur city required hai')
-      return
-    }
-    setPlacing(true)
+  async function fetchListing() {
+    setLoading(true)
     try {
-      const fullAddress = `${form.address}, ${form.city} - ${form.pincode}`
-      const res = await api.post('/orders', {
-        listingId: id,
-        address: fullAddress,
-        paymentMethod: form.paymentMethod,
-        note: form.note,
-      })
-      setOrderId(res.data.id)
-      setSuccess(true)
-    } catch (err) {
-        console.log('ORDER ERROR:', err)
-        console.log('RESPONSE:', err.response)
-        console.log('STATUS:', err.response?.status)
-        console.log('DATA:', err.response?.data)
-  
-          if (err.response?.status === 401 || err.response?.status === 403) {
-            setError('Pehle login karo — aapka session expire ho gaya')
-          } else if (!err.response) {
-            setError('Backend connect nahi ho raha — server band hai (localhost:5000)')
-          } else {
-            setError(err.response?.data?.error || 'Order place nahi hua: ' + err.message)
-        }
-    }
-    setPlacing(false)
+      var res = await api.get('/listings/' + id)
+      setListing(res.data)
+    } catch(e) { navigate('/browse') }
+    setLoading(false)
   }
 
-  if (loading) return <div className="loader" style={{ marginTop: 80 }}>⏳</div>
-  if (!listing) return null
+  async function handleOrder(e) {
+    e.preventDefault()
+    setError('')
+    if (!form.address.trim()) { setError('Address/location daalo meetup ke liye'); return }
+    setOrdering(true)
+    try {
+      var res = await api.post('/orders', { listingId: id, address: form.address, paymentMethod: form.paymentMethod, note: form.note })
+      setOrderId(res.data._id)
+      setOrdered(true)
+    } catch(err) { setError(err.response?.data?.error || 'Order nahi hua') }
+    setOrdering(false)
+  }
 
-  if (success) {
-    return (
-      <div style={{
-        minHeight: '100vh', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        textAlign: 'center', padding: 24,
-      }}>
-        <div style={{ fontSize: 72, marginBottom: 16 }}>🎉</div>
-        <h2 style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, color: '#111827', marginBottom: 8 }}>
-          Order Place Ho Gaya!
-        </h2>
-        <p style={{ color: '#6B7280', fontSize: 15, marginBottom: 8 }}>
-          Seller ko aapki request bhej di gayi hai.
-        </p>
-        <p style={{ color: '#10B981', fontSize: 14, fontWeight: 600, marginBottom: 28 }}>
-          ✓ Seller aapse WhatsApp/Call pe contact karega
-        </p>
-
-        {/* Order Summary Box */}
-        <div style={{
-          background: '#F9FAFB', border: '1px solid #E5E7EB',
-          borderRadius: 16, padding: '20px 24px', maxWidth: 360, width: '100%',
-          marginBottom: 24, textAlign: 'left',
-        }}>
-          <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 4 }}>Item</div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 12 }}>{listing.title}</div>
-          <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 4 }}>Amount</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: '#FF6B35', fontFamily: 'Baloo 2, cursive', marginBottom: 12 }}>
-            ₹{listing.price?.toLocaleString('en-IN')}
-          </div>
-          <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 4 }}>Payment</div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>
-            {paymentMethods.find(p => p.id === form.paymentMethod)?.label}
-          </div>
+  if (!user) return null
+  if (loading) return (
+    <div style={{ paddingTop: 60, background: '#F8FAFC', minHeight: '100vh' }}>
+      <div className="container" style={{ paddingTop: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+          {[300, 400].map((h, i) => <div key={i} className="skeleton" style={{ height: h, borderRadius: 24 }} />)}
         </div>
+      </div>
+    </div>
+  )
 
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-          <button className="btn btn-primary btn-lg" onClick={() => navigate('/orders')}>
-            📦 My Orders
-          </button>
-          <button className="btn btn-ghost btn-lg" onClick={() => navigate('/')}>
-            🏠 Home
-          </button>
+  if (ordered) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC', paddingTop: 60, padding: 16 }}>
+        <div style={{ background: 'white', borderRadius: 28, padding: '48px 36px', textAlign: 'center', maxWidth: 480, width: '100%', boxShadow: '0 16px 48px rgba(107,33,168,0.12)' }}>
+          <div style={{ fontSize: 72, marginBottom: 16, animation: 'bounce 0.6s ease' }}>🎉</div>
+          <style>{`@keyframes bounce { 0%{transform:scale(0.5);opacity:0} 60%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }`}</style>
+          <h2 style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 800, color: '#059669', marginBottom: 8 }}>Order Placed!</h2>
+          <p style={{ color: '#6B7280', fontSize: 15, marginBottom: 20 }}>
+            Seller ko notify kar diya gaya hai. Woh jaldi confirm karega.
+          </p>
+          <div style={{ background: '#F5F3FF', borderRadius: 16, padding: '16px 20px', marginBottom: 24 }}>
+            <div style={{ fontSize: 12, color: '#6B21A8', fontWeight: 700, marginBottom: 4 }}>Order ID</div>
+            <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, color: '#6B21A8', letterSpacing: 1 }}>#{orderId.slice(-8).toUpperCase()}</div>
+          </div>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <button onClick={() => navigate('/orders')} className="btn btn-primary btn-lg" style={{ flex: 2 }}>📦 Track Order</button>
+            <button onClick={() => navigate('/browse')} className="btn btn-ghost btn-lg" style={{ flex: 1 }}>Browse More</button>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="container" style={{ paddingTop: 80, maxWidth: 640 }}>
-      <div style={{ paddingTop: 20, paddingBottom: 40 }}>
-
-        {/* Back */}
-        <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B7280', fontSize: 14, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 4 }}>
-          ← Back to listing
-        </button>
-
-        <h2 style={{ fontFamily: 'Baloo 2, cursive', fontSize: 26, marginBottom: 4 }}>Checkout</h2>
-        <p style={{ color: '#6B7280', fontSize: 14, marginBottom: 24 }}>Confirm your order details</p>
-
-        {/* Item Summary Card */}
-        <div style={{
-          background: 'linear-gradient(135deg, #1E3A8A, #2563EB)',
-          borderRadius: 16, padding: '16px', marginBottom: 24,
-          display: 'flex', gap: 14, alignItems: 'center',
-        }}>
-          <img
-            src={listing.images?.[0] || 'https://placehold.co/80x80?text=Item'}
-            alt={listing.title}
-            style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 10, flexShrink: 0 }}
-            onError={e => { e.target.src = 'https://placehold.co/80x80?text=Item' }}
-          />
-          <div style={{ flex: 1 }}>
-            <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12, marginBottom: 2 }}>You are buying</div>
-            <div style={{ color: 'white', fontSize: 15, fontWeight: 700, marginBottom: 6 }}>{listing.title}</div>
-            <div style={{ color: '#FF6B35', fontSize: 22, fontWeight: 800, fontFamily: 'Baloo 2, cursive' }}>
-              ₹{listing.price?.toLocaleString('en-IN')}
+    <div style={{ background: '#F8FAFC', minHeight: '100vh', paddingTop: 60 }}>
+      <div style={{ background: 'linear-gradient(135deg, #1E0533, #3B0764, #6B21A8)', padding: '24px 16px 36px' }}>
+        <div className="container">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button onClick={() => navigate(-1)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: 'white', width: 36, height: 36, borderRadius: '50%', cursor: 'pointer', fontSize: 18 }}>←</button>
+            <div>
+              <h2 style={{ fontFamily: 'Baloo 2, cursive', fontSize: 22, fontWeight: 800, color: 'white' }}>🛒 Checkout</h2>
+              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13 }}>Review aur confirm karo</p>
             </div>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>Seller</div>
-            <div style={{ color: 'white', fontSize: 13, fontWeight: 600 }}>{listing.sellerName}</div>
-            {listing.isVerified && (
-              <span style={{ fontSize: 11, color: '#34D399' }}>✓ Verified</span>
-            )}
           </div>
         </div>
+      </div>
 
-        {error && (
-          <div style={{ background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 10, padding: '12px 16px', color: '#DC2626', marginBottom: 16, fontSize: 14 }}>
-            ⚠️ {error}
-          </div>
-        )}
+      <div className="container" style={{ paddingTop: 24, paddingBottom: 48 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, maxWidth: 900, margin: '0 auto' }}>
 
-        <form onSubmit={handleOrder}>
+          {/* Left — Order Form */}
+          <div>
+            {error && (
+              <div style={{ background: '#FEF2F2', border: '1.5px solid #FECACA', borderRadius: 14, padding: '12px 16px', color: '#DC2626', marginBottom: 20, fontSize: 14, fontWeight: 600 }}>
+                ⚠️ {error}
+              </div>
+            )}
 
-          {/* Contact Info */}
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 14, paddingBottom: 8, borderBottom: '1px solid #F3F4F6' }}>
-            📋 Contact Information
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div className="form-group">
-              <label>Your Name *</label>
-              <input className="form-control" value={form.name} onChange={e => set('name', e.target.value)} placeholder="Full name" />
-            </div>
-            <div className="form-group">
-              <label>Phone Number *</label>
-              <input className="form-control" value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="10-digit number" maxLength={10} />
-            </div>
-          </div>
-
-          {/* Address */}
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 14, paddingBottom: 8, borderBottom: '1px solid #F3F4F6', marginTop: 8 }}>
-            📍 Meetup / Delivery Address
-          </div>
-
-          <div className="form-group">
-            <label>Address *</label>
-            <input className="form-control" value={form.address} onChange={e => set('address', e.target.value)} placeholder="House no, Street, Area..." />
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div className="form-group">
-              <label>City *</label>
-              <select className="form-control" value={form.city} onChange={e => set('city', e.target.value)}>
-                <option value="">Select City</option>
-                {['Delhi', 'Noida', 'Gurugram', 'Ghaziabad', 'Faridabad'].map(c => (
-                  <option key={c}>{c}</option>
-                ))}
-              </select>
-            </div>
-            <div className="form-group">
-              <label>PIN Code</label>
-              <input className="form-control" value={form.pincode} onChange={e => set('pincode', e.target.value)} placeholder="110001" maxLength={6} />
-            </div>
-          </div>
-
-          {/* Payment Method */}
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 14, paddingBottom: 8, borderBottom: '1px solid #F3F4F6', marginTop: 8 }}>
-            💳 Payment Method
-          </div>
-
-          <div style={{ display: 'grid', gap: 10, marginBottom: 16 }}>
-            {paymentMethods.map(pm => (
-              <div key={pm.id}
-                onClick={() => set('paymentMethod', pm.id)}
-                style={{
-                  border: `2px solid ${form.paymentMethod === pm.id ? '#FF6B35' : '#E5E7EB'}`,
-                  borderRadius: 12, padding: '14px 16px', cursor: 'pointer',
-                  background: form.paymentMethod === pm.id ? '#FFF0EB' : 'white',
-                  display: 'flex', alignItems: 'center', gap: 14, transition: 'all 0.2s',
-                }}>
-                <span style={{ fontSize: 24 }}>{pm.icon}</span>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{pm.label}</div>
-                  <div style={{ fontSize: 12, color: '#6B7280' }}>{pm.desc}</div>
-                </div>
-                <div style={{ marginLeft: 'auto' }}>
-                  <div style={{
-                    width: 20, height: 20, borderRadius: '50%',
-                    border: `2px solid ${form.paymentMethod === pm.id ? '#FF6B35' : '#D1D5DB'}`,
-                    background: form.paymentMethod === pm.id ? '#FF6B35' : 'white',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    {form.paymentMethod === pm.id && <div style={{ width: 8, height: 8, background: 'white', borderRadius: '50%' }} />}
-                  </div>
+            <form onSubmit={handleOrder}>
+              {/* Payment Method */}
+              <div style={{ background: 'white', borderRadius: 20, padding: '20px', marginBottom: 16, boxShadow: '0 4px 16px rgba(107,33,168,0.06)' }}>
+                <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 17, fontWeight: 800, marginBottom: 16 }}>💳 Payment Method</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {paymentMethods.map(function(pm) {
+                    return (
+                      <label key={pm.id} onClick={() => setForm(f => ({ ...f, paymentMethod: pm.id }))} style={{
+                        display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px',
+                        borderRadius: 14, border: '2px solid ' + (form.paymentMethod === pm.id ? '#6B21A8' : '#E5E7EB'),
+                        background: form.paymentMethod === pm.id ? '#F5F3FF' : 'white', cursor: 'pointer', transition: 'all 0.2s',
+                      }}>
+                        <div style={{ fontSize: 28 }}>{pm.icon}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: form.paymentMethod === pm.id ? '#6B21A8' : '#111827' }}>{pm.label}</span>
+                            {pm.recommended && <span style={{ background: '#ECFDF5', color: '#059669', fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 99 }}>✓ Recommended</span>}
+                          </div>
+                          <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>{pm.desc}</div>
+                        </div>
+                        <div style={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid ' + (form.paymentMethod === pm.id ? '#6B21A8' : '#D1D5DB'), background: form.paymentMethod === pm.id ? '#6B21A8' : 'white', flexShrink: 0 }} />
+                      </label>
+                    )
+                  })}
                 </div>
               </div>
-            ))}
+
+              {/* Address */}
+              <div style={{ background: 'white', borderRadius: 20, padding: '20px', marginBottom: 16, boxShadow: '0 4px 16px rgba(107,33,168,0.06)' }}>
+                <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 17, fontWeight: 800, marginBottom: 16 }}>📍 Meetup Location *</div>
+                <div className="form-group">
+                  <textarea className="form-control" rows={3} placeholder="Meeting ki jagah ya address daalo — e.g. Sector 62 Metro Station, Noida" value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} />
+                </div>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label>💬 Note for Seller (optional)</label>
+                  <input className="form-control" placeholder="Koi special request ya time preference..." value={form.note} onChange={e => setForm(f => ({ ...f, note: e.target.value }))} />
+                </div>
+              </div>
+
+              {/* Submit */}
+              <button type="submit" disabled={ordering} style={{
+                width: '100%', padding: '16px', borderRadius: 99,
+                background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
+                color: 'white', border: 'none', fontWeight: 800,
+                fontSize: 17, cursor: 'pointer', fontFamily: 'Nunito, sans-serif',
+                boxShadow: '0 6px 20px rgba(107,33,168,0.4)',
+                transition: 'all 0.2s',
+              }}
+                onMouseEnter={e => !ordering && (e.currentTarget.style.transform = 'translateY(-2px)')}
+                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+              >
+                {ordering ? '⏳ Placing Order...' : '✅ Confirm Order'}
+              </button>
+            </form>
           </div>
 
-          {/* Note */}
-          <div className="form-group">
-            <label>Note to Seller (optional)</label>
-            <textarea className="form-control" rows={3} value={form.note} onChange={e => set('note', e.target.value)} placeholder="Koi special request ya message seller ke liye..." />
-          </div>
+          {/* Right — Order Summary */}
+          <div>
+            <div style={{ background: 'white', borderRadius: 20, padding: '20px', boxShadow: '0 4px 16px rgba(107,33,168,0.06)', position: 'sticky', top: 80 }}>
+              <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 17, fontWeight: 800, marginBottom: 16 }}>📋 Order Summary</div>
 
-          {/* Safety Tip */}
-          <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: 12, padding: '12px 16px', marginBottom: 20, fontSize: 13, color: '#065F46' }}>
-            🔒 <strong>Safe Deal Tips:</strong> Public jagah milein. Item check karke hi payment karein. Advance payment kabhi mat karein.
-          </div>
+              {listing && (
+                <>
+                  <div style={{ display: 'flex', gap: 14, marginBottom: 20, padding: '16px', background: '#F9FAFB', borderRadius: 16 }}>
+                    <img src={listing.images?.[0] || 'https://placehold.co/80x80?text=Item'} alt={listing.title}
+                      style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 12, flexShrink: 0 }}
+                      onError={e => e.target.src = 'https://placehold.co/80x80?text=Item'} />
+                    <div>
+                      <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 6 }}>{listing.title}</div>
+                      <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 4 }}>📦 {listing.condition} • {listing.category}</div>
+                      <div style={{ fontSize: 12, color: '#6B7280' }}>📍 {listing.city}</div>
+                    </div>
+                  </div>
 
-          {/* Order Total */}
-          <div style={{ background: '#F9FAFB', borderRadius: 12, padding: '16px', marginBottom: 20 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: 14, color: '#6B7280' }}>
-              <span>Item Price</span>
-              <span>₹{listing.price?.toLocaleString('en-IN')}</span>
+                  <div style={{ borderTop: '1px solid #F3F4F6', paddingTop: 16 }}>
+                    {[
+                      { label: 'Item Price', value: '₹' + (listing.price || 0).toLocaleString('en-IN') },
+                      { label: 'Platform Fee', value: 'FREE 🎉' },
+                      { label: 'Delivery', value: 'Meetup Only' },
+                    ].map(function(item) {
+                      return (
+                        <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+                          <span style={{ fontSize: 14, color: '#6B7280' }}>{item.label}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: item.value.includes('FREE') ? '#059669' : '#111827' }}>{item.value}</span>
+                        </div>
+                      )
+                    })}
+                    <div style={{ borderTop: '2px solid #F3F4F6', paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontFamily: 'Baloo 2, cursive', fontSize: 17, fontWeight: 800 }}>Total</span>
+                      <span style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 800, color: '#6B21A8' }}>₹{(listing.price || 0).toLocaleString('en-IN')}</span>
+                    </div>
+                  </div>
+
+                  {/* Seller */}
+                  <div style={{ marginTop: 16, padding: '14px 16px', background: '#F5F3FF', borderRadius: 14 }}>
+                    <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 6 }}>🏪 Seller</div>
+                    <div style={{ fontWeight: 700, color: '#374151', marginBottom: 4 }}>{listing.sellerName}</div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <a href={'tel:+91' + listing.sellerPhone} style={{ flex: 1, background: '#6B21A8', color: 'white', borderRadius: 8, padding: '8px', fontSize: 12, fontWeight: 700, textDecoration: 'none', textAlign: 'center' }}>📞 Call</a>
+                      <a href={'https://wa.me/91' + listing.sellerPhone} target="_blank" rel="noopener noreferrer" style={{ flex: 1, background: '#059669', color: 'white', borderRadius: 8, padding: '8px', fontSize: 12, fontWeight: 700, textDecoration: 'none', textAlign: 'center' }}>💬 WhatsApp</a>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Trust badges */}
+              <div style={{ marginTop: 16, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                {['🔒 Secure', '✅ Verified', '🆓 Free Platform'].map(function(b) {
+                  return (
+                    <span key={b} style={{ fontSize: 11, background: '#F3F4F6', color: '#6B7280', padding: '4px 10px', borderRadius: 99, fontWeight: 600 }}>{b}</span>
+                  )
+                })}
+              </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: 14, color: '#6B7280' }}>
-              <span>Platform Fee</span>
-              <span style={{ color: '#10B981', fontWeight: 600 }}>FREE</span>
-            </div>
-            <div style={{ height: 1, background: '#E5E7EB', margin: '10px 0' }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 18, fontWeight: 800, color: '#111827' }}>
-              <span>Total</span>
-              <span style={{ color: '#FF6B35', fontFamily: 'Baloo 2, cursive' }}>₹{listing.price?.toLocaleString('en-IN')}</span>
-            </div>
           </div>
-
-          <button type="submit" className="btn btn-primary btn-lg btn-full" disabled={placing}>
-            {placing ? '⏳ Placing Order...' : `🛒 Place Order — ₹${listing.price?.toLocaleString('en-IN')}`}
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   )
