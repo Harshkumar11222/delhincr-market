@@ -287,7 +287,7 @@ export default function Home() {
                   <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.75, marginBottom: 18 }}>
                     {section.desc}
                   </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 22 }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 15 }}>
                     {section.features.map(function(f) {
                       return (
                         <span key={f} style={{
