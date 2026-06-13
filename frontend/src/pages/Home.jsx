@@ -85,7 +85,7 @@ export default function Home() {
       {/* ══ HERO ══ */}
       <div style={{
         background: 'linear-gradient(135deg, #1E0533 0%, #3B0764 30%, #6B21A8 65%, #F59E0B 100%)',
-        padding: '84px 16px 110px',
+        padding: '84px 16px 40px',
         textAlign: 'center',
         position: 'relative',
         overflow: 'hidden',
@@ -195,7 +195,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="container" style={{ marginTop: -48, paddingBottom: 60 }}>
+      <div className="container" style={{ marginTop: -8, paddingBottom: 60 }}>
 
         {/* Section heading */}
         <div style={{
