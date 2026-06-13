@@ -195,7 +195,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="container" style={{ marginTop: -8, paddingBottom: 60 }}>
+      <div className="container" style={{ marginTop: -8, paddingBottom: 10 }}>
 
         {/* Section heading */}
         <div style={{
