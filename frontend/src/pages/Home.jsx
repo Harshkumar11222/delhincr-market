@@ -462,10 +462,12 @@ export default function Home() {
         </div>
 
 {/* Support Banner */}
+{/* Support Banner */}
 <div style={{
-  background: 'white', borderRadius: 16, padding: '16px 20px',  // ← 28px se 16px kiya
+  background: 'white', borderRadius: 16, padding: '14px 20px',
   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-  flexWrap: 'wrap', gap: 12, marginBottom: 24,  // ← gap aur margin bhi kam kiya
+  flexWrap: 'wrap', gap: 12, marginBottom: 20,
+  marginTop: 0,  // ← ensure no negative margin
   boxShadow: '0 2px 12px rgba(107,33,168,0.06)',
   border: '1.5px solid rgba(107,33,168,0.08)',
 }}>

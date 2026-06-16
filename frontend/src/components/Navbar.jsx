@@ -193,11 +193,11 @@ export default function Navbar() {
               alignItems: 'center', justifyContent: 'center',
               padding: '8px 4px', textDecoration: 'none', gap: 2,
               color: isActive ? 'var(--primary)' : 'var(--gray-400)',
-              fontSize: 10, fontWeight: 700, transition: 'color 0.2s',
+              fontSize: 9, fontWeight: 700, transition: 'color 0.2s',
               borderTop: isActive ? '2px solid var(--primary)' : '2px solid transparent',
               marginTop: -1,
             }}>
-              <span style={{ fontSize: 20, filter: isActive ? 'none' : 'grayscale(0.3)' }}>{item.icon}</span>
+              <span style={{ fontSize: 18, filter: isActive ? 'none' : 'grayscale(0.3)' }}>{item.icon}</span>
               <span>{item.label}</span>
               <Link to="/support" style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600, padding: '6px 14px', borderRadius: 8, textDecoration: 'none' }}>
   Support
