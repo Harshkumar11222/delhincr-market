@@ -199,7 +199,7 @@ export default function Navbar() {
             }}>
               <span style={{ fontSize: 18, filter: isActive ? 'none' : 'grayscale(0.3)' }}>{item.icon}</span>
               <span>{item.label}</span>
-              <Link to="/support" style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600, padding: '6px 14px', borderRadius: 8, textDecoration: 'none' }}>
+              <Link to="/support" style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 500, padding: '6px 14px', borderRadius: 8, textDecoration: 'none' }}>
   Support
 </Link>
 <Link to="/about" style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600, padding: '6px 14px', borderRadius: 8, textDecoration: 'none' }}>

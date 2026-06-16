@@ -462,7 +462,6 @@ export default function Home() {
         </div>
 
 {/* Support Banner */}
-{/* Support Banner */}
 <div style={{
   background: 'white', borderRadius: 16, padding: '14px 20px',
   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
