@@ -80,7 +80,7 @@ export default function Home() {
   ]
 
   return (
-    <div style={{ background: '#F8FAFC', minHeight: '100vh' }}>
+    <div style={{ background: '#F8FAFC', minHeight: '100vh', paddingBottom: 72 }}>
 
       {/* ══ HERO ══ */}
       <div style={{
