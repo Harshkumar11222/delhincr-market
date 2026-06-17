@@ -262,4 +262,34 @@ router.post('/google', async function(req, res) {
   }
 })
 
+const { OAuth2Client } = require('google-auth-library')
+
+router.post('/google', async function(req, res) {
+  try {
+    var credential = req.body.credential
+    if (!credential) return res.status(400).json({ error: 'Credential required' })
+    var client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+    var ticket = await client.verifyIdToken({ idToken: credential, audience: process.env.GOOGLE_CLIENT_ID })
+    var payload = ticket.getPayload()
+    var bcrypt = require('bcryptjs')
+
+    var user = await User.findOne({ email: payload.email })
+    if (!user) {
+      user = await User.create({
+        name: payload.name, email: payload.email,
+        phone: 'g_' + payload.sub.slice(0, 12),
+        passwordHash: await bcrypt.hash(payload.sub, 10),
+        isVerified: true, avatar: payload.picture,
+      })
+    } else if (!user.avatar) {
+      user.avatar = payload.picture; await user.save()
+    }
+
+    var token = jwt.sign({ id: user._id, name: user.name, phone: user.phone }, JWT_SECRET, { expiresIn: '7d' })
+    res.json({ token, user: { id: user._id, name: user.name, phone: user.phone, email: user.email, avatar: user.avatar, isVerified: user.isVerified, isAdmin: user.isAdmin } })
+  } catch(err) {
+    res.status(500).json({ error: 'Google login failed: ' + err.message })
+  }
+})
+
 module.exports = router
