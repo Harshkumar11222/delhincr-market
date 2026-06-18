@@ -204,7 +204,7 @@ textarea.form-control { resize: vertical; min-height: 100px; }
 @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.9); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
 
 /* ── Page ── */
-.page-content { padding-bottom: 72px; }
+.page-content { padding-bottom: 60px; }
 
 /* ── Divider ── */
 .divider { height: 3px; background: var(--gradient-primary); border-radius: var(--radius-full); margin: 32px 0; }

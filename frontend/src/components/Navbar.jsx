@@ -180,36 +180,29 @@ export default function Navbar() {
       </nav>
 
       {/* Bottom Nav */}
-      <nav style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1000,
-        background: 'white', borderTop: '1px solid var(--gray-100)',
-        display: 'flex', boxShadow: '0 -4px 20px rgba(107,33,168,0.08)',
+<nav style={{
+  position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1000,
+  background: 'white', borderTop: '1px solid #E5E7EB',
+  display: 'flex', height: 60,
+  boxShadow: '0 -2px 12px rgba(107,33,168,0.08)',
+}}>
+  {bottomNav.map(function(item) {
+    var isActive = location.pathname === item.path
+    return (
+      <Link key={item.path} to={item.path} style={{
+        flex: 1, display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        textDecoration: 'none',
+        color: isActive ? '#6B21A8' : '#9CA3AF',
+        fontSize: 9, fontWeight: 700, gap: 2,
+        borderTop: isActive ? '2px solid #6B21A8' : '2px solid transparent',
       }}>
-        {bottomNav.map(function(item) {
-          var isActive = location.pathname === item.path
-          return (
-            <Link key={item.path} to={item.path} style={{
-              flex: 1, display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center',
-              padding: '8px 4px', textDecoration: 'none', gap: 2,
-              color: isActive ? 'var(--primary)' : 'var(--gray-400)',
-              fontSize: 9, fontWeight: 700, transition: 'color 0.2s',
-              borderTop: isActive ? '2px solid var(--primary)' : '2px solid transparent',
-              marginTop: -1,
-            }}>
-              <span style={{ fontSize: 18, filter: isActive ? 'none' : 'grayscale(0.3)' }}>{item.icon}</span>
-              <span>{item.label}</span>
-              <Link to="/support" style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 500, padding: '6px 14px', borderRadius: 8, textDecoration: 'none' }}>
-  Support
-</Link>
-<Link to="/about" style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600, padding: '6px 14px', borderRadius: 8, textDecoration: 'none' }}>
-  About
-</Link>
-            </Link>
-            
-          )
-        })}
-      </nav>
+        <span style={{ fontSize: 18 }}>{item.icon}</span>
+        <span>{item.label}</span>
+      </Link>
+    )
+  })}
+</nav>
     </>
   )
 }

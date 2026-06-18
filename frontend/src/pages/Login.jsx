@@ -96,7 +96,6 @@ export default function Login() {
         width: '100%', maxWidth: 480, background: 'white',
         display: 'flex', flexDirection: 'column', justifyContent: 'center',
         padding: 'clamp(24px, 5vw, 56px)',
-        paddingBottom: 'clamp(80px, 10vw, 100px)',  // ← bottom nav space ke liye
         borderRadius: '32px 0 0 32px',
       }}>
         <div style={{ marginBottom: 32 }}>
