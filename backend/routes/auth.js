@@ -1,3 +1,5 @@
+cd /d/delhincr-market/backend
+cat > routes/auth.js << 'EOF'
 const express = require('express')
 const router  = express.Router()
 const bcrypt  = require('bcryptjs')
@@ -9,7 +11,6 @@ const { OAuth2Client } = require('google-auth-library')
 const JWT_SECRET   = process.env.JWT_SECRET || 'delhincr_market_secret_2024'
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
-// ── REGISTER ──────────────────────────────────────
 router.post('/register', async function(req, res) {
   try {
     var { name, email, phone, password } = req.body
@@ -31,7 +32,6 @@ router.post('/register', async function(req, res) {
   }
 })
 
-// ── LOGIN ─────────────────────────────────────────
 router.post('/login', async function(req, res) {
   try {
     var { phone, password } = req.body
@@ -47,7 +47,6 @@ router.post('/login', async function(req, res) {
   }
 })
 
-// ── FORGOT PASSWORD — send OTP ───────────────────
 router.post('/forgot-password', async function(req, res) {
   try {
     var email = req.body.email
@@ -71,20 +70,7 @@ router.post('/forgot-password', async function(req, res) {
       from:    '"NukkadMarket" <' + process.env.GMAIL_USER + '>',
       to:      email,
       subject: 'Password Reset OTP — NukkadMarket',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #6B21A8, #7C3AED); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
-            <h1 style="color: white; margin: 0;">🏪 NukkadMarket</h1>
-          </div>
-          <h2>Password Reset</h2>
-          <p style="color: #6B7280;">Aapka password reset OTP:</p>
-          <div style="background: #F5F3FF; border: 2px solid #6B21A8; border-radius: 12px; padding: 20px; text-align: center; margin: 20px 0;">
-            <span style="font-size: 36px; font-weight: 800; color: #6B21A8; letter-spacing: 8px;">${otp}</span>
-          </div>
-          <p style="color: #6B7280; font-size: 14px;">⏱️ 5 minutes mein expire ho jaayega</p>
-          <p style="color: #6B7280; font-size: 14px;">🔒 Kisi ke saath share mat karo</p>
-        </div>
-      `
+      html: '<div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px;"><div style="background: linear-gradient(135deg, #6B21A8, #7C3AED); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;"><h1 style="color: white; margin: 0;">🏪 NukkadMarket</h1></div><h2>Password Reset</h2><p style="color: #6B7280;">Aapka password reset OTP:</p><div style="background: #F5F3FF; border: 2px solid #6B21A8; border-radius: 12px; padding: 20px; text-align: center; margin: 20px 0;"><span style="font-size: 36px; font-weight: 800; color: #6B21A8; letter-spacing: 8px;">' + otp + '</span></div><p style="color: #6B7280; font-size: 14px;">⏱️ 5 minutes mein expire ho jaayega</p><p style="color: #6B7280; font-size: 14px;">🔒 Kisi ke saath share mat karo</p></div>'
     })
 
     res.json({ success: true, message: 'OTP bheja gaya ' + email + ' pe' })
@@ -93,7 +79,6 @@ router.post('/forgot-password', async function(req, res) {
   }
 })
 
-// ── RESET PASSWORD ────────────────────────────────
 router.post('/reset-password', async function(req, res) {
   try {
     var email       = req.body.email
@@ -128,7 +113,6 @@ router.post('/reset-password', async function(req, res) {
   }
 })
 
-// ── GET ME ────────────────────────────────────────
 router.get('/me', auth, async function(req, res) {
   try {
     var user = await User.findById(req.user.id)
@@ -139,7 +123,6 @@ router.get('/me', auth, async function(req, res) {
   }
 })
 
-// ── UPDATE PROFILE ────────────────────────────────
 router.patch('/profile', auth, async function(req, res) {
   try {
     var { name, email, city, location, avatar } = req.body
@@ -163,7 +146,6 @@ router.patch('/profile', auth, async function(req, res) {
   } catch(err) { res.status(500).json({ error: err.message }) }
 })
 
-// ── GOOGLE LOGIN/SIGNUP ───────────────────────────
 router.post('/google', async function(req, res) {
   try {
     var credential = req.body.credential
@@ -173,11 +155,11 @@ router.post('/google', async function(req, res) {
       idToken: credential,
       audience: process.env.GOOGLE_CLIENT_ID,
     })
-    var payload   = ticket.getPayload()
-    var email     = payload.email
-    var name      = payload.name
-    var avatar    = payload.picture
-    var googleId  = payload.sub
+    var payload  = ticket.getPayload()
+    var email    = payload.email
+    var name     = payload.name
+    var avatar   = payload.picture
+    var googleId = payload.sub
 
     var user = await User.findOne({ email: email })
     if (!user) {
@@ -199,3 +181,4 @@ router.post('/google', async function(req, res) {
 })
 
 module.exports = router
+EOF
