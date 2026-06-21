@@ -181,4 +181,3 @@ router.post('/google', async function(req, res) {
 })
 
 module.exports = router
-EOF
