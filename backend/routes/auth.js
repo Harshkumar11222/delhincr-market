@@ -3,9 +3,13 @@ const router  = express.Router()
 const bcrypt  = require('bcryptjs')
 const jwt     = require('jsonwebtoken')
 const { User } = require('../db')
+const auth    = require('../middleware/auth')
+const { OAuth2Client } = require('google-auth-library')
 
-const JWT_SECRET = process.env.JWT_SECRET || 'delhincr_market_secret_2024'
+const JWT_SECRET   = process.env.JWT_SECRET || 'delhincr_market_secret_2024'
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
+// ── REGISTER ──────────────────────────────────────
 router.post('/register', async function(req, res) {
   try {
     var { name, email, phone, password } = req.body
@@ -27,6 +31,7 @@ router.post('/register', async function(req, res) {
   }
 })
 
+// ── LOGIN ─────────────────────────────────────────
 router.post('/login', async function(req, res) {
   try {
     var { phone, password } = req.body
@@ -36,13 +41,13 @@ router.post('/login', async function(req, res) {
     var valid = await bcrypt.compare(password, user.passwordHash)
     if (!valid) return res.status(401).json({ error: 'Invalid phone or password' })
     var token = jwt.sign({ id: user._id, name: user.name, phone: user.phone }, JWT_SECRET, { expiresIn: '7d' })
-    res.json({ token, user: { id: user._id, name: user.name, phone: user.phone, email: user.email, avatar: user.avatar, isVerified: user.isVerified } })
+    res.json({ token, user: { id: user._id, name: user.name, phone: user.phone, email: user.email, avatar: user.avatar, isVerified: user.isVerified, isAdmin: user.isAdmin } })
   } catch(err) {
     res.status(500).json({ error: err.message })
   }
 })
 
-// POST /api/auth/forgot-password — email pe OTP bhejo
+// ── FORGOT PASSWORD — send OTP ───────────────────
 router.post('/forgot-password', async function(req, res) {
   try {
     var email = req.body.email
@@ -51,37 +56,30 @@ router.post('/forgot-password', async function(req, res) {
     var user = await User.findOne({ email: email })
     if (!user) return res.status(404).json({ error: 'Is email se koi account nahi mila' })
 
-    // 6 digit OTP generate karo
     var otp = Math.floor(100000 + Math.random() * 900000).toString()
-
-    // OTP store karo user mein (5 min)
     user.resetOtp       = otp
     user.resetOtpExpiry = Date.now() + 5 * 60 * 1000
     await user.save()
 
-    // Email bhejo
-    var nodemailer   = require('nodemailer')
-    var transporter  = nodemailer.createTransport({
+    var nodemailer  = require('nodemailer')
+    var transporter = nodemailer.createTransport({
       service: 'gmail',
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS,
-      }
+      auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS }
     })
 
     await transporter.sendMail({
-      from:    '"DelhiNCR Market" <' + process.env.GMAIL_USER + '>',
+      from:    '"NukkadMarket" <' + process.env.GMAIL_USER + '>',
       to:      email,
-      subject: 'Password Reset OTP — DelhiNCR Market',
+      subject: 'Password Reset OTP — NukkadMarket',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #1E3A8A, #2563EB); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
-            <h1 style="color: white; margin: 0;">DelhiNCR Market</h1>
+          <div style="background: linear-gradient(135deg, #6B21A8, #7C3AED); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
+            <h1 style="color: white; margin: 0;">🏪 NukkadMarket</h1>
           </div>
           <h2>Password Reset</h2>
           <p style="color: #6B7280;">Aapka password reset OTP:</p>
-          <div style="background: #FFF0EB; border: 2px solid #FF6B35; border-radius: 12px; padding: 20px; text-align: center; margin: 20px 0;">
-            <span style="font-size: 36px; font-weight: 800; color: #FF6B35; letter-spacing: 8px;">${otp}</span>
+          <div style="background: #F5F3FF; border: 2px solid #6B21A8; border-radius: 12px; padding: 20px; text-align: center; margin: 20px 0;">
+            <span style="font-size: 36px; font-weight: 800; color: #6B21A8; letter-spacing: 8px;">${otp}</span>
           </div>
           <p style="color: #6B7280; font-size: 14px;">⏱️ 5 minutes mein expire ho jaayega</p>
           <p style="color: #6B7280; font-size: 14px;">🔒 Kisi ke saath share mat karo</p>
@@ -95,7 +93,7 @@ router.post('/forgot-password', async function(req, res) {
   }
 })
 
-// POST /api/auth/reset-password — naya password set karo
+// ── RESET PASSWORD ────────────────────────────────
 router.post('/reset-password', async function(req, res) {
   try {
     var email       = req.body.email
@@ -119,11 +117,9 @@ router.post('/reset-password', async function(req, res) {
       return res.status(400).json({ error: 'Galat OTP' })
     }
 
-    // Password update karo
-    var bcrypt       = require('bcryptjs')
-    user.passwordHash    = await bcrypt.hash(newPassword, 10)
-    user.resetOtp        = undefined
-    user.resetOtpExpiry  = undefined
+    user.passwordHash   = await bcrypt.hash(newPassword, 10)
+    user.resetOtp       = undefined
+    user.resetOtpExpiry = undefined
     await user.save()
 
     res.json({ success: true, message: 'Password successfully change ho gaya!' })
@@ -132,21 +128,18 @@ router.post('/reset-password', async function(req, res) {
   }
 })
 
-router.get('/me', require('../middleware/auth'), async function(req, res) {
+// ── GET ME ────────────────────────────────────────
+router.get('/me', auth, async function(req, res) {
   try {
     var user = await User.findById(req.user.id)
     if (!user) return res.status(404).json({ error: 'User not found' })
-    res.json({ id: user._id, name: user.name, phone: user.phone, email: user.email, avatar: user.avatar, isVerified: user.isVerified })
+    res.json({ id: user._id, name: user.name, phone: user.phone, email: user.email, avatar: user.avatar, isVerified: user.isVerified, isAdmin: user.isAdmin })
   } catch(err) {
     res.status(500).json({ error: err.message })
   }
 })
 
-const { OAuth2Client } = require('google-auth-library')
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
-
-
-// PATCH /api/auth/profile
+// ── UPDATE PROFILE ────────────────────────────────
 router.patch('/profile', auth, async function(req, res) {
   try {
     var { name, email, city, location, avatar } = req.body
@@ -158,131 +151,44 @@ router.patch('/profile', auth, async function(req, res) {
     if (location) user.location = location
     if (avatar)   user.avatar   = avatar
     await user.save()
-    var token = require('jsonwebtoken').sign(
-      { id: user._id, name: user.name, phone: user.phone },
-      process.env.JWT_SECRET || 'delhincr_market_secret_2024',
-      { expiresIn: '7d' }
-    )
+    var token = jwt.sign({ id: user._id, name: user.name, phone: user.phone }, JWT_SECRET, { expiresIn: '7d' })
     res.json({
       token,
       user: {
-        id:         user._id,
-        name:       user.name,
-        phone:      user.phone,
-        email:      user.email,
-        avatar:     user.avatar,
-        city:       user.city,
-        location:   user.location,
-        isVerified: user.isVerified,
-        isAdmin:    user.isAdmin,
+        id: user._id, name: user.name, phone: user.phone, email: user.email,
+        avatar: user.avatar, city: user.city, location: user.location,
+        isVerified: user.isVerified, isAdmin: user.isAdmin,
       }
     })
   } catch(err) { res.status(500).json({ error: err.message }) }
 })
-// POST /api/auth/google
-// const { OAuth2Client } = require('google-auth-library')
-// const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
+// ── GOOGLE LOGIN/SIGNUP ───────────────────────────
 router.post('/google', async function(req, res) {
   try {
     var credential = req.body.credential
     if (!credential) return res.status(400).json({ error: 'Google credential required' })
+
     var ticket = await googleClient.verifyIdToken({
       idToken: credential,
       audience: process.env.GOOGLE_CLIENT_ID,
     })
-    var payload = ticket.getPayload()
-    var email   = payload.email
-    var name    = payload.name
-    var avatar  = payload.picture
-    var googleId = payload.sub
+    var payload   = ticket.getPayload()
+    var email     = payload.email
+    var name      = payload.name
+    var avatar    = payload.picture
+    var googleId  = payload.sub
 
     var user = await User.findOne({ email: email })
     if (!user) {
-      var bcrypt = require('bcryptjs')
       var fakeHash = await bcrypt.hash(googleId + 'nukkad', 10)
       user = await User.create({
         name, email, phone: 'g_' + googleId.slice(0, 10),
         passwordHash: fakeHash, isVerified: true, avatar,
       })
-    } else {
-      if (!user.avatar) { user.avatar = avatar; await user.save() }
-    }
-
-    var token = jwt.sign(
-      { id: user._id, name: user.name, phone: user.phone },
-      JWT_SECRET, { expiresIn: '7d' }
-    )
-    res.json({ token, user: { id: user._id, name: user.name, phone: user.phone, email: user.email, avatar: user.avatar, isVerified: user.isVerified, isAdmin: user.isAdmin } })
-  } catch(err) {
-    res.status(500).json({ error: 'Google login failed: ' + err.message })
-  }
-})
-
-// Google OAuth
-const { OAuth2Client } = require('google-auth-library')
-
-router.post('/google', async function(req, res) {
-  try {
-    var credential = req.body.credential
-    if (!credential) return res.status(400).json({ error: 'Credential required' })
-
-    var client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
-    var ticket = await client.verifyIdToken({
-      idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    })
-    var payload = ticket.getPayload()
-    var bcrypt  = require('bcryptjs')
-
-    var user = await User.findOne({ email: payload.email })
-    if (!user) {
-      user = await User.create({
-        name:         payload.name,
-        email:        payload.email,
-        phone:        'g_' + payload.sub.slice(0, 12),
-        passwordHash: await bcrypt.hash(payload.sub, 10),
-        isVerified:   true,
-        avatar:       payload.picture,
-      })
-    } else {
-      if (!user.avatar) { user.avatar = payload.picture; await user.save() }
-    }
-
-    var token = jwt.sign(
-      { id: user._id, name: user.name, phone: user.phone },
-      JWT_SECRET, { expiresIn: '7d' }
-    )
-    res.json({
-      token,
-      user: { id: user._id, name: user.name, phone: user.phone, email: user.email, avatar: user.avatar, isVerified: user.isVerified, isAdmin: user.isAdmin }
-    })
-  } catch(err) {
-    res.status(500).json({ error: 'Google login failed: ' + err.message })
-  }
-})
-
-const { OAuth2Client } = require('google-auth-library')
-
-router.post('/google', async function(req, res) {
-  try {
-    var credential = req.body.credential
-    if (!credential) return res.status(400).json({ error: 'Credential required' })
-    var client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
-    var ticket = await client.verifyIdToken({ idToken: credential, audience: process.env.GOOGLE_CLIENT_ID })
-    var payload = ticket.getPayload()
-    var bcrypt = require('bcryptjs')
-
-    var user = await User.findOne({ email: payload.email })
-    if (!user) {
-      user = await User.create({
-        name: payload.name, email: payload.email,
-        phone: 'g_' + payload.sub.slice(0, 12),
-        passwordHash: await bcrypt.hash(payload.sub, 10),
-        isVerified: true, avatar: payload.picture,
-      })
     } else if (!user.avatar) {
-      user.avatar = payload.picture; await user.save()
+      user.avatar = avatar
+      await user.save()
     }
 
     var token = jwt.sign({ id: user._id, name: user.name, phone: user.phone }, JWT_SECRET, { expiresIn: '7d' })
