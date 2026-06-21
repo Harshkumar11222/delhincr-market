@@ -1,5 +1,3 @@
-cd /d/delhincr-market/backend
-cat > routes/auth.js << 'EOF'
 const express = require('express')
 const router  = express.Router()
 const bcrypt  = require('bcryptjs')
@@ -69,8 +67,8 @@ router.post('/forgot-password', async function(req, res) {
     await transporter.sendMail({
       from:    '"NukkadMarket" <' + process.env.GMAIL_USER + '>',
       to:      email,
-      subject: 'Password Reset OTP — NukkadMarket',
-      html: '<div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px;"><div style="background: linear-gradient(135deg, #6B21A8, #7C3AED); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;"><h1 style="color: white; margin: 0;">🏪 NukkadMarket</h1></div><h2>Password Reset</h2><p style="color: #6B7280;">Aapka password reset OTP:</p><div style="background: #F5F3FF; border: 2px solid #6B21A8; border-radius: 12px; padding: 20px; text-align: center; margin: 20px 0;"><span style="font-size: 36px; font-weight: 800; color: #6B21A8; letter-spacing: 8px;">' + otp + '</span></div><p style="color: #6B7280; font-size: 14px;">⏱️ 5 minutes mein expire ho jaayega</p><p style="color: #6B7280; font-size: 14px;">🔒 Kisi ke saath share mat karo</p></div>'
+      subject: 'Password Reset OTP - NukkadMarket',
+      html: '<div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px;"><div style="background: linear-gradient(135deg, #6B21A8, #7C3AED); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;"><h1 style="color: white; margin: 0;">NukkadMarket</h1></div><h2>Password Reset</h2><p style="color: #6B7280;">Aapka password reset OTP:</p><div style="background: #F5F3FF; border: 2px solid #6B21A8; border-radius: 12px; padding: 20px; text-align: center; margin: 20px 0;"><span style="font-size: 36px; font-weight: 800; color: #6B21A8; letter-spacing: 8px;">' + otp + '</span></div><p style="color: #6B7280; font-size: 14px;">5 minutes mein expire ho jaayega</p></div>'
     })
 
     res.json({ success: true, message: 'OTP bheja gaya ' + email + ' pe' })
@@ -96,7 +94,7 @@ router.post('/reset-password', async function(req, res) {
     if (!user) return res.status(404).json({ error: 'User nahi mila' })
     if (!user.resetOtp) return res.status(400).json({ error: 'Pehle OTP send karo' })
     if (Date.now() > user.resetOtpExpiry) {
-      return res.status(400).json({ error: 'OTP expire ho gaya — dobara send karo' })
+      return res.status(400).json({ error: 'OTP expire ho gaya - dobara send karo' })
     }
     if (user.resetOtp !== otp.toString()) {
       return res.status(400).json({ error: 'Galat OTP' })
