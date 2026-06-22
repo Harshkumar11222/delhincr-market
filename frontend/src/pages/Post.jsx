@@ -41,6 +41,8 @@ export default function Post() {
   async function handleSubmit() {
     setError('')
     if (!form.title || !form.price || !form.category || !form.city || !form.phone) { setError('Sab required fields fill karo'); return }
+    if (images.length === 0) { setError('Photo upload karna zaroori hai'); return }  // ← yeh line add karo
+
     if (form.phone.length !== 10 || !/^[6-9]\d{9}$/.test(form.phone)) { setError('Valid 10-digit phone number daalo'); return }
     setPosting(true)
     try {
@@ -206,10 +208,18 @@ export default function Post() {
           )}
 
           {/* STEP 3 — Photos */}
-          {step === 3 && (
-            <div style={{ background: 'white', borderRadius: 24, padding: '28px', boxShadow: '0 4px 20px rgba(107,33,168,0.08)' }}>
-              <h3 style={{ fontFamily: 'Baloo 2, cursive', fontSize: 20, fontWeight: 800, marginBottom: 4 }}>📸 Photos Add Karo</h3>
-              <p style={{ fontSize: 13, color: '#6B7280', marginBottom: 20 }}>Zyada photos = zyada buyers (max 5 photos)</p>
+          <div style={{ display: 'flex', gap: 12 }}>
+  <button onClick={() => setStep(2)} className="btn btn-ghost btn-lg" style={{ flex: 1 }}>← Back</button>
+  <button
+    onClick={function() {
+      if (images.length === 0) { setError('Kam se kam 1 photo upload karo — bina photo listing post nahi hogi'); return }
+      setError('')
+      setStep(4)
+    }}
+    className="btn btn-primary btn-lg" style={{ flex: 2 }}>
+    Next: Preview →
+  </button>
+</div>
 
               {/* Upload Area */}
               <label style={{
@@ -256,7 +266,6 @@ export default function Post() {
                 </button>
               </div>
             </div>
-          )}
 
           {/* STEP 4 — Preview & Post */}
           {step === 4 && (
@@ -335,6 +344,6 @@ export default function Post() {
 
         </div>
       </div>
-    </div>
+    
   )
 }

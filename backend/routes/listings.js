@@ -101,7 +101,10 @@ router.post('/', auth, async function(req, res) {
   try {
     var { title, description, price, isNegotiable, category, condition, images, location, area, city } = req.body
     if (!title || !price || !category) return res.status(400).json({ error: 'Title, price and category required' })
-    var user = await User.findById(req.user.id)
+    if (!images || images.length === 0) {
+      return res.status(400).json({ error: 'Kam se kam 1 photo zaroori hai' })
+    }
+      var user = await User.findById(req.user.id)
     var listing = await Listing.create({
       userId: req.user.id,
       title, description: description || '',
