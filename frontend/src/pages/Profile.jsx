@@ -15,6 +15,7 @@ export default function Profile() {
   const [toast, setToast] = useState('')
   const [form, setForm] = useState({
     name:     user?.name || '',
+    phone:    user?.phone || '',
     email:    user?.email || '',
     city:     user?.city || '',
     location: user?.location || '',
@@ -44,6 +45,18 @@ export default function Profile() {
 
   async function handleUpdate(e) {
     e.preventDefault()
+    if (!form.email || !form.email.trim()) {
+    showToast('❌ Email zaroori hai')
+    return
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+    showToast('❌ Valid email daalo')
+    return
+  }
+  if (form.phone && (form.phone.length !== 10 || !/^[6-9]\d{9}$/.test(form.phone))) {
+    showToast('❌ Valid 10-digit phone number daalo')
+    return
+  }
     try {
       await api.patch('/auth/profile', form)
       var updated = { ...user, ...form }
@@ -184,6 +197,7 @@ export default function Profile() {
                 <form onSubmit={handleUpdate}>
                   {[
                     { key: 'name', label: '👤 Name', type: 'text' },
+                    { key: 'phone', label: '📱 Phone Number', type: 'tel' }, 
                     { key: 'email', label: '📧 Email', type: 'email' },
                     { key: 'city', label: '🏙️ City', type: 'text' },
                     { key: 'location', label: '📍 Area', type: 'text' },

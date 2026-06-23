@@ -47,10 +47,10 @@ router.post('/login', async function(req, res) {
 
 router.post('/forgot-password', async function(req, res) {
   try {
-    var email = req.body.email
+    var email = (req.body.email || '').trim().toLowerCase()
     if (!email) return res.status(400).json({ error: 'Email required' })
 
-    var user = await User.findOne({ email: email })
+    var user = await User.findOne({ email: { $regex: new RegExp('^' + email + '$', 'i') } })
     if (!user) return res.status(404).json({ error: 'Is email se koi account nahi mila' })
 
     var otp = Math.floor(100000 + Math.random() * 900000).toString()
@@ -123,9 +123,19 @@ router.get('/me', auth, async function(req, res) {
 
 router.patch('/profile', auth, async function(req, res) {
   try {
-    var { name, email, city, location, avatar } = req.body
+    var { name, email, city, location, avatar, phone } = req.body
     var user = await User.findById(req.user.id)
     if (!user) return res.status(404).json({ error: 'User not found' })
+    if (phone && phone !== user.phone) {
+      if (!/^[6-9]\d{9}$/.test(phone)) {
+        return res.status(400).json({ error: 'Valid 10-digit phone number daalo' })
+      }
+      var existing = await User.findOne({ phone: phone })
+      if (existing) return res.status(409).json({ error: 'Yeh phone number already registered hai' })
+      user.phone = phone
+    }
+
+
     if (name)     user.name     = name
     if (email)    user.email    = email
     if (city)     user.city     = city
