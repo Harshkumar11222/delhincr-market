@@ -27,17 +27,26 @@ app.use(helmet({
 }))
 
 // ═══════════════════════════════════════════
-// 2. CORS
+// 2. CORS — Robust, never breaks
 // ═══════════════════════════════════════════
+const cors = require('cors')
+
 app.use(cors({
-  origin: ['https://delhincr-market.vercel.app', 'http://localhost:3000'],
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
 }))
 
-// Preflight
 app.options('*', cors())
+
+// Extra safety — CORS header har response pe force karo, chahe kuch bhi ho
+app.use(function(req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  if (req.method === 'OPTIONS') return res.sendStatus(200)
+  next()
+})
 
 // ═══════════════════════════════════════════
 // 3. TRUST PROXY (Render ke liye)
@@ -306,4 +315,17 @@ server.listen(PORT, function() {
   console.log('🔒 Security: Helmet + Rate Limit + Slow Down + XSS + NoSQL Protection')
   console.log('🛡️  DDoS Protection: ENABLED')
   console.log('💬 Socket.io: READY')
+})
+
+// Global error handler — CORS header crash ke baad bhi bhejo
+app.use(function(err, req, res, next) {
+  console.error('Error:', err.message)
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.status(err.status || 500).json({ error: 'Something went wrong: ' + err.message })
+})
+
+// 404 handler ke liye bhi
+app.use(function(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.status(404).json({ error: 'Route not found' })
 })
