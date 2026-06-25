@@ -64,6 +64,11 @@ router.post('/forgot-password', async function(req, res) {
     }
 
     var nodemailer  = require('nodemailer')
+    var dns         = require('dns')
+
+// IPv4 ko priority do, IPv6 ko avoid karo
+dns.setDefaultResultOrder('ipv4first')
+
     var transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 465,
@@ -72,6 +77,8 @@ router.post('/forgot-password', async function(req, res) {
       connectionTimeout: 10000,  // 10 second max connect
       greetingTimeout: 10000,
       socketTimeout: 10000,
+      family: 4,  // ← yeh force karega sirf IPv4 use kare
+
     })
 
     // Race against a hard timeout — agar 12 second mein response na aaye, fail mark karo
