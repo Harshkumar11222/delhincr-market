@@ -29,8 +29,6 @@ app.use(helmet({
 // ═══════════════════════════════════════════
 // 2. CORS — Robust, never breaks
 // ═══════════════════════════════════════════
-const cors = require('cors')
-
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
