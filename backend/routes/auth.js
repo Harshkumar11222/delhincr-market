@@ -58,22 +58,41 @@ router.post('/forgot-password', async function(req, res) {
     user.resetOtpExpiry = Date.now() + 5 * 60 * 1000
     await user.save()
 
+    if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
+      console.error('GMAIL_USER or GMAIL_PASS not set')
+      return res.status(500).json({ error: 'Email service configured nahi hai' })
+    }
+
     var nodemailer  = require('nodemailer')
     var transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS }
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS },
+      connectionTimeout: 10000,  // 10 second max connect
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     })
 
-    await transporter.sendMail({
+    // Race against a hard timeout — agar 12 second mein response na aaye, fail mark karo
+    var emailPromise = transporter.sendMail({
       from:    '"NukkadMarket" <' + process.env.GMAIL_USER + '>',
       to:      email,
       subject: 'Password Reset OTP - NukkadMarket',
       html: '<div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px;"><div style="background: linear-gradient(135deg, #6B21A8, #7C3AED); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;"><h1 style="color: white; margin: 0;">NukkadMarket</h1></div><h2>Password Reset</h2><p style="color: #6B7280;">Aapka password reset OTP:</p><div style="background: #F5F3FF; border: 2px solid #6B21A8; border-radius: 12px; padding: 20px; text-align: center; margin: 20px 0;"><span style="font-size: 36px; font-weight: 800; color: #6B21A8; letter-spacing: 8px;">' + otp + '</span></div><p style="color: #6B7280; font-size: 14px;">5 minutes mein expire ho jaayega</p></div>'
     })
 
+    var timeoutPromise = new Promise(function(resolve, reject) {
+      setTimeout(function() { reject(new Error('Email send timeout - 12 seconds')) }, 12000)
+    })
+
+    await Promise.race([emailPromise, timeoutPromise])
+
+    console.log('OTP email sent successfully to:', email)
     res.json({ success: true, message: 'OTP bheja gaya ' + email + ' pe' })
   } catch(err) {
-    res.status(500).json({ error: err.message })
+    console.error('Forgot password error:', err.message)
+    res.status(500).json({ error: 'OTP send nahi hua: ' + err.message })
   }
 })
 
