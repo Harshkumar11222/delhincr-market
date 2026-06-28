@@ -1,151 +1,433 @@
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import api from '../api'
 
-export default function ForgotPassword() {
+export default function Detail() {
+  const { id }   = useParams()
   const navigate = useNavigate()
-  const [step, setStep] = useState(1)
-  const [email, setEmail] = useState('')
-  const [otp, setOtp] = useState(['', '', '', '', '', ''])
-  const [newPass, setNewPass] = useState('')
-  const [confirm, setConfirm] = useState('')
-  const [showPass, setShowPass] = useState(false)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
+  const { user } = useAuth()
 
-  function handleOtpChange(i, v) {
-    if (!/^\d*$/.test(v)) return
-    var newOtp = [...otp]; newOtp[i] = v; setOtp(newOtp)
-    if (v && i < 5) document.getElementById('fotp-' + (i + 1))?.focus()
-  }
-  function handleOtpKey(i, e) {
-    if (e.key === 'Backspace' && !otp[i] && i > 0) document.getElementById('fotp-' + (i - 1))?.focus()
-  }
+  const [listing, setListing]       = useState(null)
+  const [loading, setLoading]       = useState(true)
+  const [activeImg, setActiveImg]   = useState(0)
+  const [wishlisted, setWishlisted] = useState(false)
+  const [reporting, setReporting]   = useState(false)
+  const [reportReason, setReportReason] = useState('')
+  const [shareToast, setShareToast] = useState(false)
+  const [imgZoom, setImgZoom]       = useState(false)
+  const [toast, setToast]           = useState('')
+  const [relatedListings, setRelatedListings] = useState([])
 
-  async function handleSendOtp(e) {
-    e.preventDefault(); setError('')
-    if (!email) { setError('Email daalo'); return }
+  function showToast(msg) { setToast(msg); setTimeout(() => setToast(''), 3000) }
+
+  useEffect(function() {
+    fetchListing()
+    window.scrollTo(0, 0)
+  }, [id])
+
+  async function fetchListing() {
     setLoading(true)
     try {
-      await api.post('/auth/forgot-password', { email })
-      setStep(2)
-    } catch(err) { setError(err.response?.data?.error || 'Email nahi mila') }
+      var res = await api.get('/listings/' + id)
+      setListing(res.data)
+      var related = await api.get('/listings?category=' + res.data.category + '&limit=4')
+      setRelatedListings((related.data.listings || []).filter(l => l._id !== id).slice(0, 4))
+    } catch(e) { navigate('/browse') }
     setLoading(false)
   }
 
-  async function handleReset(e) {
-    e.preventDefault(); setError('')
-    var otpStr = otp.join('')
-    if (otpStr.length !== 6) { setError('6 digit OTP daalo'); return }
-    if (newPass.length < 6) { setError('Password min 6 characters'); return }
-    if (newPass !== confirm) { setError('Passwords match nahi'); return }
-    setLoading(true)
+  async function handleWishlist() {
+    if (!user) { navigate('/login'); return }
     try {
-      await api.post('/auth/reset-password', { email, otp: otpStr, newPassword: newPass })
-      setSuccess(true)
-      setTimeout(() => navigate('/login'), 2500)
-    } catch(err) { setError(err.response?.data?.error || 'Reset failed') }
-    setLoading(false)
+      var res = await api.post('/listings/' + id + '/wishlist')
+      setWishlisted(res.data.wishlisted)
+      showToast(res.data.wishlisted ? '❤️ Wishlist mein add kiya!' : '💔 Wishlist se remove kiya')
+    } catch(e) {}
   }
+
+  function handleShare() {
+    if (navigator.share) {
+      navigator.share({ title: listing.title, text: '₹' + listing.price + ' - ' + listing.title + ' on NukkadMarket', url: window.location.href })
+    } else {
+      navigator.clipboard.writeText(window.location.href)
+      setShareToast(true)
+      setTimeout(() => setShareToast(false), 2500)
+    }
+  }
+
+  async function handleReport() {
+    if (!reportReason) return
+    try {
+      await api.post('/listings/' + id + '/report', { reason: reportReason })
+      setReporting(false)
+      setReportReason('')
+      showToast('🚨 Report submit ho gaya. 24 ghante mein review karenge.')
+    } catch(e) { setReporting(false) }
+  }
+
+  var timeAgo = function(date) {
+    var diff = Date.now() - new Date(date)
+    var days = Math.floor(diff / 86400000)
+    if (days === 0) return 'Today'
+    if (days === 1) return 'Yesterday'
+    if (days < 7) return days + ' days ago'
+    if (days < 30) return Math.floor(days / 7) + ' weeks ago'
+    return Math.floor(days / 30) + ' months ago'
+  }
+
+  if (loading) {
+    return (
+      <div style={{ paddingTop: 60, background: '#F8FAFC', minHeight: '100vh' }}>
+        <div className="container" style={{ paddingTop: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }}>
+            <div className="skeleton" style={{ paddingTop: '75%', borderRadius: 24 }} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {[80, 40, 60, 100, 120].map(function(h, i) {
+                return <div key={i} className="skeleton" style={{ height: h, borderRadius: 12 }} />
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!listing) return null
+
+  var images = listing.images && listing.images.length > 0 ? listing.images : ['https://placehold.co/600x400?text=No+Image']
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #1E0533 0%, #3B0764 40%, #6B21A8 70%, #F59E0B 100%)', padding: 16 }}>
-      <div style={{ width: '100%', maxWidth: 420, background: 'white', borderRadius: 28, padding: '40px 32px', boxShadow: '0 24px 64px rgba(0,0,0,0.25)' }}>
+    <div style={{ background: '#F8FAFC', minHeight: '100vh', paddingTop: 60 }}>
 
-        {success ? (
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 72, marginBottom: 16 }}>🎉</div>
-            <h2 style={{ fontFamily: 'Baloo 2, cursive', fontSize: 26, fontWeight: 800, color: '#059669', marginBottom: 8 }}>Password Reset!</h2>
-            <p style={{ color: '#6B7280', marginBottom: 20 }}>Login page pe redirect ho raha hoon...</p>
-            <div style={{ height: 4, background: '#F3F4F6', borderRadius: 99, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: '100%', background: 'linear-gradient(135deg, #6B21A8, #7C3AED)', animation: 'fillBar 2.5s linear forwards' }} />
+      {toast && (
+        <div style={{ position: 'fixed', top: 80, left: '50%', transform: 'translateX(-50%)', zIndex: 9999, background: '#1F2937', color: 'white', padding: '12px 24px', borderRadius: 99, fontSize: 14, fontWeight: 700, boxShadow: '0 8px 24px rgba(0,0,0,0.2)', whiteSpace: 'nowrap' }}>
+          {toast}
+        </div>
+      )}
+
+      {imgZoom && (
+        <div onClick={() => setImgZoom(false)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.95)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+          <button onClick={() => setImgZoom(false)} style={{ position: 'absolute', top: 20, right: 20, background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', width: 44, height: 44, borderRadius: '50%', fontSize: 20, cursor: 'pointer' }}>✕</button>
+          <img src={images[activeImg]} alt={listing.title} style={{ maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain', borderRadius: 12 }} />
+          {images.length > 1 && (
+            <>
+              <button onClick={e => { e.stopPropagation(); setActiveImg(p => (p - 1 + images.length) % images.length) }} style={{ position: 'absolute', left: 20, background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', width: 44, height: 44, borderRadius: '50%', fontSize: 20, cursor: 'pointer' }}>‹</button>
+              <button onClick={e => { e.stopPropagation(); setActiveImg(p => (p + 1) % images.length) }} style={{ position: 'absolute', right: 20, background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', width: 44, height: 44, borderRadius: '50%', fontSize: 20, cursor: 'pointer' }}>›</button>
+            </>
+          )}
+        </div>
+      )}
+
+      {reporting && (
+        <div onClick={() => setReporting(false)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9998, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: 24, padding: '28px', maxWidth: 400, width: '100%' }}>
+            <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 20, fontWeight: 800, marginBottom: 16 }}>🚨 Report Listing</div>
+            <div style={{ display: 'grid', gap: 8, marginBottom: 20 }}>
+              {['Fake/Spam listing', 'Wrong category', 'Already sold', 'Offensive content', 'Fraud seller', 'Wrong price'].map(function(r) {
+                return (
+                  <label key={r} onClick={() => setReportReason(r)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', borderRadius: 12, border: '2px solid ' + (reportReason === r ? '#DC2626' : '#E5E7EB'), cursor: 'pointer', background: reportReason === r ? '#FEF2F2' : 'white', transition: 'all 0.2s' }}>
+                    <div style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid ' + (reportReason === r ? '#DC2626' : '#D1D5DB'), background: reportReason === r ? '#DC2626' : 'white', flexShrink: 0 }} />
+                    <span style={{ fontSize: 14, fontWeight: 600, color: reportReason === r ? '#DC2626' : '#374151' }}>{r}</span>
+                  </label>
+                )
+              })}
             </div>
-            <style>{`@keyframes fillBar { from{width:0} to{width:100%} }`}</style>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={() => setReporting(false)} className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
+              <button onClick={handleReport} disabled={!reportReason} style={{ flex: 2, background: reportReason ? '#DC2626' : '#E5E7EB', color: 'white', border: 'none', borderRadius: 99, padding: '12px', fontWeight: 700, cursor: reportReason ? 'pointer' : 'not-allowed', fontFamily: 'Nunito, sans-serif' }}>
+                🚨 Submit Report
+              </button>
+            </div>
           </div>
-        ) : (
-          <>
-            {/* Logo */}
-            <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <div style={{ width: 64, height: 64, background: 'linear-gradient(135deg, #6B21A8, #7C3AED)', borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, margin: '0 auto 16px', boxShadow: '0 8px 24px rgba(107,33,168,0.3)' }}>🔑</div>
-              <h2 style={{ fontFamily: 'Baloo 2, cursive', fontSize: 26, fontWeight: 800, color: '#111827', marginBottom: 4 }}>
-                {step === 1 ? 'Forgot Password?' : 'Reset Password'}
-              </h2>
-              <p style={{ color: '#6B7280', fontSize: 14 }}>
-                {step === 1 ? 'Registered email pe OTP bhejenge' : 'OTP bheja gaya: ' + email}
-              </p>
+        </div>
+      )}
+
+      <div className="container" style={{ paddingTop: 20, paddingBottom: 48 }}>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, fontSize: 13, color: '#9CA3AF' }}>
+          <span onClick={() => navigate('/')} style={{ cursor: 'pointer', color: '#6B21A8', fontWeight: 600 }}>Home</span>
+          <span>›</span>
+          <span onClick={() => navigate('/browse')} style={{ cursor: 'pointer', color: '#6B21A8', fontWeight: 600 }}>Browse</span>
+          <span>›</span>
+          <span onClick={() => navigate('/browse?category=' + listing.category)} style={{ cursor: 'pointer', color: '#6B21A8', fontWeight: 600 }}>{listing.category}</span>
+          <span>›</span>
+          <span style={{ color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }}>{listing.title}</span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }}>
+
+          <div>
+            <div style={{ position: 'relative', borderRadius: 24, overflow: 'hidden', marginBottom: 12, background: '#F3F4F6', cursor: 'zoom-in', boxShadow: '0 8px 32px rgba(107,33,168,0.12)' }}
+              onClick={() => setImgZoom(true)}>
+              <div style={{ paddingTop: '75%', position: 'relative' }}>
+                <img src={images[activeImg]} alt={listing.title}
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={e => e.target.src = 'https://placehold.co/600x400?text=No+Image'}
+                />
+              </div>
+
+              <div style={{ position: 'absolute', top: 16, left: 16, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {listing.isVerified && (
+                  <span style={{ background: '#059669', color: 'white', fontSize: 12, fontWeight: 800, padding: '4px 12px', borderRadius: 99 }}>
+                    ✓ Verified
+                  </span>
+                )}
+                {listing.isFeatured && (
+                  <span style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: 'white', fontSize: 12, fontWeight: 800, padding: '4px 12px', borderRadius: 99 }}>
+                    ⭐ Featured
+                  </span>
+                )}
+              </div>
+
+              {images.length > 1 && (
+                <>
+                  <button onClick={e => { e.stopPropagation(); setActiveImg(p => (p - 1 + images.length) % images.length) }}
+                    style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: 40, height: 40, cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+                    ‹
+                  </button>
+                  <button onClick={e => { e.stopPropagation(); setActiveImg(p => (p + 1) % images.length) }}
+                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: 40, height: 40, cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+                    ›
+                  </button>
+                </>
+              )}
+
+              {images.length > 1 && (
+                <div style={{ position: 'absolute', bottom: 16, right: 16, background: 'rgba(0,0,0,0.6)', color: 'white', borderRadius: 99, padding: '4px 12px', fontSize: 12, fontWeight: 700 }}>
+                  {activeImg + 1} / {images.length}
+                </div>
+              )}
             </div>
 
-            {/* Progress */}
-            <div style={{ display: 'flex', gap: 6, marginBottom: 28 }}>
-              <div style={{ flex: 1, height: 4, borderRadius: 99, background: 'linear-gradient(135deg, #6B21A8, #7C3AED)' }} />
-              <div style={{ flex: 1, height: 4, borderRadius: 99, background: step >= 2 ? 'linear-gradient(135deg, #6B21A8, #7C3AED)' : '#E5E7EB', transition: 'all 0.4s' }} />
-            </div>
-
-            {error && (
-              <div style={{ background: '#FEF2F2', border: '1.5px solid #FECACA', borderRadius: 12, padding: '12px 16px', color: '#DC2626', marginBottom: 20, fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
-                ⚠️ {error}
+            {images.length > 1 && (
+              <div style={{ display: 'flex', gap: 8, overflowX: 'auto' }}>
+                {images.map(function(img, i) {
+                  return (
+                    <div key={i} onClick={() => setActiveImg(i)} style={{ flexShrink: 0, width: 72, height: 56, borderRadius: 12, overflow: 'hidden', cursor: 'pointer', border: '3px solid ' + (activeImg === i ? '#6B21A8' : 'transparent'), transition: 'all 0.2s' }}>
+                      <img src={img} alt={i} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.src = 'https://placehold.co/72x56?text=Img'} />
+                    </div>
+                  )
+                })}
               </div>
             )}
 
-            {step === 1 && (
-              <form onSubmit={handleSendOtp}>
-                <div className="form-group">
-                  <label>📧 Registered Email *</label>
-                  <input className="form-control" type="email" placeholder="apni@email.com" value={email} onChange={e => setEmail(e.target.value)} />
-                  <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>📩 Usi email pe OTP aayega jo account mein hai</div>
+            <div style={{ background: '#F0FDF4', border: '1.5px solid #A7F3D0', borderRadius: 16, padding: '16px', marginTop: 20 }}>
+              <div style={{ fontWeight: 800, color: '#059669', fontSize: 14, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+                🛡️ Safety Tips
+              </div>
+              {[
+                'Public jagah pe milkar deal karo',
+                'Item check karne ke baad payment karo',
+                'Advance payment kabhi mat do',
+                'Suspicious lage toh report karo',
+              ].map(function(tip) {
+                return (
+                  <div key={tip} style={{ display: 'flex', gap: 8, marginBottom: 6, fontSize: 12, color: '#065F46' }}>
+                    <span>✓</span> {tip}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+            <div>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+                <span style={{ background: '#F5F3FF', color: '#6B21A8', fontSize: 12, fontWeight: 700, padding: '4px 12px', borderRadius: 99 }}>
+                  📦 {listing.category}
+                </span>
+                <span style={{ background: '#F3F4F6', color: '#6B7280', fontSize: 12, fontWeight: 700, padding: '4px 12px', borderRadius: 99 }}>
+                  🔄 {listing.condition}
+                </span>
+                {listing.isNegotiable && (
+                  <span style={{ background: '#FFFBEB', color: '#D97706', fontSize: 12, fontWeight: 700, padding: '4px 12px', borderRadius: 99 }}>
+                    🤝 Negotiable
+                  </span>
+                )}
+              </div>
+              <h1 style={{ fontFamily: 'Baloo 2, cursive', fontSize: 26, fontWeight: 800, color: '#111827', lineHeight: 1.2, marginBottom: 12 }}>
+                {listing.title}
+              </h1>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+                <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 40, fontWeight: 800, color: '#6B21A8', lineHeight: 1 }}>
+                  ₹{(listing.price || 0).toLocaleString('en-IN')}
                 </div>
-                <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading}>
-                  {loading ? '📧 Bhej raha hoon...' : '📧 Send OTP'}
-                </button>
-              </form>
+                {listing.isNegotiable && (
+                  <span style={{ fontSize: 14, color: '#D97706', fontWeight: 700 }}>Negotiable</span>
+                )}
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              {[
+                { icon: '📍', label: 'Location', value: listing.location + ', ' + listing.city },
+                { icon: '📅', label: 'Posted', value: timeAgo(listing.createdAt) },
+                { icon: '👁️', label: 'Views', value: (listing.views || 0) + ' views' },
+                { icon: '🔄', label: 'Condition', value: listing.condition },
+              ].map(function(item) {
+                return (
+                  <div key={item.label} style={{ background: '#F9FAFB', borderRadius: 12, padding: '12px 14px', border: '1px solid #F3F4F6' }}>
+                    <div style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 600, marginBottom: 2 }}>{item.icon} {item.label}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#374151' }}>{item.value}</div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {listing.description && (
+              <div style={{ background: 'white', borderRadius: 16, padding: '16px', border: '1px solid #F3F4F6', boxShadow: '0 2px 8px rgba(107,33,168,0.04)' }}>
+                <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 16, fontWeight: 800, marginBottom: 10, color: '#111827' }}>
+                  📝 Description
+                </div>
+                <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.8, whiteSpace: 'pre-line' }}>{listing.description}</p>
+              </div>
             )}
 
-            {step === 2 && (
-              <form onSubmit={handleReset}>
-                <div className="form-group">
-                  <label style={{ textAlign: 'center', display: 'block' }}>6-Digit OTP *</label>
-                  <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 10 }}>
-                    {otp.map(function(digit, i) {
-                      return (
-                        <input key={i} id={'fotp-' + i} type="text" maxLength={1} value={digit}
-                          onChange={e => handleOtpChange(i, e.target.value)}
-                          onKeyDown={e => handleOtpKey(i, e)}
-                          style={{ width: 46, height: 54, textAlign: 'center', fontSize: 22, fontWeight: 800, border: '2px solid ' + (digit ? '#6B21A8' : '#E5E7EB'), borderRadius: 12, outline: 'none', background: digit ? '#F5F3FF' : 'white', color: '#6B21A8', transition: 'all 0.2s', fontFamily: 'Nunito, sans-serif' }}
-                        />
-                      )
-                    })}
+            <div style={{ background: 'linear-gradient(135deg, #F5F3FF, #EDE9FE)', borderRadius: 20, padding: '18px 20px', border: '1.5px solid rgba(107,33,168,0.15)' }}>
+              <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 15, fontWeight: 800, color: '#374151', marginBottom: 14 }}>
+                🏪 Seller Information
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'linear-gradient(135deg, #6B21A8, #7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0, boxShadow: '0 4px 12px rgba(107,33,168,0.3)' }}>
+                  {listing.sellerName?.[0]?.toUpperCase() || '?'}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: '#111827', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {listing.sellerName}
+                    {listing.isVerified && (
+                      <span style={{ background: '#059669', color: 'white', fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 99 }}>✓ Verified</span>
+                    )}
                   </div>
+                  <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>📍 {listing.city}</div>
+                  <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>Member since {new Date(listing.createdAt).getFullYear()}</div>
                 </div>
-                <div className="form-group">
-                  <label>🔒 New Password *</label>
-                  <div style={{ position: 'relative' }}>
-                    <input className="form-control" type={showPass ? 'text' : 'password'} placeholder="Min 6 characters" value={newPass} onChange={e => setNewPass(e.target.value)} style={{ paddingRight: 48 }} />
-                    <button type="button" onClick={() => setShowPass(!showPass)} style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, opacity: 0.5 }}>
-                      {showPass ? '🙈' : '👁️'}
-                    </button>
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label>🔒 Confirm Password *</label>
-                  <input className="form-control" type="password" placeholder="Repeat password" value={confirm} onChange={e => setConfirm(e.target.value)} />
-                  {confirm && newPass === confirm && <div style={{ fontSize: 12, color: '#059669', marginTop: 4, fontWeight: 600 }}>✓ Passwords match</div>}
-                </div>
-                <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading} style={{ marginBottom: 12 }}>
-                  {loading ? '⏳ Resetting...' : '🔐 Reset Password'}
-                </button>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <button type="button" onClick={() => { setStep(1); setOtp(['','','','','','']) }} style={{ background: 'none', border: 'none', color: '#6B7280', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>← Back</button>
-                  <button type="button" onClick={() => api.post('/auth/forgot-password', { email })} style={{ background: 'none', border: 'none', color: '#6B21A8', cursor: 'pointer', fontSize: 13, fontWeight: 700 }}>🔄 Resend OTP</button>
-                </div>
-              </form>
-            )}
+              </div>
+            </div>
 
-            <p style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: '#6B7280' }}>
-              Yaad aa gaya? <Link to="/login" style={{ color: '#6B21A8', fontWeight: 800 }}>Login karo</Link>
-            </p>
-          </>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <button
+                onClick={function() {
+                  if (!user) { navigate('/login'); return }
+                  navigate('/checkout/' + listing._id)
+                }}
+                style={{
+                  width: '100%', padding: '16px', borderRadius: 99,
+                  background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
+                  color: 'white', border: 'none', fontWeight: 800,
+                  fontSize: 17, cursor: 'pointer', fontFamily: 'Nunito, sans-serif',
+                  boxShadow: '0 6px 20px rgba(107,33,168,0.4)',
+                }}
+              >
+                🛒 Buy Now — ₹{(listing.price || 0).toLocaleString('en-IN')}
+              </button>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <a href={'tel:+91' + listing.sellerPhone} style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  padding: '13px', borderRadius: 99, background: '#F5F3FF',
+                  color: '#6B21A8', textDecoration: 'none', fontWeight: 700, fontSize: 14,
+                  border: '2px solid #6B21A8',
+                }}>
+                  📞 Call Seller
+                </a>
+                <a href={'https://wa.me/91' + listing.sellerPhone + '?text=Hi, I saw your listing "' + listing.title + '" on NukkadMarket. Is it still available?'}
+                  target="_blank" rel="noopener noreferrer"
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                    padding: '13px', borderRadius: 99,
+                    background: 'linear-gradient(135deg, #059669, #10B981)',
+                    color: 'white', textDecoration: 'none', fontWeight: 700, fontSize: 14,
+                    boxShadow: '0 4px 12px rgba(5,150,105,0.3)',
+                  }}>
+                  💬 WhatsApp
+                </a>
+              </div>
+
+              <button
+                onClick={function() {
+                  if (!user) { navigate('/login'); return }
+                  navigate('/chat/' + listing._id + '_' + user.id)
+                }}
+                style={{
+                  width: '100%', padding: '13px', borderRadius: 99,
+                  background: 'white', color: '#374151',
+                  border: '2px solid #E5E7EB', fontWeight: 700,
+                  fontSize: 14, cursor: 'pointer', fontFamily: 'Nunito, sans-serif',
+                }}
+              >
+                💬 Chat with Seller
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={handleWishlist} style={{
+                flex: 1, padding: '11px', borderRadius: 12, cursor: 'pointer',
+                background: wishlisted ? '#FEF2F2' : '#F9FAFB',
+                border: '2px solid ' + (wishlisted ? '#FECACA' : '#E5E7EB'),
+                color: wishlisted ? '#DC2626' : '#6B7280',
+                fontSize: 13, fontWeight: 700,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+              }}>
+                {wishlisted ? '❤️ Saved' : '🤍 Save'}
+              </button>
+              <button onClick={handleShare} style={{
+                flex: 1, padding: '11px', borderRadius: 12, cursor: 'pointer',
+                background: shareToast ? '#ECFDF5' : '#F0F9FF',
+                border: '2px solid ' + (shareToast ? '#A7F3D0' : '#BAE6FD'),
+                color: shareToast ? '#059669' : '#0284C7',
+                fontSize: 13, fontWeight: 700,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+              }}>
+                {shareToast ? '✅ Copied!' : '📤 Share'}
+              </button>
+              <button onClick={() => setReporting(true)} style={{
+                padding: '11px 16px', borderRadius: 12, background: '#FFF7ED', border: '2px solid #FED7AA', cursor: 'pointer', fontSize: 14, fontWeight: 700, color: '#D97706',
+              }}>
+                🚨
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {relatedListings.length > 0 && (
+          <div style={{ marginTop: 48 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <div>
+                <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 22, fontWeight: 800, color: '#111827' }}>
+                  🔗 Similar Listings
+                </div>
+                <div style={{ fontSize: 13, color: '#6B7280' }}>Is category mein aur items</div>
+              </div>
+              <button onClick={() => navigate('/browse?category=' + listing.category)} className="btn btn-outline-primary btn-sm">
+                View All →
+              </button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
+              {relatedListings.map(function(l) {
+                return (
+                  <div key={l._id} onClick={() => { navigate('/listing/' + l._id); window.scrollTo(0, 0) }}
+                    style={{ background: 'white', borderRadius: 18, overflow: 'hidden', cursor: 'pointer', boxShadow: '0 2px 10px rgba(107,33,168,0.06)', border: '1px solid rgba(107,33,168,0.06)' }}>
+                    <div style={{ paddingTop: '65%', position: 'relative', background: '#F3F4F6', overflow: 'hidden' }}>
+                      <img src={l.images?.[0] || 'https://placehold.co/200x130?text=Item'} alt={l.title}
+                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={e => e.target.src = 'https://placehold.co/200x130?text=Item'}
+                      />
+                      {l.isVerified && <span style={{ position: 'absolute', top: 8, left: 8, background: '#059669', color: 'white', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 99 }}>✓</span>}
+                    </div>
+                    <div style={{ padding: '12px' }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.title}</div>
+                      <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, color: '#6B21A8' }}>₹{(l.price || 0).toLocaleString('en-IN')}</div>
+                      <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>📍 {l.city}</div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
         )}
+
       </div>
     </div>
   )
