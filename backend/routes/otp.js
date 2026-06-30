@@ -1,12 +1,12 @@
 const express  = require('express')
 const router   = express.Router()
-const { Resend } = require('resend')
+const SibApiV3Sdk = require('@getbrevo/brevo')
 const { User } = require('../db')
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
-// OTP store — memory mein (5 min valid)
 const otpStore = {}
+
+var apiInstance = new SibApiV3Sdk.TransactionalEmailsApi()
+apiInstance.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY)
 
 function otpEmailHTML(otp) {
   return `
@@ -22,13 +22,10 @@ function otpEmailHTML(otp) {
       </div>
       <p style="color: #6B7280; font-size: 14px;">⏱️ Valid for <strong>5 minutes</strong> only.</p>
       <p style="color: #6B7280; font-size: 14px;">🔒 Kisi ke saath share mat karo.</p>
-      <hr style="border: 1px solid #F3F4F6; margin: 20px 0;">
-      <p style="color: #9CA3AF; font-size: 12px;">If you didn't request this, ignore this email.</p>
     </div>
   `
 }
 
-// POST /api/otp/send — email pe OTP bhejo
 router.post('/send', async function(req, res) {
   try {
     var email = req.body.email
@@ -39,8 +36,8 @@ router.post('/send', async function(req, res) {
       return res.status(400).json({ error: 'Invalid email format' })
     }
 
-    if (!process.env.RESEND_API_KEY) {
-      console.error('RESEND_API_KEY not set')
+    if (!process.env.BREVO_API_KEY) {
+      console.error('BREVO_API_KEY not set')
       return res.status(500).json({ error: 'Email service configured nahi hai' })
     }
 
@@ -50,28 +47,23 @@ router.post('/send', async function(req, res) {
       expiresAt: Date.now() + 5 * 60 * 1000
     }
 
-    var result = await resend.emails.send({
-      from: 'NukkadMarket <onboarding@resend.dev>',
-      to: email,
-      subject: 'Your OTP - NukkadMarket',
-      html: otpEmailHTML(otp),
-    })
+    var sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail()
+    sendSmtpEmail.subject = 'Your OTP - NukkadMarket'
+    sendSmtpEmail.htmlContent = otpEmailHTML(otp)
+    sendSmtpEmail.sender = { name: 'NukkadMarket', email: process.env.BREVO_SENDER_EMAIL || 'harshkuma884@gmail.com' }
+    sendSmtpEmail.to = [{ email: email }]
 
-    if (result.error) {
-      console.error('Resend error:', result.error)
-      delete otpStore[email]
-      return res.status(500).json({ error: 'Email send failed: ' + result.error.message })
-    }
+    await apiInstance.sendTransacEmail(sendSmtpEmail)
 
     console.log('Registration OTP sent to:', email)
     res.json({ success: true, message: 'OTP sent to ' + email })
   } catch(err) {
     console.error('OTP send error:', err.message)
+    delete otpStore[req.body.email]
     res.status(500).json({ error: 'Email send failed: ' + err.message })
   }
 })
 
-// POST /api/otp/verify — OTP verify karo
 router.post('/verify', function(req, res) {
   var email = req.body.email
   var otp   = req.body.otp
