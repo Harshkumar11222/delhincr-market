@@ -4,6 +4,7 @@ import { GoogleLogin } from '@react-oauth/google'
 import { useAuth } from '../context/AuthContext'
 import api from '../api'
 
+
 export default function Register() {
   const { register } = useAuth()
   const navigate = useNavigate()
@@ -13,6 +14,8 @@ export default function Register() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [sending, setSending] = useState(false)
+  const [showPass, setShowPass] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   function set(k, v) { setForm(f => ({ ...f, [k]: v })) }
 
@@ -162,15 +165,47 @@ export default function Register() {
                 <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>📩 OTP verification ke liye</div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <div className="form-group">
-                  <label>🔒 Password *</label>
-                  <input className="form-control" type="password" placeholder="Min 6 characters" value={form.password} onChange={e => set('password', e.target.value)} />
-                </div>
-                <div className="form-group">
-                  <label>🔒 Confirm *</label>
-                  <input className="form-control" type="password" placeholder="Repeat password" value={form.confirm} onChange={e => set('confirm', e.target.value)} />
-                </div>
-              </div>
+  <div className="form-group">
+    <label>🔒 Password *</label>
+    <div style={{ position: 'relative' }}>
+      <input
+        className="form-control"
+        type={showPass ? 'text' : 'password'}
+        placeholder="Min 6 characters"
+        value={form.password}
+        onChange={e => set('password', e.target.value)}
+        style={{ paddingRight: 44 }}
+      />
+      <button
+        type="button"
+        onClick={() => setShowPass(s => !s)}
+        style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, opacity: 0.5 }}
+      >
+        {showPass ? '🙈' : '👁️'}
+      </button>
+    </div>
+  </div>
+  <div className="form-group">
+    <label>🔒 Confirm *</label>
+    <div style={{ position: 'relative' }}>
+      <input
+        className="form-control"
+        type={showConfirm ? 'text' : 'password'}
+        placeholder="Repeat password"
+        value={form.confirm}
+        onChange={e => set('confirm', e.target.value)}
+        style={{ paddingRight: 44 }}
+      />
+      <button
+        type="button"
+        onClick={() => setShowConfirm(s => !s)}
+        style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, opacity: 0.5 }}
+      >
+        {showConfirm ? '🙈' : '👁️'}
+      </button>
+    </div>
+  </div>
+</div>
               <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={sending} style={{ marginBottom: 16 }}>
                 {sending ? '📧 OTP Bhej raha hoon...' : '📧 Send OTP & Continue →'}
               </button>
