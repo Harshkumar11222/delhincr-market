@@ -5,11 +5,13 @@ const jwt     = require('jsonwebtoken')
 const { User } = require('../db')
 const auth    = require('../middleware/auth')
 const { OAuth2Client } = require('google-auth-library')
-const SibApiV3Sdk = require('@getbrevo/brevo')
+const { BrevoClient } = require('@getbrevo/brevo')
 
 
 const JWT_SECRET   = process.env.JWT_SECRET || 'delhincr_market_secret_2024'
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+const brevo         = new BrevoClient({ apiKey: process.env.BREVO_API_KEY })
+
 
 function otpEmailHTML(otp) {
   return '<div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px;"><div style="background: linear-gradient(135deg, #6B21A8, #7C3AED); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;"><h1 style="color: white; margin: 0;">NukkadMarket</h1></div><h2>Password Reset</h2><p style="color: #6B7280;">Aapka password reset OTP:</p><div style="background: #F5F3FF; border: 2px solid #6B21A8; border-radius: 12px; padding: 20px; text-align: center; margin: 20px 0;"><span style="font-size: 36px; font-weight: 800; color: #6B21A8; letter-spacing: 8px;">' + otp + '</span></div><p style="color: #6B7280; font-size: 14px;">5 minutes mein expire ho jaayega</p><p style="color: #6B7280; font-size: 14px;">Kisi ke saath share mat karo</p></div>'
@@ -77,7 +79,6 @@ router.post('/forgot-password', async function(req, res) {
       console.error('BREVO_API_KEY not set')
       return res.status(500).json({ error: 'Email service configured nahi hai' })
     }
-
 
     try {
       await sendEmail(email, 'Password Reset OTP - NukkadMarket', otpEmailHTML(otp))

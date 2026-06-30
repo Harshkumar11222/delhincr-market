@@ -1,12 +1,10 @@
 const express  = require('express')
 const router   = express.Router()
-const SibApiV3Sdk = require('@getbrevo/brevo')
+const { BrevoClient } = require('@getbrevo/brevo')
 const { User } = require('../db')
 
 const otpStore = {}
-
-var apiInstance = new SibApiV3Sdk.TransactionalEmailsApi()
-apiInstance.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY)
+const brevo = new BrevoClient({ apiKey: process.env.BREVO_API_KEY })
 
 function otpEmailHTML(otp) {
   return `
@@ -47,13 +45,12 @@ router.post('/send', async function(req, res) {
       expiresAt: Date.now() + 5 * 60 * 1000
     }
 
-    var sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail()
-    sendSmtpEmail.subject = 'Your OTP - NukkadMarket'
-    sendSmtpEmail.htmlContent = otpEmailHTML(otp)
-    sendSmtpEmail.sender = { name: 'NukkadMarket', email: process.env.BREVO_SENDER_EMAIL || 'harshkuma884@gmail.com' }
-    sendSmtpEmail.to = [{ email: email }]
-
-    await apiInstance.sendTransacEmail(sendSmtpEmail)
+    await brevo.transactionalEmails.sendTransacEmail({
+      subject: 'Your OTP - NukkadMarket',
+      htmlContent: otpEmailHTML(otp),
+      sender: { name: 'NukkadMarket', email: process.env.BREVO_SENDER_EMAIL || 'harshkuma884@gmail.com' },
+      to: [{ email: email }],
+    })
 
     console.log('Registration OTP sent to:', email)
     res.json({ success: true, message: 'OTP sent to ' + email })
