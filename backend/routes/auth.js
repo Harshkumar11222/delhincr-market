@@ -7,23 +7,21 @@ const auth    = require('../middleware/auth')
 const { OAuth2Client } = require('google-auth-library')
 const { BrevoClient } = require('@getbrevo/brevo')
 
-
 const JWT_SECRET   = process.env.JWT_SECRET || 'delhincr_market_secret_2024'
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 const brevo         = new BrevoClient({ apiKey: process.env.BREVO_API_KEY })
-
 
 function otpEmailHTML(otp) {
   return '<div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px;"><div style="background: linear-gradient(135deg, #6B21A8, #7C3AED); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;"><h1 style="color: white; margin: 0;">NukkadMarket</h1></div><h2>Password Reset</h2><p style="color: #6B7280;">Aapka password reset OTP:</p><div style="background: #F5F3FF; border: 2px solid #6B21A8; border-radius: 12px; padding: 20px; text-align: center; margin: 20px 0;"><span style="font-size: 36px; font-weight: 800; color: #6B21A8; letter-spacing: 8px;">' + otp + '</span></div><p style="color: #6B7280; font-size: 14px;">5 minutes mein expire ho jaayega</p><p style="color: #6B7280; font-size: 14px;">Kisi ke saath share mat karo</p></div>'
 }
 
 async function sendEmail(toEmail, subject, html) {
-  var sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail()
-  sendSmtpEmail.subject = subject
-  sendSmtpEmail.htmlContent = html
-  sendSmtpEmail.sender = { name: 'NukkadMarket', email: process.env.BREVO_SENDER_EMAIL || 'harshkuma884@gmail.com' }
-  sendSmtpEmail.to = [{ email: toEmail }]
-  return apiInstance.sendTransacEmail(sendSmtpEmail)
+  return brevo.transactionalEmails.sendTransacEmail({
+    subject: subject,
+    htmlContent: html,
+    sender: { name: 'NukkadMarket', email: process.env.BREVO_SENDER_EMAIL || 'harshkuma884@gmail.com' },
+    to: [{ email: toEmail }],
+  })
 }
 
 router.post('/register', async function(req, res) {
