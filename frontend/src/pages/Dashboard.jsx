@@ -168,22 +168,34 @@ export default function Dashboard() {
       <div className="container" style={{ marginTop: -24, paddingBottom: 40 }}>
 
         {/* Tabs */}
-        <div style={{ background: 'white', borderRadius: 16, padding: 6, display: 'flex', gap: 4, marginBottom: 24, boxShadow: '0 4px 16px rgba(107,33,168,0.08)' }}>
-          {tabs.map(function(t) {
-            return (
-              <button key={t.id} onClick={() => setTab(t.id)} style={{
-                flex: 1, padding: '11px 8px', borderRadius: 12, border: 'none',
-                cursor: 'pointer', fontFamily: 'Nunito, sans-serif',
-                fontSize: 13, fontWeight: 700, transition: 'all 0.2s',
-                background: tab === t.id ? 'linear-gradient(135deg, #6B21A8, #7C3AED)' : 'transparent',
-                color: tab === t.id ? 'white' : '#6B7280',
-                boxShadow: tab === t.id ? '0 4px 12px rgba(107,33,168,0.3)' : 'none',
-              }}>
-                {t.icon} {t.label}
-              </button>
-            )
-          })}
-        </div>
+        {/* Tabs */}
+<div style={{
+  background: 'white', borderRadius: 16, padding: 6,
+  display: 'flex', gap: 4, marginBottom: 24,
+  boxShadow: '0 4px 16px rgba(107,33,168,0.08)',
+  overflowX: 'auto',
+}}>
+  {tabs.map(function(t) {
+    return (
+      <button key={t.id} onClick={() => setTab(t.id)} style={{
+        flex: 1, minWidth: 80, padding: '10px 8px',
+        borderRadius: 12, border: 'none', cursor: 'pointer',
+        fontFamily: 'Nunito, sans-serif',
+        fontSize: 12, fontWeight: 700,
+        background: tab === t.id
+          ? 'linear-gradient(135deg, #6B21A8, #7C3AED)'
+          : 'transparent',
+        color: tab === t.id ? 'white' : '#6B7280',
+        transition: 'all 0.2s', whiteSpace: 'nowrap',
+        boxShadow: tab === t.id
+          ? '0 4px 12px rgba(107,33,168,0.3)'
+          : 'none',
+      }}>
+        {t.icon} {t.label}
+      </button>
+    )
+  })}
+</div>
 
         {loading ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
@@ -447,31 +459,50 @@ export default function Dashboard() {
                 <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 22, fontWeight: 800, marginBottom: 20 }}>📈 Analytics</div>
 
                 {/* Views Chart */}
-                <div style={{ background: 'white', borderRadius: 20, padding: '24px', marginBottom: 20, boxShadow: '0 4px 16px rgba(107,33,168,0.06)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
-                    <div>
-                      <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800 }}>👁️ Listing Views</div>
-                      <div style={{ fontSize: 13, color: '#6B7280' }}>Last 7 days</div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 800, color: '#6B21A8' }}>{stats.totalViews}</div>
-                      <div style={{ fontSize: 12, color: '#059669', fontWeight: 700 }}>Total views</div>
-                    </div>
-                  </div>
-                  <div style={{ height: 120, display: 'flex', alignItems: 'flex-end', gap: 8 }}>
-                    {viewsChart.map(function(v, i) {
-                      var max = Math.max(...viewsChart, 1)
-                      var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Today']
-                      return (
-                        <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, height: '100%', justifyContent: 'flex-end' }}>
-                          <div style={{ fontSize: 10, color: '#6B21A8', fontWeight: 700 }}>{v}</div>
-                          <div style={{ width: '100%', borderRadius: '6px 6px 0 0', background: i === 6 ? 'linear-gradient(135deg, #6B21A8, #7C3AED)' : 'linear-gradient(135deg, #6B21A8, #7C3AED)', opacity: i === 6 ? 1 : 0.3 + (i / viewsChart.length * 0.5), height: (v / max * 80) + '%', minHeight: 8, transition: 'height 0.5s ease' }} />
-                          <div style={{ fontSize: 10, color: '#9CA3AF' }}>{days[i]}</div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
+                {/* Analytics Tab - Views Chart fix */}
+<div style={{ background: 'white', borderRadius: 20, padding: '24px', marginBottom: 20, boxShadow: '0 4px 16px rgba(107,33,168,0.06)' }}>
+  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+    <div>
+      <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800 }}>👁️ Listing Views</div>
+      <div style={{ fontSize: 13, color: '#6B7280' }}>Last 7 days</div>
+    </div>
+    <div style={{ textAlign: 'right' }}>
+      <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 800, color: '#6B21A8' }}>{stats.totalViews}</div>
+      <div style={{ fontSize: 12, color: '#059669', fontWeight: 700 }}>Total views</div>
+    </div>
+  </div>
+
+  {/* Chart */}
+  <div style={{ height: 140, display: 'flex', alignItems: 'flex-end', gap: 8, padding: '0 4px' }}>
+    {viewsChart.map(function(v, i) {
+      var max = Math.max(...viewsChart, 1)
+      var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Today']
+      var isToday = i === 6
+      var heightPct = Math.max((v / max * 100), 8) + '%'
+      return (
+        <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, height: '100%', justifyContent: 'flex-end' }}>
+          {/* Value label */}
+          <div style={{ fontSize: 11, color: isToday ? '#6B21A8' : '#9CA3AF', fontWeight: 700 }}>{v}</div>
+          {/* Bar */}
+          <div style={{
+            width: '100%',
+            height: heightPct,
+            borderRadius: '6px 6px 0 0',
+            background: isToday
+              ? 'linear-gradient(135deg, #6B21A8, #7C3AED)'
+              : 'linear-gradient(135deg, #DDD6FE, #C4B5FD)',
+            transition: 'height 0.5s ease',
+            minHeight: 8,
+          }} />
+          {/* Day label */}
+          <div style={{ fontSize: 10, color: isToday ? '#6B21A8' : '#9CA3AF', fontWeight: isToday ? 700 : 400 }}>
+            {days[i]}
+          </div>
+        </div>
+      )
+    })}
+  </div>
+</div>
 
                 {/* Performance Grid */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
