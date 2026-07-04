@@ -169,25 +169,25 @@ app.use(function(req, res, next) {
   next()
 })
 
-// ═══════════════════════════════════════════
-// 11. REQUEST LOGGER (suspicious activity)
-// ═══════════════════════════════════════════
-app.use(function(req, res, next) {
-  var suspicious = [
-    'select', 'insert', 'update', 'delete', 'drop', 'union',
-    'script', 'onclick', 'onload', 'eval(', '../', '..\\',
-    'etc/passwd', 'cmd=', 'exec(',
-  ]
-  var url = req.url.toLowerCase()
-  var body = JSON.stringify(req.body).toLowerCase()
+// // ═══════════════════════════════════════════
+// // 11. REQUEST LOGGER (suspicious activity)
+// // ═══════════════════════════════════════════
+// // app.use(function(req, res, next) {
+// //   var suspicious = [
+// //     'select', 'insert', 'update', 'delete', 'drop', 'union',
+// //     'script', 'onclick', 'onload', 'eval(', '../', '..\\',
+// //     'etc/passwd', 'cmd=', 'exec(',
+// //   ]
+// //   var url = req.url.toLowerCase()
+// //   var body = JSON.stringify(req.body).toLowerCase()
 
-  if (suspicious.some(function(s) { return url.includes(s) || body.includes(s) })) {
-    console.warn('🚨 Suspicious request from:', req.ip, '| URL:', req.url)
-    return res.status(400).json({ error: 'Invalid request' })
-  }
+//   if (suspicious.some(function(s) { return url.includes(s) || body.includes(s) })) {
+//     console.warn('🚨 Suspicious request from:', req.ip, '| URL:', req.url)
+//     return res.status(400).json({ error: 'Invalid request' })
+//   }
 
-  next()
-})
+//   next()
+// })
 
 // ═══════════════════════════════════════════
 // 12. STATIC FILES
