@@ -100,11 +100,25 @@ router.post('/:id/report', auth, async function(req, res) {
 router.post('/', auth, async function(req, res) {
   try {
     var { title, description, price, isNegotiable, category, condition, images, location, area, city } = req.body
-    if (!title || !price || !category) return res.status(400).json({ error: 'Title, price and category required' })
+
+    // Validations PEHLE (before creating)
+    if (!title || !price || !category) {
+      return res.status(400).json({ error: 'Title, price and category required' })
+    }
     if (!images || images.length === 0) {
       return res.status(400).json({ error: 'Kam se kam 1 photo zaroori hai' })
     }
-      var user = await User.findById(req.user.id)
+    if (parseInt(price) < 1 || parseInt(price) > 10000000) {
+      return res.status(400).json({ error: 'Price ₹1 se ₹1 crore ke beech honi chahiye' })
+    }
+    if (title.trim().length < 3 || title.trim().length > 100) {
+      return res.status(400).json({ error: 'Title 3 se 100 characters ka hona chahiye' })
+    }
+    if (description && description.length > 2000) {
+      return res.status(400).json({ error: 'Description 2000 characters se zyada nahi ho sakta' })
+    }
+
+    var user = await User.findById(req.user.id)
     var listing = await Listing.create({
       userId: req.user.id,
       title, description: description || '',
@@ -120,6 +134,7 @@ router.post('/', auth, async function(req, res) {
   } catch(err) {
     res.status(500).json({ error: err.message })
   }
+  
   // Price validation
 if (parseInt(price) < 1 || parseInt(price) > 10000000) {
   return res.status(400).json({ error: 'Price ₹1 se ₹1 crore ke beech honi chahiye' })

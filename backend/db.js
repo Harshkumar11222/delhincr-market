@@ -39,6 +39,17 @@ const listingSchema = new mongoose.Schema({
   isFeatured:   { type: Boolean, default: false },
   reports:      [{ userId: String, reason: String, createdAt: Date }],
   savedBy:      [{ type: String }],
+  isPhoneVerified: { type: Boolean, default: false },
+  idVerification: {
+    idType:           { type: String },
+    idNumber:         { type: String },
+    idImageUrl:       { type: String },
+    status:           { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+    submittedAt:      { type: Date },
+    approvedAt:       { type: Date },
+    rejectedAt:       { type: Date },
+    rejectionReason:  { type: String },
+  },
 }, { timestamps: true })
 
 const serviceSchema = new mongoose.Schema({

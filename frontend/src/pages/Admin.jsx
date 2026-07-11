@@ -10,6 +10,7 @@ const tabs = [
   { id: 'orders',    label: '📦 Orders',    icon: '📦' },
   { id: 'services',  label: '🔧 Services',  icon: '🔧' },
   { id: 'rentals',   label: '🚗 Rentals',   icon: '🚗' },
+  { id: 'verifications', icon: '🛡️', label: '🛡️ Verifications' }
 ]
 
 const statusColors = {

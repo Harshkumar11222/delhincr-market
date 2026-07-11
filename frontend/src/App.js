@@ -22,7 +22,9 @@ import Rentals from './pages/Rentals'
 import Admin from './pages/Admin'
 import Support from './pages/Support'
 import About from './pages/About'
+import Verification from './pages/verification'
 
+// Routes mein:
 
 
 
@@ -53,7 +55,7 @@ function App() {
             <Route path="/admin" element={<Admin />} />
             <Route path="/support" element={<Support />} />
             <Route path="/about" element={<About />} />
-
+            <Route path="/verification" element={<Verification />} />
 
 
           </Routes>

@@ -247,6 +247,7 @@ export default function Profile() {
                 { icon: '📦', label: 'My Orders', sub: orders.bought.length + ' purchases', path: '/orders', gradient: 'linear-gradient(135deg, #2563EB, #3B82F6)', color: 'white' },
                 { icon: '💬', label: 'Messages', sub: 'Chat with buyers/sellers', path: '/messages', gradient: 'linear-gradient(135deg, #059669, #10B981)', color: 'white' },
                 { icon: '🔧', label: 'Support', sub: 'Get help anytime', path: '/support', gradient: 'linear-gradient(135deg, #F59E0B, #D97706)', color: 'white' },
+                { icon: '🛡️', label: 'Get Verified', sub: 'Badge haasil karo', path: '/verification', gradient: 'linear-gradient(135deg, #059669, #10B981)', color: 'white' },
               ].map(function(item) {
                 return (
                   <div key={item.label} onClick={() => navigate(item.path)} style={{ background: item.gradient, borderRadius: 16, padding: '16px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14, transition: 'all 0.2s', boxShadow: '0 4px 16px rgba(0,0,0,0.15)' }}

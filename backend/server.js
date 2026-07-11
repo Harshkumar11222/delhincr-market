@@ -211,6 +211,8 @@ try { app.use('/api/otp',           require('./routes/otp'))           } catch(e
 try { app.use('/api/chat',          require('./routes/chat'))          } catch(e) { console.log('chat error:', e.message) }
 try { app.use('/api/rentals',       require('./routes/rentals'))       } catch(e) { console.log('rentals error:', e.message) }
 try { app.use('/api/admin',         require('./routes/admin'))         } catch(e) { console.log('admin error:', e.message) }
+try { app.use('/api/phone-otp',    require('./routes/phone-otp'))    } catch(e) { console.log('phone-otp error:', e.message) }
+try { app.use('/api/verification', require('./routes/verification'))  } catch(e) { console.log('verification error:', e.message) }
 
 app.get('/api/categories', function(req, res) {
   res.json([
