@@ -158,6 +158,17 @@ export default function Login() {
               </button>
             </div>
           </div>
+          
+          {/* Sirf production pe Google login dikhao */}
+{window.location.hostname === 'delhincr-market.vercel.app' && (
+  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+    <GoogleLogin
+      onSuccess={handleGoogleSuccess}
+      onError={() => setError('Google login failed')}
+      theme="outline" size="large" shape="pill" text="signin_with"
+    />
+  </div>
+)}
 
           <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading} style={{ marginBottom: 16 }}>
             {loading ? '⏳ Logging in...' : '🔐 Login'}

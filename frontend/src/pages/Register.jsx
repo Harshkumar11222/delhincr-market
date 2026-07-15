@@ -206,6 +206,13 @@ export default function Register() {
     </div>
   </div>
 </div>
+
+              {window.location.hostname === 'delhincr-market.vercel.app' && (
+  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+    <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => setError('Google signup failed')} theme="outline" size="large" shape="pill" text="signup_with" />
+  </div>
+)}
+
               <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={sending} style={{ marginBottom: 16 }}>
                 {sending ? '📧 OTP Bhej raha hoon...' : '📧 Send OTP & Continue →'}
               </button>
