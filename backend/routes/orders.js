@@ -106,6 +106,45 @@ router.get('/my', auth, async function(req, res) {
   }
 })
 
+router.post('/', auth, async function(req, res) {
+  try {
+    var { listingId, address, paymentMethod, note } = req.body
+    if (!address) return res.status(400).json({ error: 'Address required' })
+
+    var listing = await Listing.findById(listingId)
+    if (!listing) return res.status(404).json({ error: 'Listing not found' })
+
+    // ← Yeh fix hai — invalid ObjectId crash nahi karega
+    var seller = null
+    try {
+      if (listing.userId && listing.userId.match(/^[0-9a-fA-F]{24}$/)) {
+        seller = await User.findById(listing.userId)
+      }
+    } catch(e) { seller = null }
+
+    var order = await Order.create({
+      listingId:       listing._id,
+      listingTitle:    listing.title,
+      listingImage:    listing.images?.[0] || '',
+      listingPrice:    listing.price,
+      listingLocation: listing.city,
+      buyerId:         req.user.id,
+      buyerName:       req.user.name,
+      sellerId:        listing.userId || 'unknown',
+      sellerName:      seller ? seller.name : listing.sellerName || 'Seller',
+      sellerPhone:     seller ? seller.phone : listing.sellerPhone || '',
+      address,
+      paymentMethod:   paymentMethod || 'Cash on Meetup',
+      note:            note || '',
+      status:          'pending',
+    })
+
+    res.status(201).json(order)
+  } catch(err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 router.get('/:id', auth, async function(req, res) {
   try {
     var order = await Order.findById(req.params.id)
