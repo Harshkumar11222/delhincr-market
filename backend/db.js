@@ -31,8 +31,9 @@ const userSchema = new mongoose.Schema({
     approvedAt:      { type: Date },
     rejectedAt:      { type: Date },
     rejectionReason: { type: String },
-
-}, { timestamps: true })
+  }
+}
+, { timestamps: true })
 
 const listingSchema = new mongoose.Schema({
   userId:       { type: String, required: true },
