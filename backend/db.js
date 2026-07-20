@@ -16,6 +16,22 @@ const userSchema = new mongoose.Schema({
   city:           { type: String, default: '' },
   resetOtp:       { type: String, default: null },
   resetOtpExpiry: { type: Number, default: null },
+  failedLoginAttempts: { type: Number, default: 0 },
+  lastFailedLogin:     { type: Date },
+  lastLoginAt:         { type: Date },
+  lastLoginIp:         { type: String },
+  isBanned:            { type: Boolean, default: false },
+  isPhoneVerified:     { type: Boolean, default: false },
+  idVerification: {
+    idType:          { type: String },
+    idNumber:        { type: String },
+    idImageUrl:      { type: String },
+    status:          { type: String, enum: ['pending', 'approved', 'rejected'] },
+    submittedAt:     { type: Date },
+    approvedAt:      { type: Date },
+    rejectedAt:      { type: Date },
+    rejectionReason: { type: String },
+
 }, { timestamps: true })
 
 const listingSchema = new mongoose.Schema({
