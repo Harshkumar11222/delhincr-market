@@ -224,7 +224,7 @@ export default function Home() {
 
 {/* 4 Section Cards — Swipeable Carousel */}
 {function() {
-  var [activeCard, setActiveCard] = React.useState(0)
+  //var [activeCard, setActiveCard] = React.useState(0)
   var [startX, setStartX] = React.useState(null)
   var [dragging, setDragging] = React.useState(false)
 
