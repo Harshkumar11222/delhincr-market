@@ -223,204 +223,114 @@ export default function Home() {
         </div>
 
 {/* 4 Section Cards — Swipeable Carousel */}
-{function() {
-  //var [activeCard, setActiveCard] = React.useState(0)
-  var [startX, setStartX] = React.useState(null)
-  var [dragging, setDragging] = React.useState(false)
-
-  function handleTouchStart(e) { setStartX(e.touches[0].clientX); setDragging(true) }
-  function handleTouchEnd(e) {
-    if (!dragging) return
-    var diff = startX - e.changedTouches[0].clientX
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) setActiveCard(p => Math.min(p + 1, sections.length - 1))
-      else setActiveCard(p => Math.max(p - 1, 0))
-    }
-    setDragging(false)
-  }
-  function handleMouseDown(e) { setStartX(e.clientX); setDragging(true) }
-  function handleMouseUp(e) {
-    if (!dragging) return
-    var diff = startX - e.clientX
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) setActiveCard(p => Math.min(p + 1, sections.length - 1))
-      else setActiveCard(p => Math.max(p - 1, 0))
-    }
-    setDragging(false)
-  }
-
-  return (
-    <div style={{ marginBottom: 48 }}>
-
-      {/* Carousel Container */}
-      <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 28 }}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={() => setDragging(false)}
-      >
-        {/* Cards Track */}
-        <div style={{
-          display: 'flex',
-          transform: 'translateX(-' + (activeCard * 100) + '%)',
-          transition: 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-        }}>
-          {sections.map(function(section, idx) {
-            return (
-              <div key={section.title} style={{ minWidth: '100%', padding: '0 4px' }}>
-                <div
-                  onClick={function() { if (!dragging) navigate(section.path) }}
-                  style={{
-                    background: 'white', borderRadius: 28, overflow: 'hidden',
-                    boxShadow: '0 8px 32px rgba(107,33,168,0.12)',
-                    cursor: 'pointer', userSelect: 'none',
-                  }}
-                >
-                  {/* Colored Top */}
-                  <div style={{
-                    background: section.gradient,
-                    padding: '36px 32px 28px',
-                    position: 'relative', overflow: 'hidden',
-                  }}>
-                    <div style={{ position: 'absolute', top: -30, right: -30, width: 160, height: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
-                    <div style={{ position: 'absolute', bottom: -40, left: '45%', width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
-
-                    <div style={{
-                      display: 'inline-block', background: 'rgba(255,255,255,0.2)',
-                      borderRadius: 99, padding: '5px 14px', fontSize: 12,
-                      fontWeight: 700, color: 'white', marginBottom: 20,
-                      border: '1px solid rgba(255,255,255,0.3)',
-                    }}>
-                      {section.badge}
-                    </div>
-
-                    <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
-                      <div>
-                        <div style={{ fontSize: 64, marginBottom: 12, filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))' }}>{section.icon}</div>
-                        <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 32, fontWeight: 800, color: 'white', lineHeight: 1.1, marginBottom: 6 }}>
-                          {section.title}
-                        </div>
-                        <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.8)', fontWeight: 500 }}>
-                          {section.titleHindi}
-                        </div>
-                      </div>
-                      <div style={{
-                        background: 'rgba(255,255,255,0.15)', borderRadius: 16,
-                        padding: '12px 18px', border: '1px solid rgba(255,255,255,0.2)',
-                        textAlign: 'center',
-                      }}>
-                        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.95)', fontWeight: 800, whiteSpace: 'nowrap' }}>
-                          {section.stats}
-                        </div>
-                      </div>
-                    </div>
+<div style={{ marginBottom: 48 }}>
+  <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 28 }}
+    onTouchStart={e => { setStartX(e.touches[0].clientX); setDragging(true) }}
+    onTouchEnd={e => {
+      if (!dragging) return
+      var diff = startX - e.changedTouches[0].clientX
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) setActiveCard(p => Math.min(p + 1, sections.length - 1))
+        else setActiveCard(p => Math.max(p - 1, 0))
+      }
+      setDragging(false)
+    }}
+    onMouseDown={e => { setStartX(e.clientX); setDragging(true) }}
+    onMouseUp={e => {
+      if (!dragging) return
+      var diff = startX - e.clientX
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) setActiveCard(p => Math.min(p + 1, sections.length - 1))
+        else setActiveCard(p => Math.max(p - 1, 0))
+      }
+      setDragging(false)
+    }}
+    onMouseLeave={() => setDragging(false)}
+  >
+    {/* Cards Track */}
+    <div style={{
+      display: 'flex',
+      transform: 'translateX(-' + (activeCard * 100) + '%)',
+      transition: dragging ? 'none' : 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    }}>
+      {sections.map(function(section) {
+        return (
+          <div key={section.title} style={{ minWidth: '100%', padding: '0 2px' }}>
+            <div
+              onClick={function() { if (!dragging) navigate(section.path) }}
+              style={{
+                background: 'white', borderRadius: 28, overflow: 'hidden',
+                boxShadow: '0 8px 32px rgba(107,33,168,0.12)',
+                cursor: 'pointer', userSelect: 'none',
+              }}
+            >
+              {/* Colored Top */}
+              <div style={{ background: section.gradient, padding: '36px 32px 28px', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', top: -30, right: -30, width: 160, height: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
+                <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.2)', borderRadius: 99, padding: '5px 14px', fontSize: 12, fontWeight: 700, color: 'white', marginBottom: 20, border: '1px solid rgba(255,255,255,0.3)' }}>
+                  {section.badge}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
+                  <div>
+                    <div style={{ fontSize: 64, marginBottom: 12 }}>{section.icon}</div>
+                    <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 32, fontWeight: 800, color: 'white', lineHeight: 1.1, marginBottom: 6 }}>{section.title}</div>
+                    <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.8)' }}>{section.titleHindi}</div>
                   </div>
-
-                  {/* Bottom Content */}
-                  <div style={{ padding: '24px 32px 32px', background: section.bg }}>
-                    <p style={{ fontSize: 15, color: '#374151', lineHeight: 1.8, marginBottom: 20 }}>
-                      {section.desc}
-                    </p>
-
-                    {/* Feature Tags */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
-                      {section.features.map(function(f) {
-                        return (
-                          <span key={f} style={{
-                            fontSize: 13, padding: '6px 14px', borderRadius: 99,
-                            background: 'white', color: section.color, fontWeight: 700,
-                            border: '1.5px solid ' + section.color + '30',
-                            boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
-                          }}>{f}</span>
-                        )
-                      })}
-                    </div>
-
-                    {/* CTA Button */}
-                    <button
-                      onClick={function(e) { e.stopPropagation(); navigate(section.path) }}
-                      style={{
-                        width: '100%', padding: '16px', borderRadius: 99,
-                        background: section.gradient, color: 'white', border: 'none',
-                        fontWeight: 800, fontSize: 16, cursor: 'pointer',
-                        fontFamily: 'Nunito, sans-serif',
-                        boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
-                        letterSpacing: '0.3px',
-                      }}>
-                      {section.btnText}
-                    </button>
+                  <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 16, padding: '12px 18px', border: '1px solid rgba(255,255,255,0.2)' }}>
+                    <div style={{ fontSize: 13, color: 'white', fontWeight: 800, whiteSpace: 'nowrap' }}>{section.stats}</div>
                   </div>
                 </div>
               </div>
-            )
-          })}
-        </div>
 
-        {/* Left Arrow */}
-        {activeCard > 0 && (
-          <button
-            onClick={() => setActiveCard(p => p - 1)}
-            style={{
-              position: 'absolute', left: 12, top: '40%', transform: 'translateY(-50%)',
-              background: 'rgba(255,255,255,0.95)', border: 'none', borderRadius: '50%',
-              width: 44, height: 44, cursor: 'pointer', fontSize: 20, fontWeight: 800,
-              boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#6B21A8', zIndex: 10,
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
-          >
-            ‹
-          </button>
-        )}
-
-        {/* Right Arrow */}
-        {activeCard < sections.length - 1 && (
-          <button
-            onClick={() => setActiveCard(p => p + 1)}
-            style={{
-              position: 'absolute', right: 12, top: '40%', transform: 'translateY(-50%)',
-              background: 'rgba(255,255,255,0.95)', border: 'none', borderRadius: '50%',
-              width: 44, height: 44, cursor: 'pointer', fontSize: 20, fontWeight: 800,
-              boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#6B21A8', zIndex: 10,
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(-50%) scale(1)'}
-          >
-            ›
-          </button>
-        )}
-      </div>
-
-      {/* Dots + Card Number */}
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10, marginTop: 20 }}>
-        {sections.map(function(_, i) {
-          return (
-            <button key={i} onClick={() => setActiveCard(i)} style={{
-              width: activeCard === i ? 28 : 8,
-              height: 8, borderRadius: 99, border: 'none', cursor: 'pointer',
-              background: activeCard === i ? sections[activeCard].color : '#D1D5DB',
-              transition: 'all 0.3s ease',
-              padding: 0,
-            }} />
-          )
-        })}
-      </div>
-
-      {/* Card label */}
-      <div style={{ textAlign: 'center', marginTop: 8, fontSize: 12, color: '#9CA3AF', fontWeight: 600 }}>
-        {activeCard + 1} / {sections.length} — {sections[activeCard].title}
-      </div>
-
+              {/* Bottom */}
+              <div style={{ padding: '24px 32px 32px', background: section.bg }}>
+                <p style={{ fontSize: 15, color: '#374151', lineHeight: 1.8, marginBottom: 20 }}>{section.desc}</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
+                  {section.features.map(f => (
+                    <span key={f} style={{ fontSize: 13, padding: '6px 14px', borderRadius: 99, background: 'white', color: section.color, fontWeight: 700, border: '1.5px solid ' + section.color + '30', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}>{f}</span>
+                  ))}
+                </div>
+                <button
+                  onClick={e => { e.stopPropagation(); navigate(section.path) }}
+                  style={{ width: '100%', padding: '16px', borderRadius: 99, background: section.gradient, color: 'white', border: 'none', fontWeight: 800, fontSize: 16, cursor: 'pointer', fontFamily: 'Nunito, sans-serif', boxShadow: '0 6px 20px rgba(0,0,0,0.15)' }}>
+                  {section.btnText}
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      })}
     </div>
-  )
-}()}
+
+    {/* Left Arrow */}
+    {activeCard > 0 && (
+      <button onClick={() => setActiveCard(p => p - 1)} style={{ position: 'absolute', left: 12, top: '42%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.95)', border: 'none', borderRadius: '50%', width: 44, height: 44, cursor: 'pointer', fontSize: 22, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B21A8', zIndex: 10 }}>
+        ‹
+      </button>
+    )}
+
+    {/* Right Arrow */}
+    {activeCard < sections.length - 1 && (
+      <button onClick={() => setActiveCard(p => p + 1)} style={{ position: 'absolute', right: 12, top: '42%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.95)', border: 'none', borderRadius: '50%', width: 44, height: 44, cursor: 'pointer', fontSize: 22, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B21A8', zIndex: 10 }}>
+        ›
+      </button>
+    )}
+  </div>
+
+  {/* Dots */}
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10, marginTop: 20 }}>
+    {sections.map(function(_, i) {
+      return (
+        <button key={i} onClick={() => setActiveCard(i)} style={{ width: activeCard === i ? 32 : 8, height: 8, borderRadius: 99, border: 'none', cursor: 'pointer', background: activeCard === i ? sections[activeCard].color : '#D1D5DB', transition: 'all 0.3s ease', padding: 0 }} />
+      )
+    })}
+  </div>
+
+  {/* Card counter */}
+  <div style={{ textAlign: 'center', marginTop: 8, fontSize: 12, color: '#9CA3AF', fontWeight: 600 }}>
+    {activeCard + 1} / {sections.length} — {sections[activeCard].title}
+  </div>
+</div>
 
         {/* Popular Cities */}
         <div style={{ marginBottom: 48 }}>
