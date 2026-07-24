@@ -5,17 +5,28 @@ import NotificationBell from './NotificationBell'
 
 export default function Navbar() {
   const { user, logout } = useAuth()
-  const location  = useLocation()
+  const location  = useNavigate()
   const navigate  = useNavigate()
-  const [search, setSearch]       = useState('')
-  const [scrolled, setScrolled]   = useState(false)
-  const [menuOpen, setMenuOpen]   = useState(false)
+  const loc       = useLocation()
+  const [search, setSearch]   = useState('')
+  const [scrolled, setScrolled] = useState(false)
+  const [darkMode, setDarkMode] = useState(false)
+  const [mobileMenu, setMobileMenu] = useState(false)
 
   useEffect(function() {
+    var saved = localStorage.getItem('nukkad-theme')
+    if (saved === 'dark') { setDarkMode(true); document.documentElement.setAttribute('data-theme', 'dark') }
     function onScroll() { setScrolled(window.scrollY > 10) }
     window.addEventListener('scroll', onScroll)
-    return function() { window.removeEventListener('scroll', onScroll) }
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  function toggleDark() {
+    var newMode = !darkMode
+    setDarkMode(newMode)
+    document.documentElement.setAttribute('data-theme', newMode ? 'dark' : 'light')
+    localStorage.setItem('nukkad-theme', newMode ? 'dark' : 'light')
+  }
 
   function handleSearch(e) {
     if (e.key === 'Enter' && search.trim()) {
@@ -25,11 +36,11 @@ export default function Navbar() {
   }
 
   var navLinks = [
-    { path: '/browse',   label: 'Browse',   icon: '🛍️' },
-    { path: '/services', label: 'Services',  icon: '🔧' },
-    { path: '/rentals',  label: 'Rentals',   icon: '🚗' },
-    { path: '/about',    label: 'About',     icon: 'ℹ️' },  // ← ADD
-
+    { path: '/',         label: 'Home' },
+    { path: '/browse',   label: 'Listings' },
+    { path: '/services', label: 'Services' },
+    { path: '/about',    label: 'About Us' },
+    { path: '/support',  label: 'Contact' },
   ]
 
   var bottomNav = [
@@ -39,170 +50,156 @@ export default function Navbar() {
     { path: '/rentals',  icon: '🚗', label: 'Rentals' },
     { path: '/orders',   icon: '📦', label: 'Orders' },
     { path: '/messages', icon: '💬', label: 'Chat' },
-    { path: user ? '/profile' : '/login', icon: '👤', label: user ? 'Profile' : 'Login' },
+    { path: user ? '/profile' : '/login', icon: '👤', label: user ? 'Me' : 'Login' },
   ]
 
   return (
     <>
+      {/* Top Navbar */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
-        background: scrolled
-          ? 'rgba(30, 5, 51, 0.97)'
-          : 'linear-gradient(135deg, #1E0533 0%, #3B0764 50%, #6B21A8 100%)',
-        backdropFilter: scrolled ? 'blur(20px)' : 'none',
-        boxShadow: scrolled ? '0 4px 24px rgba(107,33,168,0.4)' : 'none',
+        background: darkMode
+          ? 'rgba(10,22,40,0.97)'
+          : scrolled ? 'rgba(255,255,255,0.98)' : '#FFFFFF',
+        backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid ' + (darkMode ? 'rgba(14,165,160,0.15)' : '#E2E8F0'),
+        boxShadow: scrolled ? '0 2px 20px rgba(14,165,160,0.1)' : 'none',
         transition: 'all 0.3s ease',
-        borderBottom: scrolled ? '1px solid rgba(245,158,11,0.15)' : 'none',
       }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 16px', display: 'flex', alignItems: 'center', height: 64, gap: 16 }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 20px', display: 'flex', alignItems: 'center', height: 68, gap: 24 }}>
 
           {/* Logo */}
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0, textDecoration: 'none' }}>
-            <div style={{
-              width: 40, height: 40, flexShrink: 0,
-              background: 'linear-gradient(135deg, #F59E0B, #D97706)',
-              borderRadius: 12, display: 'flex', alignItems: 'center',
-              justifyContent: 'center', fontSize: 20,
-              boxShadow: '0 4px 12px rgba(245,158,11,0.4)',
-            }}>🏪</div>
+            <div style={{ width: 44, height: 44, background: 'linear-gradient(135deg, #0EA5A0, #0C8A85)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, boxShadow: '0 4px 12px rgba(14,165,160,0.3)' }}>
+              🏪
+            </div>
             <div className="hide-mobile">
-              <div style={{ fontFamily: 'Baloo 2, cursive', fontWeight: 800, fontSize: 20, color: 'white', lineHeight: 1, letterSpacing: '-0.5px' }}>
-                NukkadMarket
+              <div style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 800, fontSize: 20, lineHeight: 1, color: darkMode ? '#F1F5F9' : '#0F2A3F' }}>
+                <span style={{ color: '#0F2A3F' }}>Nukkad</span>
+                <span style={{ color: '#0EA5A0' }}>Market</span>
               </div>
-              <div style={{ fontSize: 10, color: 'rgba(245,158,11,0.8)', fontWeight: 600, letterSpacing: '0.5px' }}>
-                अपना नुक्कड़, अपना बाज़ार
+              <div style={{ fontSize: 10, color: '#0EA5A0', fontWeight: 600, letterSpacing: '0.5px' }}>
+                Apna Shehar, Apna Bazaar
               </div>
             </div>
           </Link>
 
-          {/* Search */}
-          <div className="hide-mobile" style={{
-            flex: 1, maxWidth: 440, display: 'flex', alignItems: 'center',
-            background: 'rgba(255,255,255,0.1)', borderRadius: 99,
-            border: '1.5px solid rgba(255,255,255,0.15)',
-            padding: '0 16px', gap: 10,
-            transition: 'all 0.2s',
-          }}
-            onMouseEnter={function(e) { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.borderColor = 'rgba(245,158,11,0.4)' }}
-            onMouseLeave={function(e) { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)' }}
-          >
-            <span style={{ fontSize: 16, opacity: 0.7 }}>🔍</span>
-            <input
-              value={search}
-              onChange={function(e) { setSearch(e.target.value) }}
-              onKeyDown={handleSearch}
-              placeholder="Laptop, plumber, bike..."
-              style={{
-                background: 'transparent', border: 'none', outline: 'none',
-                color: 'white', fontSize: 14, flex: 1, padding: '10px 0',
-                fontFamily: 'Nunito, sans-serif',
-              }}
-            />
-          </div>
-
-          {/* Nav Links */}
-          <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          {/* Nav Links - Desktop */}
+          <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             {navLinks.map(function(item) {
-              var isActive = location.pathname === item.path
+              var isActive = loc.pathname === item.path
               return (
                 <Link key={item.path} to={item.path} style={{
-                  color: isActive ? '#FCD34D' : 'rgba(255,255,255,0.8)',
-                  fontSize: 14, fontWeight: 600, padding: '6px 14px',
-                  borderRadius: 8, textDecoration: 'none', transition: 'all 0.2s',
-                  background: isActive ? 'rgba(245,158,11,0.15)' : 'transparent',
-                }}
-                  onMouseEnter={function(e) { if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
-                  onMouseLeave={function(e) { if (!isActive) e.currentTarget.style.background = 'transparent' }}
-                >
+                  color: isActive ? '#0EA5A0' : darkMode ? '#94A3B8' : '#475569',
+                  fontSize: 14, fontWeight: isActive ? 700 : 500,
+                  padding: '6px 14px', borderRadius: 8, textDecoration: 'none',
+                  borderBottom: isActive ? '2px solid #0EA5A0' : '2px solid transparent',
+                  transition: 'all 0.2s',
+                }}>
                   {item.label}
                 </Link>
               )
             })}
-            {user && (
-              <Link to="/dashboard" style={{
-                color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600,
-                padding: '6px 14px', borderRadius: 8, textDecoration: 'none',
-              }}>
-                Dashboard
-              </Link>
-              
-            )}
           </div>
-            
-          {/* Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto' }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <NotificationBell />
-            </div>
 
-            <button onClick={function() { navigate('/post') }} style={{
-              background: 'linear-gradient(135deg, #F59E0B, #D97706)',
-              color: 'white', border: 'none', borderRadius: 99,
-              padding: '8px 20px', fontWeight: 800, fontSize: 14,
-              cursor: 'pointer', fontFamily: 'Nunito, sans-serif',
-              boxShadow: '0 4px 12px rgba(245,158,11,0.4)',
-              display: 'flex', alignItems: 'center', gap: 4,
+          {/* Search */}
+          <div className="hide-mobile" style={{
+            flex: 1, maxWidth: 360, display: 'flex', alignItems: 'center',
+            background: darkMode ? 'rgba(14,165,160,0.08)' : '#F8FAFC',
+            borderRadius: 99, border: '1.5px solid ' + (darkMode ? 'rgba(14,165,160,0.2)' : '#E2E8F0'),
+            padding: '0 16px', gap: 8,
+          }}>
+            <span style={{ fontSize: 16, opacity: 0.5 }}>🔍</span>
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              onKeyDown={handleSearch}
+              placeholder="Search products, services..."
+              style={{ background: 'transparent', border: 'none', outline: 'none', color: darkMode ? '#F1F5F9' : '#0F2A3F', fontSize: 14, flex: 1, padding: '10px 0' }}
+            />
+          </div>
+
+          {/* Right Actions */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto' }}>
+
+            {/* Dark Mode Toggle */}
+            <button onClick={toggleDark} style={{
+              background: darkMode ? 'rgba(14,165,160,0.15)' : '#F1F5F9',
+              border: '1.5px solid ' + (darkMode ? 'rgba(14,165,160,0.3)' : '#E2E8F0'),
+              borderRadius: 99, padding: '6px 12px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 6,
+              fontSize: 13, fontWeight: 600,
+              color: darkMode ? '#0EA5A0' : '#475569',
               transition: 'all 0.2s',
-            }}
-              onMouseEnter={function(e) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(245,158,11,0.5)' }}
-              onMouseLeave={function(e) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(245,158,11,0.4)' }}
-            >
-              <span>+</span> <span className="hide-mobile">Sell</span>
+            }}>
+              {darkMode ? '☀️ Light' : '🌙 Dark'}
             </button>
 
+            <NotificationBell />
+
+            {/* Login / Profile */}
             {user ? (
-              <div style={{ position: 'relative' }}>
-                <img
-                  src={user.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name) + '&background=6B21A8&color=fff&size=36'}
-                  alt={user.name}
-                  onClick={function() { navigate('/profile') }}
-                  style={{
-                    width: 36, height: 36, borderRadius: '50%', objectFit: 'cover',
-                    border: '2px solid rgba(245,158,11,0.6)', cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                  onMouseEnter={function(e) { e.currentTarget.style.borderColor = '#F59E0B' }}
-                  onMouseLeave={function(e) { e.currentTarget.style.borderColor = 'rgba(245,158,11,0.6)' }}
-                />
-              </div>
+              <img
+                src={user.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name) + '&background=0EA5A0&color=fff&size=36'}
+                alt={user.name}
+                onClick={() => navigate('/profile')}
+                style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid #0EA5A0', cursor: 'pointer' }}
+              />
             ) : (
-              <Link to="/login" className="hide-mobile" style={{
-                background: 'rgba(255,255,255,0.12)', color: 'white',
-                border: '1.5px solid rgba(255,255,255,0.25)',
-                padding: '7px 16px', borderRadius: 99, fontSize: 13,
-                fontWeight: 700, textDecoration: 'none', transition: 'all 0.2s',
-              }}>
-                Login
+              <Link to="/login" style={{
+                color: darkMode ? '#94A3B8' : '#475569', fontSize: 14, fontWeight: 600,
+                padding: '8px 14px', borderRadius: 8, textDecoration: 'none',
+                border: '1.5px solid ' + (darkMode ? 'rgba(14,165,160,0.2)' : '#E2E8F0'),
+                display: 'flex', alignItems: 'center', gap: 6,
+              }} className="hide-mobile">
+                👤 Login
               </Link>
             )}
+
+            {/* Post Ad Button */}
+            <button onClick={() => navigate('/post')} style={{
+              background: 'linear-gradient(135deg, #0EA5A0, #0C8A85)',
+              color: 'white', border: 'none', borderRadius: 99,
+              padding: '9px 18px', fontWeight: 700, fontSize: 14,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+              boxShadow: '0 4px 12px rgba(14,165,160,0.3)',
+              transition: 'all 0.2s',
+            }}
+              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+              onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              ➕ Post Your Ad
+            </button>
           </div>
         </div>
       </nav>
 
-      {/* Bottom Nav */}
-<nav style={{
-  position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1000,
-  background: 'white', borderTop: '1px solid #E5E7EB',
-  display: 'flex', height: 60,
-  boxShadow: '0 -2px 12px rgba(107,33,168,0.08)',
-}}>
-  {bottomNav.map(function(item) {
-    var isActive = location.pathname === item.path
-    return (
-      <Link key={item.path} to={item.path} style={{
-        flex: 1, display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        textDecoration: 'none',
-        color: isActive ? '#6B21A8' : '#9CA3AF',
-        fontSize: 9, fontWeight: 700, gap: 2,
-        borderTop: isActive ? '2px solid #6B21A8' : '2px solid transparent',
+      {/* Bottom Nav (Mobile) */}
+      <nav style={{
+        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1000,
+        background: darkMode ? '#0A1628' : '#FFFFFF',
+        borderTop: '1px solid ' + (darkMode ? 'rgba(14,165,160,0.15)' : '#E2E8F0'),
+        display: 'flex', height: 60,
+        boxShadow: '0 -4px 20px rgba(14,165,160,0.08)',
       }}>
-        <span style={{ fontSize: 18 }}>{item.icon}</span>
-        <span>{item.label}</span>
-      </Link>
-    )
-  })}
-</nav>
+        {bottomNav.map(function(item) {
+          var isActive = loc.pathname === item.path
+          return (
+            <Link key={item.path} to={item.path} style={{
+              flex: 1, display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center',
+              textDecoration: 'none', gap: 2,
+              color: isActive ? '#0EA5A0' : darkMode ? '#64748B' : '#94A3B8',
+              fontSize: 9, fontWeight: 700,
+              borderTop: '2px solid ' + (isActive ? '#0EA5A0' : 'transparent'),
+              transition: 'all 0.2s',
+            }}>
+              <span style={{ fontSize: 18 }}>{item.icon}</span>
+              <span>{item.label}</span>
+            </Link>
+          )
+        })}
+      </nav>
     </>
   )
 }

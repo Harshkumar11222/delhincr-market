@@ -1,517 +1,558 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { POPULAR_CITIES } from '../data/india'
+import api from '../api'
+import { POPULAR_CITIES, CATEGORIES } from '../data/india'
+
+function CountUp({ end, suffix = '', duration = 2000 }) {
+  const [count, setCount] = useState(0)
+  const ref = useRef(null)
+  const started = useRef(false)
+  useEffect(function() {
+    var observer = new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting && !started.current) {
+        started.current = true
+        var start = 0, step = end / (duration / 16)
+        var timer = setInterval(function() {
+          start += step
+          if (start >= end) { setCount(end); clearInterval(timer) }
+          else setCount(Math.floor(start))
+        }, 16)
+      }
+    }, { threshold: 0.3 })
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
+  return <span ref={ref}>{count.toLocaleString('en-IN')}{suffix}</span>
+}
 
 export default function Home() {
   const navigate = useNavigate()
-  const [statsVisible, setStatsVisible] = useState(false)
   const [search, setSearch] = useState('')
-  const [activeCard, setActiveCard] = useState(0)        // ← ADD
-  const [startX, setStartX] = useState(null)             // ← ADD
-  const [dragging, setDragging] = useState(false) 
-  
+  const [category, setCategory] = useState('all')
+  const [listings, setListings] = useState([])
+  const [loadingListings, setLoadingListings] = useState(true)
+  const [darkMode, setDarkMode] = useState(false)
+
   useEffect(function() {
-    setTimeout(function() { setStatsVisible(true) }, 400)
+    var saved = localStorage.getItem('nukkad-theme')
+    setDarkMode(saved === 'dark')
+    fetchFeatured()
   }, [])
 
-  var sections = [
-    {
-      icon: '🛍️',
-      title: 'Buy & Sell',
-      titleHindi: 'खरीदो और बेचो',
-      desc: 'Poore India mein used items buy aur sell karo — 100+ cities mein. Laptops, phones, cars, furniture aur bahut kuch.',
-      features: ['📱 Electronics', '🚗 Vehicles', '🛋️ Furniture', '🏡 Property', '💼 Jobs'],
-      color: '#6B21A8',
-      gradient: 'linear-gradient(135deg, #6B21A8 0%, #7C3AED 100%)',
-      bg: '#F5F3FF',
-      path: '/browse',
-      btnText: 'Browse Listings →',
-      stats: '50,000+ Listings',
-      badge: '🔥 Most Popular',
-    },
-    {
-      icon: '🔧',
-      title: 'Local Services',
-      titleHindi: 'लोकल सर्विसेज़',
-      desc: 'Verified professionals dhundho — plumber, electrician, carpenter. 100+ cities mein available. Ghar baithe booking karo.',
-      features: ['🔧 Plumber', '⚡ Electrician', '👨‍🍳 Cook', '📖 Tutor', '💇 Salon'],
-      color: '#059669',
-      gradient: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
-      bg: '#ECFDF5',
-      path: '/services',
-      btnText: 'Find Professionals →',
-      stats: '10,000+ Pros',
-      badge: '✅ Verified Only',
-    },
-    {
-      icon: '🚗',
-      title: 'Vehicle Rentals',
-      titleHindi: 'वाहन किराये पर',
-      desc: 'Car, bike, scooty aur cycle rent karo. Hourly aur daily rates. Poore India mein best prices guaranteed.',
-      features: ['🚗 Cars', '🏍️ Bikes', '🛵 Scooty', '🚲 Cycles', '🚐 Vans'],
-      color: '#DC2626',
-      gradient: 'linear-gradient(135deg, #DC2626 0%, #EF4444 100%)',
-      bg: '#FEF2F2',
-      path: '/rentals',
-      btnText: 'Rent a Vehicle →',
-      stats: 'Best Rates in India',
-      badge: '🆕 New Section',
-    },
-    {
-      icon: '➕',
-      title: 'Post Free Ad',
-      titleHindi: 'फ्री में बेचो',
-      desc: 'Apna item list karo bilkul free mein. Crores of buyers tak pahuncho. 2 minute mein listing live!',
-      features: ['📸 Photo Upload', '✅ Free Forever', '📍 India-wide', '💬 Direct Chat', '🔒 Safe & Secure'],
-      color: '#D97706',
-      gradient: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
-      bg: '#FFFBEB',
-      path: '/post',
-      btnText: 'Post Your Ad →',
-      stats: '100% Free Forever',
-      badge: '💰 Earn Money',
-    },
+  async function fetchFeatured() {
+    try {
+      var res = await api.get('/listings?limit=8&sort=newest')
+      setListings(res.data.listings || [])
+    } catch(e) { setListings([]) }
+    setLoadingListings(false)
+  }
+
+  var categories = [
+    { id: 'all',         icon: '🛍️', label: 'For Sale',     count: '12,560+' },
+    { id: 'rental',      icon: '🏠', label: 'For Rent',     count: '3,240+' },
+    { id: 'vehicles',    icon: '🚗', label: 'Vehicles',     count: '2,150+' },
+    { id: 'electronics', icon: '💻', label: 'Electronics',  count: '4,890+' },
+    { id: 'services',    icon: '🔧', label: 'Services',     count: '6,320+' },
+    { id: 'more',        icon: '⋯',  label: 'More',         count: 'Explore All', isMore: true },
   ]
 
-  var trustPoints = [
-    { icon: '🇮🇳', title: '100+ Cities',      desc: 'Delhi se Mumbai, Bangalore se Kolkata — har shehar mein' },
-    { icon: '✅',  title: 'Verified Sellers', desc: 'Aadhaar-linked profiles — fake sellers zero tolerance' },
-    { icon: '🔒',  title: 'Secure Platform',  desc: 'Bank-grade security — aapka data safe hai' },
-    { icon: '📍',  title: 'Hyper Local',      desc: 'Apne mohalle mein hi milega — delivery nahi, meetup' },
-    { icon: '🚀',  title: '100% Free',        desc: 'Listing daalo free mein — koi commission nahi kabhi' },
-    { icon: '💬',  title: 'Direct Chat',      desc: 'Buyer-seller directly baat karo — no middleman ever' },
+  var stats = [
+    { icon: '👥', num: 10000, suffix: '+', label: 'Happy Users' },
+    { icon: '📋', num: 25000, suffix: '+', label: 'Active Listings' },
+    { icon: '📍', num: 50,    suffix: '+', label: 'Localities Covered' },
+    { icon: '🛡️', num: 100,   suffix: '%', label: 'Trusted Community' },
   ]
+
+  var popularCitiesSlice = (POPULAR_CITIES || [
+    { city: 'Delhi',     emoji: '🏛️', state: 'Delhi' },
+    { city: 'Mumbai',    emoji: '🌊', state: 'Maharashtra' },
+    { city: 'Bangalore', emoji: '🌿', state: 'Karnataka' },
+    { city: 'Hyderabad', emoji: '💎', state: 'Telangana' },
+    { city: 'Chennai',   emoji: '☀️', state: 'Tamil Nadu' },
+    { city: 'Kolkata',   emoji: '🎨', state: 'West Bengal' },
+  ]).slice(0, 6)
+
+  var isDark = darkMode
 
   return (
-    <div style={{ background: '#F8FAFC', minHeight: '100vh', paddingBottom: 72 }}>
+    <div style={{ background: isDark ? '#0A1628' : '#FFFFFF', minHeight: '100vh', paddingTop: 68 }}>
 
-      {/* ══ HERO ══ */}
-      <div style={{
-        background: 'linear-gradient(135deg, #1E0533 0%, #3B0764 30%, #6B21A8 65%, #F59E0B 100%)',
-        padding: '84px 16px 40px',
-        textAlign: 'center',
-        position: 'relative',
-        overflow: 'hidden',
+      {/* ══ HERO SECTION ══ */}
+      <section style={{
+        padding: '60px 20px 80px',
+        background: isDark
+          ? 'linear-gradient(135deg, #0A1628 0%, #0F2A3F 50%, #0A1628 100%)'
+          : '#FFFFFF',
+        position: 'relative', overflow: 'hidden',
       }}>
-        <div style={{ position: 'absolute', top: -80, right: -80, width: 320, height: 320, borderRadius: '50%', background: 'rgba(245,158,11,0.08)' }} />
-        <div style={{ position: 'absolute', bottom: -60, left: -60, width: 260, height: 260, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
-        <div style={{ position: 'absolute', top: '30%', right: '15%', width: 120, height: 120, borderRadius: '50%', background: 'rgba(245,158,11,0.06)' }} />
+        {/* Decorative circles */}
+        <div style={{ position: 'absolute', top: -100, right: -100, width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(14,165,160,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: -50, left: -50, width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(14,165,160,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-        <div style={{ position: 'relative', zIndex: 1, maxWidth: 700, margin: '0 auto' }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: 'rgba(245,158,11,0.2)', backdropFilter: 'blur(8px)',
-            borderRadius: 99, padding: '6px 18px', fontSize: 13,
-            color: '#FCD34D', marginBottom: 24,
-            border: '1px solid rgba(245,158,11,0.3)', fontWeight: 600,
-          }}>
-            🇮🇳 India ka #1 Hyperlocal Marketplace
-          </div>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'center' }}>
 
-          <h1 style={{
-            fontFamily: 'Baloo 2, cursive',
-            fontSize: 'clamp(36px, 7vw, 60px)',
-            fontWeight: 800, color: 'white',
-            marginBottom: 8, lineHeight: 1.1,
-          }}>
-            नुक्कड़ मार्केट
-          </h1>
-          <h2 style={{
-            fontFamily: 'Baloo 2, cursive',
-            fontSize: 'clamp(18px, 3vw, 26px)',
-            fontWeight: 600, marginBottom: 16, lineHeight: 1.3,
-            background: 'linear-gradient(135deg, #FCD34D, #F59E0B)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          }}>
-            Apna Shehar, Apna Bazaar
-          </h2>
+          {/* Left Content */}
+          <div>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: 'rgba(14,165,160,0.1)', border: '1px solid rgba(14,165,160,0.2)',
+              borderRadius: 99, padding: '6px 16px', fontSize: 12,
+              color: '#0EA5A0', fontWeight: 700, marginBottom: 24,
+              letterSpacing: '1px',
+            }}>
+              <span style={{ width: 6, height: 6, background: '#0EA5A0', borderRadius: '50%', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+              WELCOME TO NUKKADMARKET
+            </div>
 
-          <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 16, marginBottom: 36, lineHeight: 1.8 }}>
-            Buy • Sell • Services • Rentals<br />
-            <span style={{ fontSize: 13, opacity: 0.7 }}>
-              Verified, Safe aur 100% Local — Har Shehar, Har Nukkad
-            </span>
-          </p>
+            <h1 style={{
+              fontFamily: 'Poppins, sans-serif',
+              fontSize: 'clamp(36px, 5vw, 58px)',
+              fontWeight: 800, lineHeight: 1.15, marginBottom: 20,
+              color: isDark ? '#F1F5F9' : '#0F2A3F',
+            }}>
+              Apna Shehar,{' '}
+              <span style={{ color: '#0EA5A0', display: 'block' }}>Apna Bazaar</span>
+            </h1>
 
-          {/* Search */}
-          <div style={{
-            maxWidth: 580, margin: '0 auto 44px',
-            display: 'flex', background: 'white', borderRadius: 99,
-            boxShadow: '0 8px 40px rgba(107,33,168,0.3)',
-            overflow: 'hidden', border: '2px solid rgba(245,158,11,0.3)',
-          }}>
-            <span style={{ padding: '0 16px', fontSize: 20, display: 'flex', alignItems: 'center' }}>🔍</span>
-            <input
-              value={search}
-              onChange={function(e) { setSearch(e.target.value) }}
-              onKeyDown={function(e) {
-                if (e.key === 'Enter' && search.trim()) {
-                  navigate('/browse?search=' + encodeURIComponent(search.trim()))
-                }
-              }}
-              placeholder="Laptop, plumber, bike rental, property..."
-              style={{
-                flex: 1, border: 'none', outline: 'none',
-                fontSize: 15, fontFamily: 'Nunito, sans-serif',
-                padding: '16px 0', background: 'transparent',
-              }}
-            />
-            <button
-              onClick={function() {
-                if (search.trim()) navigate('/browse?search=' + encodeURIComponent(search.trim()))
-              }}
-              style={{
-                background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
-                color: 'white', border: 'none', padding: '0 28px',
-                fontWeight: 700, fontSize: 15, cursor: 'pointer',
-                fontFamily: 'Nunito, sans-serif',
+            <p style={{ fontSize: 16, color: isDark ? '#94A3B8' : '#64748B', lineHeight: 1.8, marginBottom: 36, maxWidth: 460 }}>
+              Buy, Sell, Rent and find Local Services — sab kuch ek jagah. Apne shehar ke liye, apne logon ke liye.
+            </p>
+
+            {/* Search Bar */}
+            <div style={{
+              display: 'flex', background: isDark ? '#0F2035' : '#F8FAFC',
+              border: '2px solid ' + (isDark ? 'rgba(14,165,160,0.2)' : '#E2E8F0'),
+              borderRadius: 12, overflow: 'hidden',
+              boxShadow: '0 4px 20px rgba(14,165,160,0.1)',
+              marginBottom: 24,
+            }}>
+              <select style={{
+                padding: '14px 16px', background: 'transparent', border: 'none',
+                borderRight: '1.5px solid ' + (isDark ? 'rgba(14,165,160,0.2)' : '#E2E8F0'),
+                color: isDark ? '#94A3B8' : '#64748B', fontSize: 14, cursor: 'pointer',
+                outline: 'none', fontFamily: 'Inter, sans-serif',
               }}>
-              Search
-            </button>
+                <option>All Categories</option>
+                <option>For Sale</option>
+                <option>For Rent</option>
+                <option>Services</option>
+                <option>Vehicles</option>
+              </select>
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && search.trim()) navigate('/browse?search=' + encodeURIComponent(search)) }}
+                placeholder="Search for products, services..."
+                style={{
+                  flex: 1, padding: '14px 16px', background: 'transparent',
+                  border: 'none', outline: 'none', fontSize: 14,
+                  color: isDark ? '#F1F5F9' : '#0F2A3F',
+                }}
+              />
+              <button
+                onClick={() => { if (search.trim()) navigate('/browse?search=' + encodeURIComponent(search)) }}
+                style={{
+                  padding: '14px 24px', background: '#0EA5A0', color: 'white',
+                  border: 'none', fontWeight: 700, fontSize: 14, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                }}>
+                🔍 Search
+              </button>
+            </div>
+
+            {/* CTAs */}
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+              <button onClick={() => navigate('/browse')} style={{
+                padding: '14px 28px', background: '#0EA5A0', color: 'white',
+                border: 'none', borderRadius: 99, fontWeight: 700, fontSize: 15,
+                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                boxShadow: '0 6px 20px rgba(14,165,160,0.35)', transition: 'all 0.2s',
+              }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+              >
+                Explore Listings →
+              </button>
+              <button onClick={() => navigate('/about')} style={{
+                padding: '14px 28px', background: 'transparent', color: isDark ? '#94A3B8' : '#475569',
+                border: '2px solid ' + (isDark ? 'rgba(14,165,160,0.2)' : '#E2E8F0'),
+                borderRadius: 99, fontWeight: 700, fontSize: 15, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.2s',
+              }}>
+                ▶ How It Works
+              </button>
+            </div>
           </div>
 
-          {/* Stats */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 'clamp(20px, 5vw, 56px)', flexWrap: 'wrap' }}>
-            {[
-              { num: '50,000+', label: 'Listings' },
-              { num: '10,000+', label: 'Verified Sellers' },
-              { num: '500+',    label: 'Service Pros' },
-              { num: '100+',    label: 'Cities' },
-            ].map(function(s) {
+          {/* Right — Logo Hero */}
+          <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+            {/* Background glow */}
+            <div style={{ position: 'absolute', width: 320, height: 320, borderRadius: '50%', background: 'radial-gradient(circle, rgba(14,165,160,0.12) 0%, transparent 70%)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+
+            {/* Logo big display */}
+            <div style={{
+              background: isDark ? 'rgba(14,165,160,0.08)' : 'rgba(14,165,160,0.05)',
+              border: '2px solid rgba(14,165,160,0.15)',
+              borderRadius: 32, padding: '48px', textAlign: 'center',
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 20px 60px rgba(14,165,160,0.15)',
+              position: 'relative',
+              animation: 'float 3s ease-in-out infinite',
+            }}>
+              <div style={{ fontSize: 80, marginBottom: 16 }}>🏪</div>
+              <div style={{ fontFamily: 'Poppins, sans-serif', fontSize: 28, fontWeight: 800, lineHeight: 1.1 }}>
+                <span style={{ color: isDark ? '#F1F5F9' : '#0F2A3F' }}>Nukkad</span>
+                <span style={{ color: '#0EA5A0' }}>Market</span>
+              </div>
+              <div style={{ fontSize: 12, color: '#0EA5A0', fontWeight: 600, letterSpacing: '2px', marginTop: 6 }}>
+                APNA SHEHAR, APNA BAZAAR
+              </div>
+
+              {/* Floating badges */}
+              <div style={{ position: 'absolute', top: -16, right: -16, background: '#0EA5A0', color: 'white', borderRadius: 99, padding: '6px 14px', fontSize: 12, fontWeight: 700, boxShadow: '0 4px 12px rgba(14,165,160,0.4)' }}>
+                🛡️ 100% Safe
+              </div>
+              <div style={{ position: 'absolute', bottom: -16, left: -16, background: isDark ? '#0F2035' : 'white', border: '2px solid rgba(14,165,160,0.2)', borderRadius: 99, padding: '6px 14px', fontSize: 12, fontWeight: 700, color: '#0EA5A0', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                🏷️ 100% Free
+              </div>
+            </div>
+
+            {/* Shop Local tag */}
+            <div style={{
+              position: 'absolute', right: 0, top: '30%',
+              background: isDark ? '#0F2035' : 'white',
+              border: '2px solid rgba(14,165,160,0.15)',
+              borderRadius: 14, padding: '14px 18px',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+              textAlign: 'center',
+            }}>
+              <div style={{ fontSize: 24, marginBottom: 4 }}>🏘️</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#0EA5A0' }}>SHOP LOCAL</div>
+            </div>
+          </div>
+        </div>
+
+        <style>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+          }
+        `}</style>
+      </section>
+
+      {/* ══ BROWSE BY CATEGORIES ══ */}
+      <section style={{ padding: '60px 20px', background: isDark ? '#0A1628' : '#FFFFFF' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+            <h2 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 28, fontWeight: 700, color: isDark ? '#F1F5F9' : '#0F2A3F', marginBottom: 8 }}>
+              Browse by Categories
+            </h2>
+            <div style={{ width: 48, height: 3, background: '#0EA5A0', borderRadius: 99, margin: '0 auto' }} />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 16 }}>
+            {categories.map(function(cat) {
+              return (
+                <div key={cat.id}
+                  onClick={() => cat.isMore ? navigate('/browse') : navigate('/browse?category=' + cat.id)}
+                  style={{
+                    background: isDark ? '#0F2035' : '#FFFFFF',
+                    border: '1.5px solid ' + (isDark ? 'rgba(14,165,160,0.15)' : '#E2E8F0'),
+                    borderRadius: 16, padding: '28px 16px', textAlign: 'center',
+                    cursor: 'pointer', transition: 'all 0.25s',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = '#0EA5A0'
+                    e.currentTarget.style.transform = 'translateY(-4px)'
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(14,165,160,0.15)'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = isDark ? 'rgba(14,165,160,0.15)' : '#E2E8F0'
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'
+                  }}
+                >
+                  <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(14,165,160,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, margin: '0 auto 14px' }}>
+                    {cat.icon}
+                  </div>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: isDark ? '#F1F5F9' : '#0F2A3F', marginBottom: 4 }}>{cat.label}</div>
+                  <div style={{ fontSize: 12, color: '#0EA5A0', fontWeight: 600 }}>{cat.count}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ STATS BANNER ══ */}
+      <section style={{ padding: '0 20px 60px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{
+            background: isDark ? '#0F2A3F' : '#0F2A3F',
+            borderRadius: 20, padding: '40px 48px',
+            display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: 0, position: 'relative', overflow: 'hidden',
+          }}>
+            <div style={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(14,165,160,0.1)', pointerEvents: 'none' }} />
+
+            {stats.map(function(s, i) {
               return (
                 <div key={s.label} style={{
-                  textAlign: 'center',
-                  opacity: statsVisible ? 1 : 0,
-                  transform: statsVisible ? 'translateY(0)' : 'translateY(20px)',
-                  transition: 'all 0.6s ease',
+                  textAlign: 'center', padding: '0 24px',
+                  borderRight: i < stats.length - 1 ? '1px solid rgba(255,255,255,0.1)' : 'none',
                 }}>
-                  <div style={{
-                    fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 800,
-                    background: 'linear-gradient(135deg, #FCD34D, #F59E0B)',
-                    WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                  }}>{s.num}</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)' }}>{s.label}</div>
+                  <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(14,165,160,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, margin: '0 auto 14px' }}>
+                    {s.icon}
+                  </div>
+                  <div style={{ fontFamily: 'Poppins, sans-serif', fontSize: 32, fontWeight: 800, color: '#0EA5A0', lineHeight: 1 }}>
+                    <CountUp end={s.num} suffix={s.suffix} />
+                  </div>
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 6, fontWeight: 500 }}>{s.label}</div>
                 </div>
               )
             })}
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="container" style={{ marginTop: -8, paddingBottom: 10 }}>
-
-        {/* Section heading */}
-        <div style={{
-          textAlign: 'center', marginBottom: 32,
-          background: 'white', borderRadius: 20,
-          padding: '24px 20px 16px',
-          marginTop: 8,
-          boxShadow: '0 2px 12px rgba(107,33,168,0.06)',
-          border: '1px solid rgba(107,33,168,0.08)',
-        }}>
-          <div style={{
-            fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 700,
-            background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            marginBottom: 6,
-          }}>
-            Kya dhundh rahe ho? 🎯
-          </div>
-          <div style={{ fontSize: 14, color: '#6B7280' }}>
-            Apna section choose karo — sab kuch ek jagah
-          </div>
-        </div>
-
-{/* 4 Section Cards — Swipeable Carousel */}
-<div style={{ marginBottom: 48 }}>
-  <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 28 }}
-    onTouchStart={e => { setStartX(e.touches[0].clientX); setDragging(true) }}
-    onTouchEnd={e => {
-      if (!dragging) return
-      var diff = startX - e.changedTouches[0].clientX
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) setActiveCard(p => Math.min(p + 1, sections.length - 1))
-        else setActiveCard(p => Math.max(p - 1, 0))
-      }
-      setDragging(false)
-    }}
-    onMouseDown={e => { setStartX(e.clientX); setDragging(true) }}
-    onMouseUp={e => {
-      if (!dragging) return
-      var diff = startX - e.clientX
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) setActiveCard(p => Math.min(p + 1, sections.length - 1))
-        else setActiveCard(p => Math.max(p - 1, 0))
-      }
-      setDragging(false)
-    }}
-    onMouseLeave={() => setDragging(false)}
-  >
-    {/* Cards Track */}
-    <div style={{
-      display: 'flex',
-      transform: 'translateX(-' + (activeCard * 100) + '%)',
-      transition: dragging ? 'none' : 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-    }}>
-      {sections.map(function(section) {
-        return (
-          <div key={section.title} style={{ minWidth: '100%', padding: '0 2px' }}>
-            <div
-              onClick={function() { if (!dragging) navigate(section.path) }}
-              style={{
-                background: 'white', borderRadius: 28, overflow: 'hidden',
-                boxShadow: '0 8px 32px rgba(107,33,168,0.12)',
-                cursor: 'pointer', userSelect: 'none',
-              }}
-            >
-              {/* Colored Top */}
-              <div style={{ background: section.gradient, padding: '36px 32px 28px', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', top: -30, right: -30, width: 160, height: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
-                <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.2)', borderRadius: 99, padding: '5px 14px', fontSize: 12, fontWeight: 700, color: 'white', marginBottom: 20, border: '1px solid rgba(255,255,255,0.3)' }}>
-                  {section.badge}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
-                  <div>
-                    <div style={{ fontSize: 64, marginBottom: 12 }}>{section.icon}</div>
-                    <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 32, fontWeight: 800, color: 'white', lineHeight: 1.1, marginBottom: 6 }}>{section.title}</div>
-                    <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.8)' }}>{section.titleHindi}</div>
-                  </div>
-                  <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 16, padding: '12px 18px', border: '1px solid rgba(255,255,255,0.2)' }}>
-                    <div style={{ fontSize: 13, color: 'white', fontWeight: 800, whiteSpace: 'nowrap' }}>{section.stats}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bottom */}
-              <div style={{ padding: '24px 32px 32px', background: section.bg }}>
-                <p style={{ fontSize: 15, color: '#374151', lineHeight: 1.8, marginBottom: 20 }}>{section.desc}</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
-                  {section.features.map(f => (
-                    <span key={f} style={{ fontSize: 13, padding: '6px 14px', borderRadius: 99, background: 'white', color: section.color, fontWeight: 700, border: '1.5px solid ' + section.color + '30', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}>{f}</span>
-                  ))}
-                </div>
-                <button
-                  onClick={e => { e.stopPropagation(); navigate(section.path) }}
-                  style={{ width: '100%', padding: '16px', borderRadius: 99, background: section.gradient, color: 'white', border: 'none', fontWeight: 800, fontSize: 16, cursor: 'pointer', fontFamily: 'Nunito, sans-serif', boxShadow: '0 6px 20px rgba(0,0,0,0.15)' }}>
-                  {section.btnText}
-                </button>
-              </div>
-            </div>
-          </div>
-        )
-      })}
-    </div>
-
-    {/* Left Arrow */}
-    {activeCard > 0 && (
-      <button onClick={() => setActiveCard(p => p - 1)} style={{ position: 'absolute', left: 12, top: '42%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.95)', border: 'none', borderRadius: '50%', width: 44, height: 44, cursor: 'pointer', fontSize: 22, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B21A8', zIndex: 10 }}>
-        ‹
-      </button>
-    )}
-
-    {/* Right Arrow */}
-    {activeCard < sections.length - 1 && (
-      <button onClick={() => setActiveCard(p => p + 1)} style={{ position: 'absolute', right: 12, top: '42%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.95)', border: 'none', borderRadius: '50%', width: 44, height: 44, cursor: 'pointer', fontSize: 22, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B21A8', zIndex: 10 }}>
-        ›
-      </button>
-    )}
-  </div>
-
-  {/* Dots */}
-  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10, marginTop: 20 }}>
-    {sections.map(function(_, i) {
-      return (
-        <button key={i} onClick={() => setActiveCard(i)} style={{ width: activeCard === i ? 32 : 8, height: 8, borderRadius: 99, border: 'none', cursor: 'pointer', background: activeCard === i ? sections[activeCard].color : '#D1D5DB', transition: 'all 0.3s ease', padding: 0 }} />
-      )
-    })}
-  </div>
-
-  {/* Card counter */}
-  <div style={{ textAlign: 'center', marginTop: 8, fontSize: 12, color: '#9CA3AF', fontWeight: 600 }}>
-    {activeCard + 1} / {sections.length} — {sections[activeCard].title}
-  </div>
-</div>
-
-        {/* Popular Cities */}
-        <div style={{ marginBottom: 48 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 20 }}>
+      {/* ══ FEATURED LISTINGS ══ */}
+      <section style={{ padding: '0 20px 60px', background: isDark ? '#0A1628' : '#FFFFFF' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
             <div>
-              <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 24, fontWeight: 700, color: '#111827' }}>
-                Popular Cities 🏙️
-              </div>
-              <div style={{ fontSize: 13, color: '#6B7280' }}>Apne shehar mein browse karo</div>
+              <h2 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 26, fontWeight: 700, color: isDark ? '#F1F5F9' : '#0F2A3F', marginBottom: 8 }}>
+                Featured Listings
+              </h2>
+              <div style={{ width: 48, height: 3, background: '#0EA5A0', borderRadius: 99 }} />
             </div>
-            <button onClick={function() { navigate('/browse') }}
-              style={{ background: 'none', border: 'none', color: '#6B21A8', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>
-              View All →
+            <button onClick={() => navigate('/browse')} style={{
+              padding: '10px 20px', background: 'transparent', color: isDark ? '#94A3B8' : '#475569',
+              border: '1.5px solid ' + (isDark ? 'rgba(14,165,160,0.2)' : '#E2E8F0'),
+              borderRadius: 99, fontWeight: 600, fontSize: 13, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.2s',
+            }}>
+              View All Listings →
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: 12 }}>
-            {POPULAR_CITIES.slice(0, 12).map(function(item) {
+          {loadingListings ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 20 }}>
+              {[1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 280, borderRadius: 16 }} />)}
+            </div>
+          ) : listings.length === 0 ? (
+            <div className="empty-state">
+              <div className="icon">🛍️</div>
+              <h3>Koi listings nahi abhi</h3>
+              <p>Pehle listing daalo!</p>
+              <button className="btn btn-primary" onClick={() => navigate('/post')}>Post Free Ad</button>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 20 }}>
+              {listings.map(function(l) {
+                return (
+                  <div key={l._id}
+                    onClick={() => navigate('/listing/' + l._id)}
+                    style={{
+                      background: isDark ? '#0F2035' : '#FFFFFF',
+                      border: '1.5px solid ' + (isDark ? 'rgba(14,165,160,0.1)' : '#E2E8F0'),
+                      borderRadius: 16, overflow: 'hidden', cursor: 'pointer',
+                      transition: 'all 0.25s', boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(14,165,160,0.15)'; e.currentTarget.style.borderColor = '#0EA5A0' }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'; e.currentTarget.style.borderColor = isDark ? 'rgba(14,165,160,0.1)' : '#E2E8F0' }}
+                  >
+                    {/* Image */}
+                    <div style={{ position: 'relative', paddingTop: '60%', background: isDark ? '#1A3A52' : '#F8FAFC', overflow: 'hidden' }}>
+                      <img src={l.images?.[0] || 'https://placehold.co/300x180?text=No+Image'} alt={l.title}
+                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
+                        onError={e => e.target.src = 'https://placehold.co/300x180?text=No+Image'}
+                      />
+                      {/* Category badge */}
+                      <div style={{ position: 'absolute', top: 10, left: 10, background: '#0EA5A0', color: 'white', fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 99 }}>
+                        {l.category || 'For Sale'}
+                      </div>
+                      {/* Wishlist */}
+                      <div style={{ position: 'absolute', top: 10, right: 10, background: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 16 }}>
+                        🤍
+                      </div>
+                    </div>
+
+                    {/* Info */}
+                    <div style={{ padding: '14px 16px' }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#F1F5F9' : '#0F2A3F', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.title}</div>
+                      <div style={{ fontFamily: 'Poppins, sans-serif', fontSize: 18, fontWeight: 700, color: '#0EA5A0', marginBottom: 8 }}>
+                        ₹{(l.price || 0).toLocaleString('en-IN')}
+                        {l.isNegotiable && <span style={{ fontSize: 11, color: '#F59E0B', marginLeft: 8, background: 'rgba(245,158,11,0.1)', padding: '2px 8px', borderRadius: 99 }}>Negotiable</span>}
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: isDark ? '#64748B' : '#94A3B8' }}>
+                        <span>📍 {l.city || l.location}</span>
+                        <span>{new Date(l.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ══ TRUST SECTION ══ */}
+      <section style={{ padding: '60px 20px', background: isDark ? '#0F2035' : '#F8FAFC' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
+
+            <div>
+              <h2 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 32, fontWeight: 700, color: isDark ? '#F1F5F9' : '#0F2A3F', marginBottom: 4 }}>
+                Safe.{' '}
+                <span style={{ color: isDark ? '#F1F5F9' : '#0F2A3F' }}>Local.</span>{' '}
+                <span style={{ color: '#0EA5A0' }}>Trusted.</span>
+              </h2>
+              <div style={{ width: 48, height: 3, background: '#0EA5A0', borderRadius: 99, marginBottom: 20 }} />
+              <p style={{ fontSize: 15, color: isDark ? '#94A3B8' : '#64748B', lineHeight: 1.8, marginBottom: 32 }}>
+                NukkadMarket is committed to creating a safe and trusted marketplace for everyone. Join thousands of local people who trust NukkadMarket.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20, marginBottom: 32 }}>
+                {[
+                  { icon: '🛡️', title: 'Verified Users', sub: '100% Secure' },
+                  { icon: '📞', title: 'Local Support', sub: "We're here to help" },
+                  { icon: '⚡', title: 'Easy & Fast', sub: 'Simple & Reliable' },
+                ].map(function(item) {
+                  return (
+                    <div key={item.title} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                      <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(14,165,160,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>{item.icon}</div>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: isDark ? '#F1F5F9' : '#0F2A3F' }}>{item.title}</div>
+                        <div style={{ fontSize: 12, color: isDark ? '#64748B' : '#94A3B8' }}>{item.sub}</div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <button onClick={() => navigate('/register')} style={{ padding: '13px 28px', background: '#0EA5A0', color: 'white', border: 'none', borderRadius: 99, fontWeight: 700, fontSize: 14, cursor: 'pointer', boxShadow: '0 4px 14px rgba(14,165,160,0.35)', transition: 'all 0.2s' }}>
+                  Join Now →
+                </button>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <span style={{ fontSize: 12, color: isDark ? '#64748B' : '#94A3B8' }}>Also available on</span>
+                  <span style={{ fontSize: 18 }}>▶</span>
+                  <span style={{ fontSize: 18 }}>🍎</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right — Phone mockup */}
+            <div className="hide-mobile" style={{ display: 'flex', justifyContent: 'center' }}>
+              <div style={{
+                width: 280, background: isDark ? '#0A1628' : '#0F2A3F',
+                borderRadius: 32, padding: '20px', boxShadow: '0 24px 60px rgba(0,0,0,0.4)',
+                border: '4px solid ' + (isDark ? '#1A3A52' : '#1A3A52'),
+                position: 'relative',
+              }}>
+                {/* Phone notch */}
+                <div style={{ width: 80, height: 6, background: '#1A3A52', borderRadius: 99, margin: '0 auto 20px' }} />
+
+                {/* Mini app preview */}
+                <div style={{ background: isDark ? '#0F2035' : '#F8FAFC', borderRadius: 20, padding: '16px', marginBottom: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                    <div style={{ width: 28, height: 28, background: '#0EA5A0', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>🏪</div>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: isDark ? '#F1F5F9' : '#0F2A3F' }}>NukkadMarket</span>
+                  </div>
+                  <div style={{ background: isDark ? '#1A3A52' : 'white', borderRadius: 10, padding: '10px 12px', marginBottom: 10, border: '1px solid rgba(14,165,160,0.15)' }}>
+                    <div style={{ fontSize: 11, color: '#94A3B8' }}>Search anything...</div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8, marginBottom: 12 }}>
+                    {['🛍️','🏠','🚗','🔧'].map((icon, i) => (
+                      <div key={i} style={{ background: 'rgba(14,165,160,0.1)', borderRadius: 10, padding: '10px', textAlign: 'center', fontSize: 20 }}>{icon}</div>
+                    ))}
+                  </div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: isDark ? '#94A3B8' : '#64748B', marginBottom: 8 }}>Trending Near You</div>
+                  {[
+                    { title: 'iPhone 13 Pro', price: '₹65,000', loc: 'Karol Bagh, Delhi' },
+                    { title: 'Honda Activa', price: '₹45,000', loc: 'Sector 62, Noida' },
+                  ].map(function(item) {
+                    return (
+                      <div key={item.title} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: '1px solid rgba(14,165,160,0.1)', alignItems: 'center' }}>
+                        <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(14,165,160,0.1)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>📱</div>
+                        <div>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: isDark ? '#F1F5F9' : '#0F2A3F' }}>{item.title}</div>
+                          <div style={{ fontSize: 11, color: '#0EA5A0', fontWeight: 700 }}>{item.price}</div>
+                          <div style={{ fontSize: 10, color: '#94A3B8' }}>📍 {item.loc}</div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ POPULAR CITIES ══ */}
+      <section style={{ padding: '60px 20px', background: isDark ? '#0A1628' : '#FFFFFF' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 36 }}>
+            <h2 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 26, fontWeight: 700, color: isDark ? '#F1F5F9' : '#0F2A3F', marginBottom: 8 }}>Popular Cities</h2>
+            <div style={{ width: 48, height: 3, background: '#0EA5A0', borderRadius: 99, margin: '0 auto' }} />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 14 }}>
+            {popularCitiesSlice.map(function(item) {
               return (
                 <div key={item.city}
-                  onClick={function() { navigate('/browse?city=' + item.city) }}
+                  onClick={() => navigate('/browse?city=' + item.city)}
                   style={{
-                    background: 'white', borderRadius: 16, padding: '16px 10px',
-                    textAlign: 'center', cursor: 'pointer',
-                    border: '2px solid transparent',
-                    boxShadow: '0 2px 8px rgba(107,33,168,0.06)',
-                    transition: 'all 0.2s',
+                    background: isDark ? '#0F2035' : '#FFFFFF',
+                    border: '1.5px solid ' + (isDark ? 'rgba(14,165,160,0.15)' : '#E2E8F0'),
+                    borderRadius: 16, padding: '20px 12px', textAlign: 'center',
+                    cursor: 'pointer', transition: 'all 0.25s',
                   }}
-                  onMouseEnter={function(e) {
-                    e.currentTarget.style.borderColor = '#6B21A8'
-                    e.currentTarget.style.transform = 'translateY(-4px)'
-                    e.currentTarget.style.boxShadow = '0 8px 20px rgba(107,33,168,0.15)'
-                  }}
-                  onMouseLeave={function(e) {
-                    e.currentTarget.style.borderColor = 'transparent'
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(107,33,168,0.06)'
-                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#0EA5A0'; e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(14,165,160,0.15)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? 'rgba(14,165,160,0.15)' : '#E2E8F0'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none' }}
                 >
-                  <div style={{ fontSize: 28, marginBottom: 6 }}>{item.emoji}</div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{item.city}</div>
-                  <div style={{ fontSize: 10, color: '#9CA3AF' }}>{item.state}</div>
+                  <div style={{ fontSize: 32, marginBottom: 8 }}>{item.emoji}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: isDark ? '#F1F5F9' : '#0F2A3F', marginBottom: 2 }}>{item.city}</div>
+                  <div style={{ fontSize: 11, color: '#0EA5A0', fontWeight: 600 }}>{item.state}</div>
                 </div>
               )
             })}
           </div>
         </div>
+      </section>
 
-        {/* Trust Section */}
-        <div style={{
-          background: 'linear-gradient(135deg, #1E0533 0%, #3B0764 50%, #6B21A8 100%)',
-          borderRadius: 28, padding: '40px 28px', marginBottom: 40,
-          position: 'relative', overflow: 'hidden',
-        }}>
-          <div style={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(245,158,11,0.08)' }} />
-          <div style={{ position: 'absolute', bottom: -60, left: -30, width: 180, height: 180, borderRadius: '50%', background: 'rgba(255,255,255,0.03)' }} />
-
-          <div style={{ textAlign: 'center', marginBottom: 32, position: 'relative', zIndex: 1 }}>
-            <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 26, fontWeight: 700, color: 'white', marginBottom: 4 }}>
-              Why NukkadMarket? 🏆
+      {/* ══ SUPPORT BANNER ══ */}
+      <section style={{ padding: '0 20px 60px', background: isDark ? '#0A1628' : '#FFFFFF' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{
+            background: isDark ? '#0F2035' : '#F8FAFC',
+            border: '1.5px solid ' + (isDark ? 'rgba(14,165,160,0.15)' : '#E2E8F0'),
+            borderRadius: 20, padding: '20px 28px',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            flexWrap: 'wrap', gap: 16,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{ width: 48, height: 48, background: 'rgba(14,165,160,0.1)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>🤝</div>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: isDark ? '#F1F5F9' : '#0F2A3F' }}>Need Help? We are here!</div>
+                <div style={{ fontSize: 13, color: isDark ? '#64748B' : '#94A3B8' }}>📞 +91 70552 52609 • 📧 nukkadmarket25@gmail.com</div>
+              </div>
             </div>
-            <div style={{
-              fontSize: 14, fontWeight: 600,
-              background: 'linear-gradient(135deg, #FCD34D, #F59E0B)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            }}>
-              India ka sabse trusted hyperlocal platform
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, position: 'relative', zIndex: 1 }}>
-            {trustPoints.map(function(item) {
-              return (
-                <div key={item.title} style={{
-                  background: 'rgba(255,255,255,0.07)',
-                  borderRadius: 20, padding: '22px 16px',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  textAlign: 'center', transition: 'all 0.2s',
-                }}
-                  onMouseEnter={function(e) {
-                    e.currentTarget.style.background = 'rgba(245,158,11,0.12)'
-                    e.currentTarget.style.borderColor = 'rgba(245,158,11,0.3)'
-                  }}
-                  onMouseLeave={function(e) {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.07)'
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
-                  }}
-                >
-                  <div style={{ fontSize: 30, marginBottom: 10 }}>{item.icon}</div>
-                  <div style={{ color: 'white', fontWeight: 700, fontSize: 13, marginBottom: 6 }}>{item.title}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 11, lineHeight: 1.6 }}>{item.desc}</div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* CTA Banner */}
-        <div style={{
-          background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
-          borderRadius: 28, padding: '40px 28px',
-          textAlign: 'center', marginBottom: 40,
-          position: 'relative', overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(245,158,11,0.3)',
-        }}>
-
-
-          <div style={{ position: 'absolute', top: -30, left: -30, width: 160, height: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
-          <div style={{ position: 'absolute', bottom: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
-
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{ fontSize: 44, marginBottom: 12 }}>🏪</div>
-            <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 800, color: 'white', marginBottom: 8 }}>
-              Aaj Hi Apne Nukkad Pe Becho!
-            </div>
-            <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: 15, marginBottom: 28, lineHeight: 1.7 }}>
-              Free mein listing daalo — crores of buyers tak pahuncho<br />
-              <span style={{ fontSize: 13, opacity: 0.85 }}>No hidden charges • No commission • 100% Free</span>
-            </div>
-            <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <button onClick={function() { navigate('/post') }}
-                style={{
-                  background: 'white', color: '#D97706', border: 'none',
-                  padding: '14px 36px', borderRadius: 99, fontWeight: 800,
-                  fontSize: 15, cursor: 'pointer', fontFamily: 'Nunito, sans-serif',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                }}>
-                ➕ Post Free Ad
-              </button>
-              <button onClick={function() { navigate('/browse') }}
-                style={{
-                  background: 'rgba(255,255,255,0.2)', color: 'white',
-                  border: '2px solid rgba(255,255,255,0.5)',
-                  padding: '14px 36px', borderRadius: 99, fontWeight: 700,
-                  fontSize: 15, cursor: 'pointer', fontFamily: 'Nunito, sans-serif',
-                }}>
-                🔍 Browse Listings
-              </button>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <a href="tel:+917055252609" style={{ padding: '9px 18px', background: '#0EA5A0', color: 'white', borderRadius: 99, fontWeight: 700, fontSize: 13, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>📞 Call</a>
+              <a href="https://wa.me/917055252609" target="_blank" rel="noopener noreferrer" style={{ padding: '9px 18px', background: 'rgba(14,165,160,0.1)', color: '#0EA5A0', border: '1.5px solid rgba(14,165,160,0.2)', borderRadius: 99, fontWeight: 700, fontSize: 13, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>💬 WhatsApp</a>
+              <button onClick={() => navigate('/support')} style={{ padding: '9px 18px', background: 'transparent', color: isDark ? '#94A3B8' : '#475569', border: '1.5px solid ' + (isDark ? 'rgba(14,165,160,0.2)' : '#E2E8F0'), borderRadius: 99, fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>Help Center</button>
             </div>
           </div>
         </div>
+      </section>
 
-{/* Support Banner */}
-<div style={{
-  background: 'white', borderRadius: 16, padding: '14px 20px',
-  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-  flexWrap: 'wrap', gap: 12, marginBottom: 20,
-  marginTop: 0,  // ← ensure no negative margin
-  boxShadow: '0 2px 12px rgba(107,33,168,0.06)',
-  border: '1.5px solid rgba(107,33,168,0.08)',
-}}>
-  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-    <div style={{
-      width: 44, height: 44,  // ← 56 se 44 kiya
-      background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
-      borderRadius: 12, display: 'flex', alignItems: 'center',
-      justifyContent: 'center', fontSize: 22, flexShrink: 0,
-    }}>🤝</div>
-    <div>
-      <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 15, fontWeight: 800, color: '#111827' }}>
-        Koi problem? Hum yahan hain!
-      </div>
-      <div style={{ fontSize: 12, color: '#6B7280' }}>
-        📞 +91 70552 52609 &nbsp;|&nbsp; 📧 nukkadmarket25@gmail.com
-      </div>
-    </div>
-  </div>
-  <div style={{ display: 'flex', gap: 8 }}>
-    <a href="tel:+917055252609" style={{ background: 'linear-gradient(135deg, #6B21A8, #7C3AED)', color: 'white', borderRadius: 99, padding: '8px 16px', fontWeight: 700, fontSize: 12, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
-      📞 Call
-    </a>
-    <a href="https://wa.me/917055252609" target="_blank" rel="noopener noreferrer" style={{ background: 'linear-gradient(135deg, #059669, #10B981)', color: 'white', borderRadius: 99, padding: '8px 16px', fontWeight: 700, fontSize: 12, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
-      💬 WhatsApp
-    </a>
-    <button onClick={function() { navigate('/support') }} style={{ background: 'white', color: '#6B21A8', border: '1.5px solid #6B21A8', borderRadius: 99, padding: '8px 14px', fontWeight: 700, fontSize: 12, cursor: 'pointer', fontFamily: 'Nunito, sans-serif' }}>
-      Help Center
-    </button>
-  </div>
-</div>
-
-      </div>
     </div>
   )
 }
