@@ -50,8 +50,8 @@ export default function About() {
   const [activeFaq, setActiveFaq] = useState(null)
 
   var stats = [
-    { num: 50000, suffix: '+', label: 'Active Listings', icon: '🛍️', color: '#6B21A8' },
-    { num: 10000, suffix: '+', label: 'Happy Users',     icon: '😊', color: '#F59E0B' },
+    { num: 50000, suffix: '+', label: 'Active Listings', icon: '🛍️', color: '#0EA5A0' },
+    { num: 10000, suffix: '+', label: 'Happy Users',     icon: '😊', color: '#0EA5A0' },
     { num: 100,   suffix: '+', label: 'Cities',          icon: '🏙️', color: '#059669' },
     { num: 98,    suffix: '%', label: 'Satisfaction',    icon: '⭐', color: '#DC2626' },
   ]
@@ -65,7 +65,7 @@ export default function About() {
     {
       icon: '🔒', title: 'Safe & Secure',
       desc: 'Bank-grade encryption, verified sellers, aur 24/7 fraud monitoring. Aapka data hamesha safe.',
-      color: '#6B21A8', bg: '#F5F3FF',
+      color: '#0EA5A0', bg: '#E6F7F7',
     },
     {
       icon: '🚀', title: '100% Free — Forever',
@@ -116,7 +116,7 @@ export default function About() {
 
       {/* ══ HERO SECTION ══ */}
       <section style={{
-        background: 'linear-gradient(135deg, #1E0533 0%, #3B0764 25%, #6B21A8 60%, #F59E0B 100%)',
+        background: 'linear-gradient(135deg, #0F2A3F 0%, #0C8A85 25%, #0EA5A0 60%, #0EA5A0 100%)',
         padding: '80px 16px 120px', textAlign: 'center',
         position: 'relative', overflow: 'hidden',
       }}>
@@ -140,7 +140,7 @@ export default function About() {
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             background: 'rgba(245,158,11,0.2)', borderRadius: 99,
-            padding: '8px 20px', fontSize: 13, color: '#FCD34D',
+            padding: '8px 20px', fontSize: 13, color: '#7FDED9',
             border: '1px solid rgba(245,158,11,0.3)', fontWeight: 700,
             marginBottom: 28,
           }}>
@@ -154,7 +154,7 @@ export default function About() {
             lineHeight: 1.05, marginBottom: 12,
           }}>
             Apna Nukkad,<br />
-            <span style={{ background: 'linear-gradient(135deg, #FCD34D, #F59E0B)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <span style={{ background: 'linear-gradient(135deg, #7FDED9, #0EA5A0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Apna Bazaar
             </span>
           </h1>
@@ -165,7 +165,7 @@ export default function About() {
 
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button onClick={function() { navigate('/browse') }} style={{
-              background: 'white', color: '#6B21A8', border: 'none',
+              background: 'white', color: '##0EA5A0', border: 'none',
               padding: '16px 36px', borderRadius: 99, fontWeight: 800,
               fontSize: 16, cursor: 'pointer', fontFamily: 'Nunito, sans-serif',
               boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
@@ -177,7 +177,7 @@ export default function About() {
               🔍 Explore Marketplace
             </button>
             <button onClick={function() { navigate('/post') }} style={{
-              background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: 'white',
+              background: 'linear-gradient(135deg, #0EA5A0, #D97706)', color: 'white',
               border: 'none', padding: '16px 36px', borderRadius: 99,
               fontWeight: 800, fontSize: 16, cursor: 'pointer',
               fontFamily: 'Nunito, sans-serif',
@@ -223,7 +223,7 @@ export default function About() {
       </section>
 
       {/* ══ MISSION SECTION ══ */}
-      <section style={{ padding: '80px 16px', background: 'linear-gradient(135deg, #1E0533, #3B0764, #6B21A8)' }}>
+      <section style={{ padding: '80px 16px', background: 'linear-gradient(135deg, #0F2A3F, #0C8A85, #0EA5A0)' }}>
         <div className="container" style={{ maxWidth: 900 }}>
           <AnimatedSection>
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
@@ -231,7 +231,7 @@ export default function About() {
                 Hamara Mission 🎯
               </div>
               <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.8)', lineHeight: 1.8, maxWidth: 700, margin: '0 auto' }}>
-                India mein <strong style={{ color: '#FCD34D' }}>har cheez ka ek nukkad</strong> hota hai — jahan log milte hain, sauda karte hain, aur connections banate hain. Hum wohi experience digital duniya mein laana chahte hain.
+                India mein <strong style={{ color: '#7FDED9' }}>har cheez ka ek nukkad</strong> hota hai — jahan log milte hain, sauda karte hain, aur connections banate hain. Hum wohi experience digital duniya mein laana chahte hain.
               </p>
             </div>
           </AnimatedSection>
@@ -239,8 +239,8 @@ export default function About() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
             {[
               { icon: '🌱', title: 'Empowering Small Sellers', desc: 'India ke crores small sellers ko ek platform dena jahan wo apna saman directly buyers tak pahuncha sakein — bina kisi middleman ke.', color: '#6EE7B7' },
-              { icon: '🤝', title: 'Building Trust', desc: 'Har transaction mein trust banana — verified sellers, secure payments, real reviews. Kyunki business sirf paison ka nahi, bharose ka bhi hai.', color: '#A78BFA' },
-              { icon: '🏙️', title: 'Connecting Communities', desc: 'Neighbors ko neighbours se connect karna. Apne shahar mein hi sauda — faster, cheaper, aur environment-friendly.', color: '#FCD34D' },
+              { icon: '🤝', title: 'Building Trust', desc: 'Har transaction mein trust banana — verified sellers, secure payments, real reviews. Kyunki business sirf paison ka nahi, bharose ka bhi hai.', color: '#0EA5A0' },
+              { icon: '🏙️', title: 'Connecting Communities', desc: 'Neighbors ko neighbours se connect karna. Apne shahar mein hi sauda — faster, cheaper, aur environment-friendly.', color: '#7FDED9' },
               { icon: '🇮🇳', title: 'Digital Bharat', desc: 'India ke tier 2, tier 3 cities ko bhi digital economy mein laana. NukkadMarket sirf metro cities ke liye nahi — har shehar ke liye.', color: '#FCA5A5' },
             ].map(function(item) {
               return (
@@ -310,7 +310,7 @@ export default function About() {
 
           <div style={{ position: 'relative' }}>
             {/* Vertical line */}
-            <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 2, background: 'linear-gradient(to bottom, #6B21A8, #F59E0B)', transform: 'translateX(-50%)', borderRadius: 99 }} className="hide-mobile" />
+            <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 2, background: 'linear-gradient(to bottom, #0EA5A0, #0EA5A0)', transform: 'translateX(-50%)', borderRadius: 99 }} className="hide-mobile" />
 
             {timeline.map(function(item, i) {
               var isLeft = i % 2 === 0
@@ -318,17 +318,17 @@ export default function About() {
                 <AnimatedSection key={i} delay={i * 100}>
                   <div style={{ display: 'flex', justifyContent: isLeft ? 'flex-start' : 'flex-end', marginBottom: 32, position: 'relative' }}>
                     {/* Center dot */}
-                    <div className="hide-mobile" style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg, #6B21A8, #7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, zIndex: 1, boxShadow: '0 4px 16px rgba(107,33,168,0.4)', border: '3px solid white' }}>
+                    <div className="hide-mobile" style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg, #0EA5A0, #0EA5A0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, zIndex: 1, boxShadow: '0 4px 16px 168rgba(107,33,,0.4)', border: '3px solid white' }}>
                       {item.icon}
                     </div>
 
-                    <div style={{ width: '45%', background: 'white', borderRadius: 20, padding: '20px 24px', boxShadow: '0 4px 16px rgba(107,33,168,0.08)', border: '2px solid rgba(107,33,168,0.08)', transition: 'all 0.3s' }}
-                      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(107,33,168,0.14)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-                      onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 16px rgba(107,33,168,0.08)'; e.currentTarget.style.transform = 'translateY(0)' }}
+                    <div style={{ width: '45%', background: 'white', borderRadius: 20, padding: '20px 24px', boxShadow: '0 4px 16px rgba(14,165,160,0.08)', border: '2px solid rgba(14,165,160,0.08)', transition: 'all 0.3s' }}
+                      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(14,165,160,0.14)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+                      onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 16px rgba(14,165,160,0.08)'; e.currentTarget.style.transform = 'translateY(0)' }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                         <span style={{ fontSize: 20 }}>{item.icon}</span>
-                        <span style={{ background: 'linear-gradient(135deg, #6B21A8, #7C3AED)', color: 'white', fontSize: 12, fontWeight: 800, padding: '3px 10px', borderRadius: 99 }}>{item.year}</span>
+                        <span style={{ background: 'linear-gradient(135deg, #0EA5A0, #0EA5A0)', color: 'white', fontSize: 12, fontWeight: 800, padding: '3px 10px', borderRadius: 99 }}>{item.year}</span>
                       </div>
                       <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 6 }}>{item.title}</div>
                       <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6 }}>{item.desc}</div>
@@ -360,17 +360,17 @@ export default function About() {
                   <div style={{
                     background: '#F8FAFC', borderRadius: 24, padding: '36px 28px',
                     textAlign: 'center', width: 280, cursor: 'pointer',
-                    border: '2px solid ' + (activeTeam === i ? '#6B21A8' : 'transparent'),
-                    boxShadow: activeTeam === i ? '0 16px 40px rgba(107,33,168,0.16)' : '0 4px 16px rgba(107,33,168,0.06)',
+                    border: '2px solid ' + (activeTeam === i ? '#0EA5A0' : 'transparent'),
+                    boxShadow: activeTeam === i ? '0 16px 40px rgba(14,165,160,0.16)' : '0 4px 16px rgba(14,165,160,0.06)',
                     transition: 'all 0.3s',
                   }}
                     onClick={() => setActiveTeam(activeTeam === i ? null : i)}
                   >
-                    <div style={{ width: 88, height: 88, borderRadius: '50%', background: 'linear-gradient(135deg, #6B21A8, #7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 44, margin: '0 auto 20px', boxShadow: '0 8px 24px rgba(107,33,168,0.3)' }}>
+                    <div style={{ width: 88, height: 88, borderRadius: '50%', background: 'linear-gradient(135deg, #0EA5A0, #0EA5A0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 44, margin: '0 auto 20px', boxShadow: '0 8px 24px rgba(14,165,160,0.3)' }}>
                       {member.emoji}
                     </div>
                     <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 22, fontWeight: 800, color: '#111827', marginBottom: 4 }}>{member.name}</div>
-                    <div style={{ background: 'linear-gradient(135deg, #6B21A8, #7C3AED)', color: 'white', fontSize: 12, fontWeight: 700, padding: '4px 14px', borderRadius: 99, display: 'inline-block', marginBottom: 12 }}>{member.role}</div>
+                    <div style={{ background: 'linear-gradient(135deg, #0EA5A0, #0EA5A0)', color: 'white', fontSize: 12, fontWeight: 700, padding: '4px 14px', borderRadius: 99, display: 'inline-block', marginBottom: 12 }}>{member.role}</div>
                     <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6 }}>{member.desc}</div>
                     <div style={{ marginTop: 12, fontSize: 12, color: '#9CA3AF', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                       📍 {member.city}
@@ -400,20 +400,20 @@ export default function About() {
               <AnimatedSection key={i} delay={i * 80}>
                 <div style={{
                   background: 'white', borderRadius: 18, marginBottom: 12,
-                  border: '2px solid ' + (activeFaq === i ? '#6B21A8' : 'transparent'),
-                  boxShadow: activeFaq === i ? '0 8px 24px rgba(107,33,168,0.12)' : '0 2px 10px rgba(0,0,0,0.04)',
+                  border: '2px solid ' + (activeFaq === i ? '#0EA5A0' : 'transparent'),
+                  boxShadow: activeFaq === i ? '0 8px 24px rgba(14,165,160,0.12)' : '0 2px 10px rgba(0,0,0,0.04)',
                   overflow: 'hidden', transition: 'all 0.25s',
                 }}>
                   <button onClick={() => setActiveFaq(activeFaq === i ? null : i)} style={{
                     width: '100%', display: 'flex', justifyContent: 'space-between',
                     alignItems: 'center', padding: '20px 24px',
-                    background: activeFaq === i ? '#F5F3FF' : 'none',
+                    background: activeFaq === i ? '#E6F7F7' : 'none',
                     border: 'none', cursor: 'pointer', textAlign: 'left', gap: 16,
                   }}>
                     <span style={{ fontSize: 16, fontWeight: 700, color: '#111827', flex: 1 }}>{faq.q}</span>
                     <div style={{
                       width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
-                      background: activeFaq === i ? 'linear-gradient(135deg, #6B21A8, #7C3AED)' : '#F3F4F6',
+                      background: activeFaq === i ? 'linear-gradient(135deg, #0EA5A0, #0EA5A0)' : '#F3F4F6',
                       color: activeFaq === i ? 'white' : '#6B7280',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 16, transition: 'all 0.2s',
@@ -444,7 +444,7 @@ export default function About() {
         <div className="container">
           <AnimatedSection>
             <div style={{
-              background: 'linear-gradient(135deg, #1E0533, #3B0764, #6B21A8)',
+              background: 'linear-gradient(135deg, #0F2A3F, #0C8A85, #0EA5A0)',
               borderRadius: 32, padding: '56px 40px', textAlign: 'center',
               position: 'relative', overflow: 'hidden',
             }}>
@@ -462,8 +462,8 @@ export default function About() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, maxWidth: 700, margin: '0 auto 36px' }}>
                   {[
-                    { icon: '📞', label: 'Phone / WhatsApp', value: '+91 70552 52609', href: 'tel:+917055252609', color: '#A78BFA' },
-                    { icon: '📧', label: 'Email', value: 'nukkadmarket25@gmail.com', href: 'mailto:nukkadmarket25@gmail.com', color: '#FCD34D' },
+                    { icon: '📞', label: 'Phone / WhatsApp', value: '+91 70552 52609', href: 'tel:+917055252609', color: '#0EA5A0' },
+                    { icon: '📧', label: 'Email', value: 'nukkadmarket25@gmail.com', href: 'mailto:nukkadmarket25@gmail.com', color: '#7FDED9' },
                     { icon: '⏰', label: 'Hours', value: 'Mon-Sat, 9AM-7PM', href: null, color: '#6EE7B7' },
                   ].map(function(c) {
                     var El = c.href ? 'a' : 'div'
@@ -505,7 +505,7 @@ export default function About() {
       </section>
 
       {/* ══ CTA SECTION ══ */}
-      <section style={{ padding: '60px 16px 80px', background: 'linear-gradient(135deg, #F59E0B, #D97706)' }}>
+      <section style={{ padding: '60px 16px 80px', background: 'linear-gradient(135deg, #0EA5A0, #D97706)' }}>
         <div className="container" style={{ textAlign: 'center' }}>
           <AnimatedSection>
             <div style={{ fontSize: 52, marginBottom: 16 }}>🏪</div>
@@ -538,7 +538,7 @@ export default function About() {
             {/* Brand */}
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                <div style={{ width: 44, height: 44, background: 'linear-gradient(135deg, #F59E0B, #D97706)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>🏪</div>
+                <div style={{ width: 44, height: 44, background: 'linear-gradient(135deg, #0EA5A0, #D97706)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>🏪</div>
                 <div>
                   <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 20, fontWeight: 800, color: 'white' }}>NukkadMarket</div>
                   <div style={{ fontSize: 10, color: 'rgba(245,158,11,0.7)', fontWeight: 600 }}>Apna Nukkad, Apna Bazaar</div>
@@ -576,7 +576,7 @@ export default function About() {
                 return (
                   <div key={link.path} onClick={() => navigate(link.path)}
                     style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', marginBottom: 10, cursor: 'pointer', transition: 'color 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#FCD34D'}
+                    onMouseEnter={e => e.currentTarget.style.color = '#7FDED9'}
                     onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
                   >
                     {link.label}
@@ -598,7 +598,7 @@ export default function About() {
                 return (
                   <div key={link.path} onClick={() => navigate(link.path)}
                     style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', marginBottom: 10, cursor: 'pointer', transition: 'color 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#FCD34D'}
+                    onMouseEnter={e => e.currentTarget.style.color = '#7FDED9'}
                     onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
                   >
                     {link.label}
@@ -620,7 +620,7 @@ export default function About() {
                 return (
                   <El key={c.label} href={c.href} target={c.href?.startsWith('http') ? '_blank' : undefined}
                     style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 10, textDecoration: 'none', cursor: c.href ? 'pointer' : 'default', transition: 'color 0.2s' }}
-                    onMouseEnter={c.href ? e => e.currentTarget.style.color = '#FCD34D' : undefined}
+                    onMouseEnter={c.href ? e => e.currentTarget.style.color = '#7FDED9' : undefined}
                     onMouseLeave={c.href ? e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)' : undefined}
                   >
                     <span>{c.icon}</span> {c.label}
@@ -639,7 +639,7 @@ export default function About() {
               {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map(function(t) {
                 return (
                   <span key={t} style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', transition: 'color 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#FCD34D'}
+                    onMouseEnter={e => e.currentTarget.style.color = '#7FDED9'}
                     onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}
                   >{t}</span>
                 )

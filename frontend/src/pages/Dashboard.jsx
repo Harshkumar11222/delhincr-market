@@ -8,11 +8,11 @@ function StatCard({ icon, label, value, sub, color, bg, onClick }) {
     <div onClick={onClick} style={{
       background: bg || 'white', borderRadius: 20, padding: '24px 20px',
       border: '2px solid transparent', transition: 'all 0.25s',
-      boxShadow: '0 4px 16px rgba(107,33,168,0.06)',
+      boxShadow: '0 4px 16px rgba(14,165,160,0.06)',
       cursor: onClick ? 'pointer' : 'default',
     }}
-      onMouseEnter={e => { if (onClick) { e.currentTarget.style.borderColor = color; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(107,33,168,0.14)' } }}
-      onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(107,33,168,0.06)' }}
+      onMouseEnter={e => { if (onClick) { e.currentTarget.style.borderColor = color; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(14,165,160,0.14)' } }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(14,165,160,0.06)' }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
         <div style={{ width: 48, height: 48, borderRadius: 14, background: color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>{icon}</div>
@@ -136,7 +136,7 @@ export default function Dashboard() {
       )}
 
       {/* Header */}
-      <div style={{ background: 'linear-gradient(135deg, #1E0533, #3B0764, #6B21A8)', padding: '28px 16px 48px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: 'linear-gradient(135deg, #0F2A3F, #0C8A85, #0EA5A0)', padding: '28px 16px 48px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(245,158,11,0.07)' }} />
         <div className="container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
@@ -152,7 +152,7 @@ export default function Dashboard() {
               </p>
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => navigate('/post')} style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)', color: 'white', border: 'none', borderRadius: 99, padding: '10px 20px', fontWeight: 800, fontSize: 14, cursor: 'pointer', fontFamily: 'Nunito, sans-serif', boxShadow: '0 4px 12px rgba(245,158,11,0.4)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button onClick={() => navigate('/post')} style={{ background: 'linear-gradient(135deg, #0EA5A0, #0C8A85)', color: 'white', border: 'none', borderRadius: 99, padding: '10px 20px', fontWeight: 800, fontSize: 14, cursor: 'pointer', fontFamily: 'Nunito, sans-serif', boxShadow: '0 4px 12px rgba(245,158,11,0.4)', display: 'flex', alignItems: 'center', gap: 6 }}>
                 ➕ New Listing
               </button>
               {user.isAdmin && (
@@ -172,7 +172,7 @@ export default function Dashboard() {
 <div style={{
   background: 'white', borderRadius: 16, padding: 6,
   display: 'flex', gap: 4, marginBottom: 24,
-  boxShadow: '0 4px 16px rgba(107,33,168,0.08)',
+  boxShadow: '0 4px 16px rgba(14,165,160,0.08)',
   overflowX: 'auto',
 }}>
   {tabs.map(function(t) {
@@ -183,12 +183,12 @@ export default function Dashboard() {
         fontFamily: 'Nunito, sans-serif',
         fontSize: 12, fontWeight: 700,
         background: tab === t.id
-          ? 'linear-gradient(135deg, #6B21A8, #7C3AED)'
+          ? 'linear-gradient(135deg, #0EA5A0, #0C8A85)'
           : 'transparent',
         color: tab === t.id ? 'white' : '#6B7280',
         transition: 'all 0.2s', whiteSpace: 'nowrap',
         boxShadow: tab === t.id
-          ? '0 4px 12px rgba(107,33,168,0.3)'
+          ? '0 4px 12px rgba(14,165,160,0.3)'
           : 'none',
       }}>
         {t.icon} {t.label}
@@ -211,27 +211,27 @@ export default function Dashboard() {
               <div>
                 {/* Main Stats */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 24 }}>
-                  <StatCard icon="🛍️" label="Total Listings" value={stats.totalListings} sub={stats.activeListings + ' active'} color="#6B21A8" onClick={() => setTab('listings')} />
+                  <StatCard icon="🛍️" label="Total Listings" value={stats.totalListings} sub={stats.activeListings + ' active'} color="#0EA5A0" onClick={() => setTab('listings')} />
                   <StatCard icon="👁️" label="Total Views" value={stats.totalViews.toLocaleString('en-IN')} sub="All time" color="#2563EB" />
                   <StatCard icon="📦" label="Pending Orders" value={stats.pendingOrders} sub="Action needed" color="#D97706" onClick={() => setTab('orders')} />
                   <StatCard icon="💰" label="Revenue Earned" value={'₹' + stats.revenue.toLocaleString('en-IN')} sub="Completed sales" color="#059669" />
                   <StatCard icon="🎉" label="Items Sold" value={stats.totalSold} sub="Completed" color="#DC2626" />
                   <StatCard icon="⭐" label="Avg Rating" value={stats.avgRating} sub={data.reviews.length + ' reviews'} color="#F59E0B" />
-                  <StatCard icon="🛒" label="Purchases" value={stats.totalBought} sub="Items bought" color="#7C3AED" onClick={() => navigate('/orders')} />
+                  <StatCard icon="🛒" label="Purchases" value={stats.totalBought} sub="Items bought" color="#0C8A85" onClick={() => navigate('/orders')} />
                   <StatCard icon="💬" label="Messages" value="Chat" sub="View inbox" color="#059669" onClick={() => navigate('/messages')} />
                 </div>
 
                 {/* Quick Actions */}
-                <div style={{ background: 'white', borderRadius: 20, padding: '24px', marginBottom: 24, boxShadow: '0 4px 16px rgba(107,33,168,0.06)' }}>
+                <div style={{ background: 'white', borderRadius: 20, padding: '24px', marginBottom: 24, boxShadow: '0 4px 16px rgba(14,165,160,0.06)' }}>
                   <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, marginBottom: 16 }}>⚡ Quick Actions</div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
                     {[
-                      { icon: '➕', label: 'Post New Ad', color: '#6B21A8', path: '/post' },
+                      { icon: '➕', label: 'Post New Ad', color: '#0EA5A0', path: '/post' },
                       { icon: '🔍', label: 'Browse Items', color: '#2563EB', path: '/browse' },
                       { icon: '🔧', label: 'Services', color: '#059669', path: '/services' },
                       { icon: '🚗', label: 'Rentals', color: '#DC2626', path: '/rentals' },
                       { icon: '📦', label: 'My Orders', color: '#D97706', path: '/orders' },
-                      { icon: '🤝', label: 'Support', color: '#7C3AED', path: '/support' },
+                      { icon: '🤝', label: 'Support', color: '#0C8A85', path: '/support' },
                     ].map(function(action) {
                       return (
                         <div key={action.label} onClick={() => navigate(action.path)} style={{
@@ -254,10 +254,10 @@ export default function Dashboard() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
 
                   {/* Recent Listings */}
-                  <div style={{ background: 'white', borderRadius: 20, padding: '20px', boxShadow: '0 4px 16px rgba(107,33,168,0.06)' }}>
+                  <div style={{ background: 'white', borderRadius: 20, padding: '20px', boxShadow: '0 4px 16px rgba(14,165,160,0.06)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
                       <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 16, fontWeight: 800 }}>🛍️ Recent Listings</div>
-                      <button onClick={() => setTab('listings')} style={{ background: 'none', border: 'none', color: '#6B21A8', fontWeight: 700, cursor: 'pointer', fontSize: 12 }}>View All →</button>
+                      <button onClick={() => setTab('listings')} style={{ background: 'none', border: 'none', color: '#0EA5A0', fontWeight: 700, cursor: 'pointer', fontSize: 12 }}>View All →</button>
                     </div>
                     {data.listings.slice(0, 4).map(function(l) {
                       return (
@@ -267,7 +267,7 @@ export default function Dashboard() {
                           <div style={{ flex: 1, overflow: 'hidden' }}>
                             <div style={{ fontSize: 13, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.title}</div>
                             <div style={{ display: 'flex', gap: 8, marginTop: 2 }}>
-                              <span style={{ fontFamily: 'Baloo 2, cursive', fontSize: 14, fontWeight: 800, color: '#6B21A8' }}>₹{(l.price || 0).toLocaleString('en-IN')}</span>
+                              <span style={{ fontFamily: 'Baloo 2, cursive', fontSize: 14, fontWeight: 800, color: '#0EA5A0' }}>₹{(l.price || 0).toLocaleString('en-IN')}</span>
                               <span style={{ fontSize: 11, color: '#9CA3AF' }}>👁 {l.views || 0}</span>
                             </div>
                           </div>
@@ -279,16 +279,16 @@ export default function Dashboard() {
                     })}
                     {data.listings.length === 0 && (
                       <div style={{ textAlign: 'center', padding: '20px 0', color: '#9CA3AF', fontSize: 13 }}>
-                        Koi listing nahi — <button onClick={() => navigate('/post')} style={{ background: 'none', border: 'none', color: '#6B21A8', cursor: 'pointer', fontWeight: 700 }}>Post karo!</button>
+                        Koi listing nahi — <button onClick={() => navigate('/post')} style={{ background: 'none', border: 'none', color: '#0EA5A0', cursor: 'pointer', fontWeight: 700 }}>Post karo!</button>
                       </div>
                     )}
                   </div>
 
                   {/* Recent Orders */}
-                  <div style={{ background: 'white', borderRadius: 20, padding: '20px', boxShadow: '0 4px 16px rgba(107,33,168,0.06)' }}>
+                  <div style={{ background: 'white', borderRadius: 20, padding: '20px', boxShadow: '0 4px 16px rgba(14,165,160,0.06)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
                       <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 16, fontWeight: 800 }}>📦 Recent Orders</div>
-                      <button onClick={() => setTab('orders')} style={{ background: 'none', border: 'none', color: '#6B21A8', fontWeight: 700, cursor: 'pointer', fontSize: 12 }}>View All →</button>
+                      <button onClick={() => setTab('orders')} style={{ background: 'none', border: 'none', color: '#0EA5A0', fontWeight: 700, cursor: 'pointer', fontSize: 12 }}>View All →</button>
                     </div>
                     {[...data.orders.sold, ...data.orders.bought].slice(0, 4).map(function(o) {
                       var sc = { pending: { c: '#D97706', i: '⏳' }, confirmed: { c: '#2563EB', i: '✅' }, completed: { c: '#059669', i: '🎉' }, cancelled: { c: '#DC2626', i: '❌' } }[o.status] || { c: '#D97706', i: '⏳' }
@@ -300,7 +300,7 @@ export default function Dashboard() {
                             <div style={{ fontSize: 12, color: '#9CA3AF' }}>by {o.buyerName}</div>
                           </div>
                           <div style={{ textAlign: 'right' }}>
-                            <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 14, fontWeight: 800, color: '#6B21A8' }}>₹{(o.listingPrice || 0).toLocaleString('en-IN')}</div>
+                            <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 14, fontWeight: 800, color: '#0EA5A0' }}>₹{(o.listingPrice || 0).toLocaleString('en-IN')}</div>
                             <span style={{ fontSize: 10, color: sc.c, fontWeight: 700 }}>{o.status}</span>
                           </div>
                         </div>
@@ -338,21 +338,21 @@ export default function Dashboard() {
                   <div style={{ display: 'grid', gap: 14 }}>
                     {data.listings.map(function(l) {
                       return (
-                        <div key={l._id} style={{ background: 'white', borderRadius: 20, padding: '16px 20px', display: 'flex', gap: 16, alignItems: 'center', boxShadow: '0 2px 10px rgba(107,33,168,0.06)', border: '1px solid rgba(107,33,168,0.06)', opacity: l.isActive ? 1 : 0.7 }}>
+                        <div key={l._id} style={{ background: 'white', borderRadius: 20, padding: '16px 20px', display: 'flex', gap: 16, alignItems: 'center', boxShadow: '0 2px 10px rgba(14,165,160,0.06)', border: '1px solid rgba(14,165,160,0.06)', opacity: l.isActive ? 1 : 0.7 }}>
                           <img src={l.images?.[0] || 'https://placehold.co/72x72?text=Item'} alt={l.title}
                             style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 14, flexShrink: 0, cursor: 'pointer' }}
                             onClick={() => navigate('/listing/' + l._id)} />
                           <div style={{ flex: 1 }}>
                             <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 4, cursor: 'pointer' }} onClick={() => navigate('/listing/' + l._id)}>{l.title}</div>
                             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-                              <span style={{ fontFamily: 'Baloo 2, cursive', fontSize: 20, fontWeight: 800, color: '#6B21A8' }}>₹{(l.price || 0).toLocaleString('en-IN')}</span>
+                              <span style={{ fontFamily: 'Baloo 2, cursive', fontSize: 20, fontWeight: 800, color: '#0EA5A0' }}>₹{(l.price || 0).toLocaleString('en-IN')}</span>
                               <span style={{ fontSize: 12, color: '#9CA3AF' }}>👁 {l.views || 0} views</span>
                               <span style={{ fontSize: 12, color: '#9CA3AF' }}>📍 {l.city}</span>
                               <span style={{ fontSize: 12, color: '#9CA3AF' }}>📅 {new Date(l.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
                             </div>
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
-                            <button onClick={() => navigate('/listing/' + l._id)} style={{ background: '#F5F3FF', color: '#6B21A8', border: 'none', borderRadius: 10, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap' }}>
+                            <button onClick={() => navigate('/listing/' + l._id)} style={{ background: '#E6F7F7', color: '#0EA5A0', border: 'none', borderRadius: 10, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap' }}>
                               👁 View
                             </button>
                             <button onClick={() => toggleActive(l._id, l.isActive)} style={{ background: l.isActive ? '#FFFBEB' : '#ECFDF5', color: l.isActive ? '#D97706' : '#059669', border: 'none', borderRadius: 10, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap' }}>
@@ -391,13 +391,13 @@ export default function Dashboard() {
                   <div style={{ marginBottom: 28 }}>
                     <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
                       🏪 Selling Orders
-                      <span style={{ background: '#F5F3FF', color: '#6B21A8', fontSize: 12, padding: '2px 10px', borderRadius: 99 }}>{data.orders.sold.length}</span>
+                      <span style={{ background: '#E6F7F7', color: '#0EA5A0', fontSize: 12, padding: '2px 10px', borderRadius: 99 }}>{data.orders.sold.length}</span>
                     </div>
                     <div style={{ display: 'grid', gap: 12 }}>
                       {data.orders.sold.map(function(o) {
                         var sc = { pending: { color: '#D97706', bg: '#FFFBEB', icon: '⏳' }, confirmed: { color: '#2563EB', bg: '#EFF6FF', icon: '✅' }, completed: { color: '#059669', bg: '#ECFDF5', icon: '🎉' }, cancelled: { color: '#DC2626', bg: '#FEF2F2', icon: '❌' } }[o.status] || { color: '#D97706', bg: '#FFFBEB', icon: '⏳' }
                         return (
-                          <div key={o._id} style={{ background: 'white', borderRadius: 18, overflow: 'hidden', boxShadow: '0 2px 10px rgba(107,33,168,0.06)', border: '2px solid ' + sc.color + '30' }}>
+                          <div key={o._id} style={{ background: 'white', borderRadius: 18, overflow: 'hidden', boxShadow: '0 2px 10px rgba(14,165,160,0.06)', border: '2px solid ' + sc.color + '30' }}>
                             <div style={{ background: sc.bg, padding: '10px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <span style={{ fontSize: 14, fontWeight: 800, color: sc.color }}>{sc.icon} {o.status.toUpperCase()}</span>
                               <span style={{ fontSize: 12, color: '#9CA3AF' }}>{new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
@@ -409,7 +409,7 @@ export default function Dashboard() {
                                 <div style={{ fontSize: 13, color: '#6B7280' }}>🛒 Buyer: <strong>{o.buyerName}</strong> • 📍 {o.address}</div>
                                 <div style={{ fontSize: 13, color: '#6B7280' }}>💳 {o.paymentMethod}</div>
                               </div>
-                              <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 22, fontWeight: 800, color: '#6B21A8', flexShrink: 0 }}>
+                              <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 22, fontWeight: 800, color: '#0EA5A0', flexShrink: 0 }}>
                                 ₹{(o.listingPrice || 0).toLocaleString('en-IN')}
                               </div>
                             </div>
@@ -426,12 +426,12 @@ export default function Dashboard() {
                                   </>
                                 )}
                                 {o.status === 'confirmed' && (
-                                  <button onClick={() => updateOrderStatus(o._id, 'completed')} style={{ flex: 1, background: 'linear-gradient(135deg, #6B21A8, #7C3AED)', color: 'white', border: 'none', borderRadius: 99, padding: '10px', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>
+                                  <button onClick={() => updateOrderStatus(o._id, 'completed')} style={{ flex: 1, background: 'linear-gradient(135deg, #0EA5A0, #0C8A85)', color: 'white', border: 'none', borderRadius: 99, padding: '10px', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>
                                     🎉 Mark Complete
                                   </button>
                                 )}
                                 {o.buyerPhone && (
-                                  <a href={'tel:' + o.buyerPhone} style={{ padding: '10px 16px', background: '#F5F3FF', color: '#6B21A8', borderRadius: 99, fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>📞</a>
+                                  <a href={'tel:' + o.buyerPhone} style={{ padding: '10px 16px', background: '#E6F7F7', color: '#0EA5A0', borderRadius: 99, fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>📞</a>
                                 )}
                               </div>
                             )}
@@ -459,14 +459,14 @@ export default function Dashboard() {
                 <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 22, fontWeight: 800, marginBottom: 20 }}>📈 Analytics</div>
 
                 {/* Views Chart */}
-                <div style={{ background: 'white', borderRadius: 20, padding: '24px', marginBottom: 20, boxShadow: '0 4px 16px rgba(107,33,168,0.06)' }}>
+                <div style={{ background: 'white', borderRadius: 20, padding: '24px', marginBottom: 20, boxShadow: '0 4px 16px rgba(14,165,160,0.06)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
                     <div>
                       <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800 }}>👁️ Listing Views</div>
                       <div style={{ fontSize: 13, color: '#6B7280' }}>Last 7 days</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 800, color: '#6B21A8' }}>{stats.totalViews}</div>
+                      <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 800, color: '#0EA5A0' }}>{stats.totalViews}</div>
                       <div style={{ fontSize: 12, color: '#059669', fontWeight: 700 }}>Total views</div>
                     </div>
                   </div>
@@ -476,8 +476,8 @@ export default function Dashboard() {
                       var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Today']
                       return (
                         <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, height: '100%', justifyContent: 'flex-end' }}>
-                          <div style={{ fontSize: 10, color: '#6B21A8', fontWeight: 700 }}>{v}</div>
-                          <div style={{ width: '100%', borderRadius: '6px 6px 0 0', background: i === 6 ? 'linear-gradient(135deg, #6B21A8, #7C3AED)' : 'linear-gradient(135deg, #6B21A8, #7C3AED)', opacity: i === 6 ? 1 : 0.3 + (i / viewsChart.length * 0.5), height: (v / max * 80) + '%', minHeight: 8, transition: 'height 0.5s ease' }} />
+                          <div style={{ fontSize: 10, color: '#0EA5A0', fontWeight: 700 }}>{v}</div>
+                          <div style={{ width: '100%', borderRadius: '6px 6px 0 0', background: i === 6 ? 'linear-gradient(135deg, #0EA5A0, #0C8A85)' : 'linear-gradient(135deg, #0EA5A0, #0C8A85)', opacity: i === 6 ? 1 : 0.3 + (i / viewsChart.length * 0.5), height: (v / max * 80) + '%', minHeight: 8, transition: 'height 0.5s ease' }} />
                           <div style={{ fontSize: 10, color: '#9CA3AF' }}>{days[i]}</div>
                         </div>
                       )
@@ -489,7 +489,7 @@ export default function Dashboard() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
 
                   {/* Top Listing */}
-                  <div style={{ background: 'white', borderRadius: 20, padding: '20px', boxShadow: '0 4px 16px rgba(107,33,168,0.06)' }}>
+                  <div style={{ background: 'white', borderRadius: 20, padding: '20px', boxShadow: '0 4px 16px rgba(14,165,160,0.06)' }}>
                     <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 16, fontWeight: 800, marginBottom: 14 }}>🏆 Top Listings</div>
                     {[...data.listings].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 4).map(function(l, i) {
                       var maxViews = Math.max(...data.listings.map(l => l.views || 0), 1)
@@ -499,10 +499,10 @@ export default function Dashboard() {
                             <span style={{ fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                               {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '🔹'} {l.title}
                             </span>
-                            <span style={{ fontSize: 13, color: '#6B21A8', fontWeight: 700, flexShrink: 0, marginLeft: 8 }}>{l.views || 0}</span>
+                            <span style={{ fontSize: 13, color: '#0EA5A0', fontWeight: 700, flexShrink: 0, marginLeft: 8 }}>{l.views || 0}</span>
                           </div>
                           <div style={{ height: 6, background: '#F3F4F6', borderRadius: 99, overflow: 'hidden' }}>
-                            <div style={{ width: ((l.views || 0) / maxViews * 100) + '%', height: '100%', background: 'linear-gradient(135deg, #6B21A8, #7C3AED)', borderRadius: 99, transition: 'width 0.8s ease' }} />
+                            <div style={{ width: ((l.views || 0) / maxViews * 100) + '%', height: '100%', background: 'linear-gradient(135deg, #0EA5A0, #0C8A85)', borderRadius: 99, transition: 'width 0.8s ease' }} />
                           </div>
                         </div>
                       )
@@ -511,7 +511,7 @@ export default function Dashboard() {
                   </div>
 
                   {/* Revenue Breakdown */}
-                  <div style={{ background: 'white', borderRadius: 20, padding: '20px', boxShadow: '0 4px 16px rgba(107,33,168,0.06)' }}>
+                  <div style={{ background: 'white', borderRadius: 20, padding: '20px', boxShadow: '0 4px 16px rgba(14,165,160,0.06)' }}>
                     <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 16, fontWeight: 800, marginBottom: 14 }}>💰 Revenue Breakdown</div>
                     {[
                       { label: 'Completed Sales', value: stats.revenue, color: '#059669', icon: '✅' },
@@ -530,7 +530,7 @@ export default function Dashboard() {
                     })}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0' }}>
                       <span style={{ fontSize: 14, fontWeight: 800, color: '#111827' }}>Total Pipeline</span>
-                      <span style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, color: '#6B21A8' }}>
+                      <span style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, color: '#0EA5A0' }}>
                         ₹{data.orders.sold.reduce((a, o) => a + (o.listingPrice || 0), 0).toLocaleString('en-IN')}
                       </span>
                     </div>
@@ -538,7 +538,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Tips */}
-                <div style={{ background: 'linear-gradient(135deg, #1E0533, #3B0764, #6B21A8)', borderRadius: 20, padding: '24px' }}>
+                <div style={{ background: 'linear-gradient(135deg, #0F2A3F, #0C8A85, #0EA5A0)', borderRadius: 20, padding: '24px' }}>
                   <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, color: 'white', marginBottom: 16 }}>💡 Sell More Tips</div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
                     {[

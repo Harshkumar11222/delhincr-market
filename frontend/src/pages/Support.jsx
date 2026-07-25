@@ -43,12 +43,12 @@ const faqs = [
 ]
 
 const ticketCategories = [
-  { id: 'listing', label: '🛍️ Listing Problem', color: '#6B21A8' },
+  { id: 'listing', label: '🛍️ Listing Problem', color: '#0EA5A0' },
   { id: 'payment', label: '💰 Payment Issue', color: '#D97706' },
   { id: 'account', label: '👤 Account Problem', color: '#2563EB' },
   { id: 'fraud', label: '🚨 Report Fraud', color: '#DC2626' },
   { id: 'technical', label: '⚙️ Technical Issue', color: '#059669' },
-  { id: 'feedback', label: '💡 Feedback/Suggestion', color: '#7C3AED' },
+  { id: 'feedback', label: '💡 Feedback/Suggestion', color: '#0EA5A0' },
   { id: 'other', label: '📋 Other', color: '#374151' },
 ]
 
@@ -129,7 +129,7 @@ export default function Support() {
 
       {/* Hero */}
       <div style={{
-        background: 'linear-gradient(135deg, #1E0533 0%, #3B0764 40%, #6B21A8 80%, #7C3AED 100%)',
+        background: 'linear-gradient(135deg, #0F2A3F 0%, #0C8A85 40%, #0EA5A0 80%, #0EA5A0 100%)',
         padding: '48px 16px 80px', textAlign: 'center',
         position: 'relative', overflow: 'hidden',
       }}>
@@ -163,7 +163,7 @@ export default function Support() {
           <div style={{
             maxWidth: 500, margin: '0 auto',
             display: 'flex', background: 'white', borderRadius: 99,
-            boxShadow: '0 8px 32px rgba(107,33,168,0.3)',
+            boxShadow: '0 8px 32px rgba(14,165,160,0.3)',
             overflow: 'hidden', border: '2px solid rgba(245,158,11,0.2)',
           }}>
             <span style={{ padding: '0 16px', fontSize: 18, display: 'flex', alignItems: 'center' }}>🔍</span>
@@ -212,7 +212,7 @@ export default function Support() {
         <div style={{
           background: 'white', borderRadius: 20, padding: 6,
           display: 'flex', gap: 4, marginBottom: 28,
-          boxShadow: '0 4px 20px rgba(107,33,168,0.1)',
+          boxShadow: '0 4px 20px rgba(14,165,160,0.1)',
           flexWrap: 'wrap',
         }}>
           {tabs.map(function(tab) {
@@ -226,10 +226,10 @@ export default function Support() {
                   transition: 'all 0.2s', display: 'flex', alignItems: 'center',
                   justifyContent: 'center', gap: 6,
                   background: activeTab === tab.id
-                    ? 'linear-gradient(135deg, #6B21A8, #7C3AED)'
+                    ? 'linear-gradient(135deg, #0EA5A0, #0EA5A0)'
                     : 'transparent',
                   color: activeTab === tab.id ? 'white' : '#6B7280',
-                  boxShadow: activeTab === tab.id ? '0 4px 12px rgba(107,33,168,0.3)' : 'none',
+                  boxShadow: activeTab === tab.id ? '0 4px 12px rgba(14,165,160,0.3)' : 'none',
                 }}>
                 <span>{tab.icon}</span>
                 <span>{tab.label}</span>
@@ -248,28 +248,28 @@ export default function Support() {
               <a href="tel:+917055252609" style={{ textDecoration: 'none' }}>
                 <div style={{
                   background: 'white', borderRadius: 20, padding: '28px 20px',
-                  textAlign: 'center', boxShadow: '0 4px 20px rgba(107,33,168,0.08)',
+                  textAlign: 'center', boxShadow: '0 4px 20px rgba(14,165,160,0.08)',
                   border: '2px solid transparent', transition: 'all 0.3s', cursor: 'pointer',
                   height: '100%',
                 }}
-                  onMouseEnter={function(e) { e.currentTarget.style.borderColor = '#6B21A8'; e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(107,33,168,0.16)' }}
-                  onMouseLeave={function(e) { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(107,33,168,0.08)' }}
+                  onMouseEnter={function(e) { e.currentTarget.style.borderColor = '#0EA5A0'; e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(14,165,160,0.16)' }}
+                  onMouseLeave={function(e) { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,165,160,0.08)' }}
                 >
                   <div style={{
                     width: 64, height: 64, borderRadius: 20,
-                    background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
+                    background: 'linear-gradient(135deg, #0EA5A0, #0EA5A0)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 30, margin: '0 auto 16px',
-                    boxShadow: '0 8px 20px rgba(107,33,168,0.3)',
+                    boxShadow: '0 8px 20px rgba(14,165,160,0.3)',
                   }}>📞</div>
                   <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 6 }}>Call Support</div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: '#6B21A8', marginBottom: 4 }}>+91 70552 52609</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#0EA5A0', marginBottom: 4 }}>+91 70552 52609</div>
                   <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 16 }}>Mon-Sat • 9AM - 7PM IST</div>
                   <div style={{
-                    background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
+                    background: 'linear-gradient(135deg, #0EA5A0, #0EA5A0)',
                     color: 'white', borderRadius: 99, padding: '10px 24px',
                     fontSize: 13, fontWeight: 700, display: 'inline-block',
-                    boxShadow: '0 4px 12px rgba(107,33,168,0.3)',
+                    boxShadow: '0 4px 12px rgba(14,165,160,0.3)',
                   }}>📞 Call Now</div>
                 </div>
               </a>
@@ -278,7 +278,7 @@ export default function Support() {
               <a href="https://wa.me/917055252609?text=Hi%20NukkadMarket%2C%20I%20need%20help%20with..." target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                 <div style={{
                   background: 'white', borderRadius: 20, padding: '28px 20px',
-                  textAlign: 'center', boxShadow: '0 4px 20px rgba(5,150,105,0.08)',
+                  textAlign: 'center', boxShadow: '0 4px 20px rgba(14,165,160,0.08)',
                   border: '2px solid transparent', transition: 'all 0.3s', cursor: 'pointer',
                   height: '100%',
                 }}
@@ -336,13 +336,13 @@ export default function Support() {
 
               {/* Submit Ticket */}
               <div style={{
-                background: 'linear-gradient(135deg, #1E0533, #3B0764, #6B21A8)',
+                background: 'linear-gradient(135deg, #0F2A3F, #0C8A85, #0EA5A0)',
                 borderRadius: 20, padding: '28px 20px',
                 textAlign: 'center', cursor: 'pointer',
                 border: '2px solid transparent', transition: 'all 0.3s',
               }}
                 onClick={function() { setActiveTab('ticket') }}
-                onMouseEnter={function(e) { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(107,33,168,0.4)' }}
+                onMouseEnter={function(e) { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(14,165,160,0.4)' }}
                 onMouseLeave={function(e) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none' }}
               >
                 <div style={{
@@ -397,13 +397,13 @@ export default function Support() {
             </div>
 
             {/* Popular FAQs */}
-            <div style={{ background: 'white', borderRadius: 20, padding: '24px', boxShadow: '0 4px 20px rgba(107,33,168,0.06)', marginBottom: 28 }}>
+            <div style={{ background: 'white', borderRadius: 20, padding: '24px', boxShadow: '0 4px 20px rgba(14,165,160,0.06)', marginBottom: 28 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
                 <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 20, fontWeight: 800, color: '#111827' }}>
                   ⭐ Popular Questions
                 </div>
                 <button onClick={function() { setActiveTab('faq') }}
-                  style={{ background: 'none', border: 'none', color: '#6B21A8', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>
+                  style={{ background: 'none', border: 'none', color: '#0EA5A0', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}>
                   View All →
                 </button>
               </div>
@@ -415,12 +415,12 @@ export default function Support() {
                       display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0',
                       borderBottom: i < 2 ? '1px solid #F3F4F6' : 'none', cursor: 'pointer',
                     }}
-                    onMouseEnter={function(e) { e.currentTarget.style.color = '#6B21A8' }}
+                    onMouseEnter={function(e) { e.currentTarget.style.color = '#0EA5A0' }}
                     onMouseLeave={function(e) { e.currentTarget.style.color = '#111827' }}
                   >
                     <span style={{ fontSize: 20, flexShrink: 0 }}>❓</span>
                     <span style={{ fontSize: 14, fontWeight: 600 }}>{item.q}</span>
-                    <span style={{ marginLeft: 'auto', color: '#6B21A8', fontSize: 16 }}>›</span>
+                    <span style={{ marginLeft: 'auto', color: '#0EA5A0', fontSize: 16 }}>›</span>
                   </div>
                 )
               })}
@@ -461,7 +461,7 @@ export default function Support() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
                     <span style={{ fontSize: 24 }}>{cat.icon}</span>
                     <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, color: '#111827' }}>{cat.category}</div>
-                    <span style={{ background: '#F5F3FF', color: '#6B21A8', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 99 }}>
+                    <span style={{ background: '#E6F7F7', color: '#0EA5A0', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 99 }}>
                       {cat.items.length} questions
                     </span>
                   </div>
@@ -471,8 +471,8 @@ export default function Support() {
                     return (
                       <div key={ii} style={{
                         background: 'white', borderRadius: 16, marginBottom: 10,
-                        border: '2px solid ' + (openFaq === key ? '#6B21A8' : 'transparent'),
-                        boxShadow: openFaq === key ? '0 4px 20px rgba(107,33,168,0.12)' : '0 2px 8px rgba(0,0,0,0.04)',
+                        border: '2px solid ' + (openFaq === key ? '#0EA5A0' : 'transparent'),
+                        boxShadow: openFaq === key ? '0 4px 20px rgba(14,165,160,0.12)' : '0 2px 8px rgba(0,0,0,0.04)',
                         overflow: 'hidden', transition: 'all 0.25s',
                       }}>
                         <button
@@ -480,13 +480,13 @@ export default function Support() {
                           style={{
                             width: '100%', display: 'flex', justifyContent: 'space-between',
                             alignItems: 'center', padding: '18px 20px',
-                            background: openFaq === key ? '#F5F3FF' : 'none',
+                            background: openFaq === key ? '#E6F7F7' : 'none',
                             border: 'none', cursor: 'pointer', textAlign: 'left', gap: 16,
                           }}>
                           <span style={{ fontSize: 15, fontWeight: 700, color: '#111827', flex: 1 }}>{item.q}</span>
                           <span style={{
                             width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-                            background: openFaq === key ? '#6B21A8' : '#F3F4F6',
+                            background: openFaq === key ? '#0EA5A0' : '#F3F4F6',
                             color: openFaq === key ? 'white' : '#6B7280',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: 14, transition: 'all 0.2s',
@@ -533,18 +533,18 @@ export default function Support() {
             {sent ? (
               <div style={{
                 background: 'white', borderRadius: 24, padding: '48px 32px',
-                textAlign: 'center', boxShadow: '0 8px 32px rgba(107,33,168,0.1)',
+                textAlign: 'center', boxShadow: '0 8px 32px rgba(14,165,160,0.1)',
               }}>
                 <div style={{ fontSize: 72, marginBottom: 16 }}>🎉</div>
                 <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 800, color: '#059669', marginBottom: 8 }}>
                   Ticket Submit Ho Gaya!
                 </div>
                 <div style={{
-                  background: '#F5F3FF', borderRadius: 16, padding: '20px',
+                  background: '#E6F7F7', borderRadius: 16, padding: '20px',
                   margin: '20px 0', display: 'inline-block',
                 }}>
                   <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 4 }}>Your Ticket ID</div>
-                  <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 800, color: '#6B21A8', letterSpacing: 2 }}>
+                  <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 800, color: '#0EA5A0', letterSpacing: 2 }}>
                     #{ticketId}
                   </div>
                   <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>Save this for reference</div>
@@ -573,7 +573,7 @@ export default function Support() {
                   Ek unique ticket ID milega — track karo apna issue
                 </div>
 
-                <div style={{ background: 'white', borderRadius: 24, padding: '32px', boxShadow: '0 8px 32px rgba(107,33,168,0.08)' }}>
+                <div style={{ background: 'white', borderRadius: 24, padding: '32px', boxShadow: '0 8px 32px rgba(14,165,160,0.08)' }}>
                   {error && (
                     <div style={{ background: '#FEF2F2', border: '1.5px solid #FCA5A5', borderRadius: 12, padding: '12px 16px', color: '#DC2626', marginBottom: 20, fontSize: 14, fontWeight: 600 }}>
                       ⚠️ {error}
@@ -630,11 +630,11 @@ export default function Support() {
                               onClick={function() { set('priority', p.id) }}
                               style={{
                                 flex: 1, padding: '10px', borderRadius: 12, cursor: 'pointer',
-                                border: '2px solid ' + (form.priority === p.id ? '#6B21A8' : '#E5E7EB'),
-                                background: form.priority === p.id ? '#F5F3FF' : 'white',
+                                border: '2px solid ' + (form.priority === p.id ? '#0EA5A0' : '#E5E7EB'),
+                                background: form.priority === p.id ? '#E6F7F7' : 'white',
                                 textAlign: 'center', transition: 'all 0.2s',
                               }}>
-                              <div style={{ fontSize: 13, fontWeight: 700, color: form.priority === p.id ? '#6B21A8' : '#374151' }}>{p.label}</div>
+                              <div style={{ fontSize: 13, fontWeight: 700, color: form.priority === p.id ? '#0EA5A0' : '#374151' }}>{p.label}</div>
                               <div style={{ fontSize: 11, color: '#9CA3AF' }}>{p.desc}</div>
                             </div>
                           )
@@ -684,13 +684,13 @@ export default function Support() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 28 }}>
 
               {/* Direct Contacts */}
-              <div style={{ background: 'white', borderRadius: 20, padding: '28px', boxShadow: '0 4px 20px rgba(107,33,168,0.06)' }}>
+              <div style={{ background: 'white', borderRadius: 20, padding: '28px', boxShadow: '0 4px 20px rgba(14,165,160,0.06)' }}>
                 <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, marginBottom: 20 }}>
                   📱 Direct Contact
                 </div>
 
                 {[
-                  { icon: '📞', label: 'Phone', value: '+91 70552 52609', href: 'tel:+917055252609', color: '#6B21A8' },
+                  { icon: '📞', label: 'Phone', value: '+91 70552 52609', href: 'tel:+917055252609', color: '#0EA5A0' },
                   { icon: '💬', label: 'WhatsApp', value: '+91 70552 52609', href: 'https://wa.me/917055252609', color: '#059669' },
                   { icon: '📧', label: 'Email', value: 'nukkadmarket25@gmail.com', href: 'mailto:nukkadmarket25@gmail.com', color: '#D97706' },
                 ].map(function(contact) {
@@ -723,7 +723,7 @@ export default function Support() {
 
               {/* Hours & Info */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div style={{ background: 'white', borderRadius: 20, padding: '24px', boxShadow: '0 4px 20px rgba(107,33,168,0.06)' }}>
+                <div style={{ background: 'white', borderRadius: 20, padding: '24px', boxShadow: '0 4px 20px rgba(14,165,160,0.06)' }}>
                   <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, marginBottom: 16 }}>
                     ⏰ Support Hours
                   </div>
@@ -742,7 +742,7 @@ export default function Support() {
                 </div>
 
                 <div style={{
-                  background: 'linear-gradient(135deg, #1E0533, #3B0764, #6B21A8)',
+                  background: 'linear-gradient(135deg, #0F2A3F, #0C8A85, #0EA5A0)',
                   borderRadius: 20, padding: '24px',
                 }}>
                   <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, color: 'white', marginBottom: 12 }}>

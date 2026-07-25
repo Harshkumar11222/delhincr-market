@@ -95,7 +95,7 @@ export default function Profile() {
   ]
 
   var stats = [
-    { icon: '🛍️', label: 'Listings',   value: listings.length,      color: '#6B21A8' },
+    { icon: '🛍️', label: 'Listings',   value: listings.length,      color: '#0EA5A0' },
     { icon: '📦', label: 'Orders',     value: orders.bought.length,  color: '#2563EB' },
     { icon: '💰', label: 'Sold',       value: orders.sold.filter(o => o.status === 'completed').length, color: '#059669' },
     { icon: '❤️', label: 'Wishlist',   value: wishlist.length,       color: '#DC2626' },
@@ -111,15 +111,15 @@ export default function Profile() {
       )}
 
       {/* Profile Hero */}
-      <div style={{ background: 'linear-gradient(135deg, #1E0533, #3B0764, #6B21A8)', padding: '32px 16px 60px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: 'linear-gradient(135deg, #0F2A3F, #0C8A85, #0EA5A0)', padding: '32px 16px 60px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(245,158,11,0.08)' }} />
         <div className="container">
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, flexWrap: 'wrap' }}>
             <div style={{ position: 'relative' }}>
               <img
-                src={user.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name) + '&background=6B21A8&color=fff&size=96'}
+                src={user.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name) + '&background=0EA5A0&color=fff&size=96'}
                 alt={user.name}
-                style={{ width: 96, height: 96, borderRadius: 24, objectFit: 'cover', border: '3px solid rgba(245,158,11,0.6)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }}
+                style={{ width: 96, height: 96, borderRadius: 24, objectFit: 'cover', border: '3px solid rgba(14,165,160,0.6)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }}
               />
               {user.isVerified && (
                 <div style={{ position: 'absolute', bottom: -6, right: -6, background: '#059669', borderRadius: '50%', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, border: '3px solid white' }}>
@@ -167,17 +167,17 @@ export default function Profile() {
       <div className="container" style={{ marginTop: -16, paddingBottom: 40 }}>
 
         {/* Tabs */}
-        <div style={{ background: 'white', borderRadius: 16, padding: 6, display: 'flex', gap: 4, marginBottom: 20, boxShadow: '0 4px 16px rgba(107,33,168,0.08)', overflowX: 'auto' }}>
+        <div style={{ background: 'white', borderRadius: 16, padding: 6, display: 'flex', gap: 4, marginBottom: 20, boxShadow: '0 4px 16px rgba(14,165,160,0.08)', overflowX: 'auto' }}>
           {tabs.map(function(t) {
             return (
               <button key={t.id} onClick={() => setTab(t.id)} style={{
                 flex: 1, minWidth: 100, padding: '10px 12px',
                 borderRadius: 12, border: 'none', cursor: 'pointer',
                 fontFamily: 'Nunito, sans-serif', fontSize: 12, fontWeight: 700,
-                background: tab === t.id ? 'linear-gradient(135deg, #6B21A8, #7C3AED)' : 'transparent',
+                background: tab === t.id ? 'linear-gradient(135deg, #0EA5A0, #0C8A85)' : 'transparent',
                 color: tab === t.id ? 'white' : '#6B7280',
                 transition: 'all 0.2s', whiteSpace: 'nowrap',
-                boxShadow: tab === t.id ? '0 4px 12px rgba(107,33,168,0.3)' : 'none',
+                boxShadow: tab === t.id ? '0 4px 12px rgba(14,165,160,0.3)' : 'none',
               }}>
                 {t.icon} {t.label}
               </button>
@@ -190,7 +190,7 @@ export default function Profile() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
 
             {/* Profile Info */}
-            <div style={{ background: 'white', borderRadius: 20, padding: '24px', boxShadow: '0 4px 16px rgba(107,33,168,0.06)' }}>
+            <div style={{ background: 'white', borderRadius: 20, padding: '24px', boxShadow: '0 4px 16px rgba(14,165,160,0.06)' }}>
               <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, marginBottom: 20 }}>👤 Profile Info</div>
 
               {editing ? (
@@ -243,7 +243,7 @@ export default function Profile() {
             {/* Quick Actions */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
-                { icon: '➕', label: 'Post New Ad', sub: 'Free listing daalo', path: '/post', gradient: 'linear-gradient(135deg, #6B21A8, #7C3AED)', color: 'white' },
+                { icon: '➕', label: 'Post New Ad', sub: 'Free listing daalo', path: '/post', gradient: 'linear-gradient(135deg, #0EA5A0, #0C8A85)', color: 'white' },
                 { icon: '📦', label: 'My Orders', sub: orders.bought.length + ' purchases', path: '/orders', gradient: 'linear-gradient(135deg, #2563EB, #3B82F6)', color: 'white' },
                 { icon: '💬', label: 'Messages', sub: 'Chat with buyers/sellers', path: '/messages', gradient: 'linear-gradient(135deg, #059669, #10B981)', color: 'white' },
                 { icon: '🔧', label: 'Support', sub: 'Get help anytime', path: '/support', gradient: 'linear-gradient(135deg, #F59E0B, #D97706)', color: 'white' },
@@ -287,12 +287,12 @@ export default function Profile() {
               <div style={{ display: 'grid', gap: 14 }}>
                 {listings.map(function(l) {
                   return (
-                    <div key={l._id} style={{ background: 'white', borderRadius: 18, padding: '16px', display: 'flex', gap: 14, alignItems: 'center', boxShadow: '0 2px 10px rgba(107,33,168,0.06)', border: '1px solid rgba(107,33,168,0.06)' }}>
+                    <div key={l._id} style={{ background: 'white', borderRadius: 18, padding: '16px', display: 'flex', gap: 14, alignItems: 'center', boxShadow: '0 2px 10px rgba(14,165,160,0.06)', border: '1px solid rgba(14,165,160,0.06)' }}>
                       <img src={l.images?.[0] || 'https://placehold.co/72x72?text=Item'} alt={l.title}
                         style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 12, flexShrink: 0 }} />
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 4 }}>{l.title}</div>
-                        <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 20, fontWeight: 800, color: '#6B21A8', marginBottom: 4 }}>
+                        <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 20, fontWeight: 800, color: '#0EA5A0', marginBottom: 4 }}>
                           ₹{(l.price || 0).toLocaleString('en-IN')}
                         </div>
                         <div style={{ display: 'flex', gap: 8 }}>
@@ -334,7 +334,7 @@ export default function Profile() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
                 {wishlist.map(function(l) {
                   return (
-                    <div key={l._id} style={{ background: 'white', borderRadius: 18, overflow: 'hidden', boxShadow: '0 2px 10px rgba(107,33,168,0.06)', border: '1px solid rgba(107,33,168,0.06)', position: 'relative' }}>
+                    <div key={l._id} style={{ background: 'white', borderRadius: 18, overflow: 'hidden', boxShadow: '0 2px 10px rgba(14,165,160,0.06)', border: '1px solid rgba(14,165,160,0.06)', position: 'relative' }}>
                       <div style={{ paddingTop: '65%', position: 'relative', background: '#F3F4F6' }}>
                         <img src={l.images?.[0] || 'https://placehold.co/200x130?text=Item'} alt={l.title}
                           style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
@@ -346,7 +346,7 @@ export default function Profile() {
                       </div>
                       <div style={{ padding: '12px' }}>
                         <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.title}</div>
-                        <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, color: '#6B21A8' }}>₹{(l.price || 0).toLocaleString('en-IN')}</div>
+                        <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, color: '#0EA5A0' }}>₹{(l.price || 0).toLocaleString('en-IN')}</div>
                         <button onClick={() => navigate('/listing/' + l._id)} className="btn btn-primary btn-full btn-sm" style={{ marginTop: 10 }}>View Item →</button>
                       </div>
                     </div>
@@ -367,12 +367,12 @@ export default function Profile() {
             {[...orders.bought.slice(0, 5)].map(function(o) {
               var sc = { pending: { color: '#D97706', icon: '⏳' }, confirmed: { color: '#2563EB', icon: '✅' }, completed: { color: '#059669', icon: '🎉' }, cancelled: { color: '#DC2626', icon: '❌' } }[o.status] || { color: '#D97706', icon: '⏳' }
               return (
-                <div key={o._id} style={{ background: 'white', borderRadius: 16, padding: '16px', marginBottom: 12, display: 'flex', gap: 14, alignItems: 'center', boxShadow: '0 2px 8px rgba(107,33,168,0.06)' }}>
+                <div key={o._id} style={{ background: 'white', borderRadius: 16, padding: '16px', marginBottom: 12, display: 'flex', gap: 14, alignItems: 'center', boxShadow: '0 2px 8px rgba(14,165,160,0.06)' }}>
                   <img src={o.listingImage || 'https://placehold.co/56x56?text=Item'} alt={o.listingTitle}
                     style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 10 }} />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 14, fontWeight: 700 }}>{o.listingTitle}</div>
-                    <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 16, fontWeight: 800, color: '#6B21A8' }}>₹{(o.listingPrice || 0).toLocaleString('en-IN')}</div>
+                    <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 16, fontWeight: 800, color: '#0EA5A0' }}>₹{(o.listingPrice || 0).toLocaleString('en-IN')}</div>
                   </div>
                   <span style={{ fontSize: 12, fontWeight: 700, color: sc.color, background: sc.color + '15', padding: '4px 10px', borderRadius: 99 }}>
                     {sc.icon} {o.status}
@@ -415,13 +415,13 @@ export default function Profile() {
               ]},
             ].map(function(section) {
               return (
-                <div key={section.section} style={{ background: 'white', borderRadius: 20, padding: '20px', marginBottom: 16, boxShadow: '0 4px 16px rgba(107,33,168,0.06)' }}>
+                <div key={section.section} style={{ background: 'white', borderRadius: 20, padding: '20px', marginBottom: 16, boxShadow: '0 4px 16px rgba(14,165,160,0.06)' }}>
                   <div style={{ fontSize: 14, fontWeight: 800, color: '#6B7280', marginBottom: 14, textTransform: 'uppercase', letterSpacing: 1 }}>{section.section}</div>
                   {section.items.map(function(item, i) {
                     return (
                       <div key={item.label} onClick={item.action}
                         style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 0', borderBottom: i < section.items.length - 1 ? '1px solid #F3F4F6' : 'none', cursor: item.action ? 'pointer' : 'default' }}>
-                        <div style={{ width: 40, height: 40, borderRadius: 12, background: item.danger ? '#FEF2F2' : '#F5F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
+                        <div style={{ width: 40, height: 40, borderRadius: 12, background: item.danger ? '#FEF2F2' : '#E6F7F7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
                           {item.icon}
                         </div>
                         <div style={{ flex: 1 }}>
@@ -451,7 +451,7 @@ function ToggleSwitch({ defaultOn }) {
   const [on, setOn] = useState(defaultOn)
   return (
     <div onClick={e => { e.stopPropagation(); setOn(!on) }}
-      style={{ width: 44, height: 24, borderRadius: 99, background: on ? 'linear-gradient(135deg, #6B21A8, #7C3AED)' : '#E5E7EB', position: 'relative', cursor: 'pointer', transition: 'all 0.25s', flexShrink: 0 }}>
+      style={{ width: 44, height: 24, borderRadius: 99, background: on ? 'linear-gradient(135deg, #0EA5A0, #0C8A85)' : '#E5E7EB', position: 'relative', cursor: 'pointer', transition: 'all 0.25s', flexShrink: 0 }}>
       <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'white', position: 'absolute', top: 3, left: on ? 23 : 3, transition: 'left 0.25s', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
     </div>
   )

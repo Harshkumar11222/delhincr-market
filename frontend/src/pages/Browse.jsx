@@ -100,10 +100,11 @@ export default function Browse() {
     <div style={{ paddingTop: 60 }}>
 
       {/* Search Header */}
-      <div style={{
-        background: 'linear-gradient(135deg, #1E0533 0%, #3B0764 50%, #6B21A8 100%)',
-        padding: '20px 16px 24px',
-      }}>
+      {/* Search Header */}
+<div style={{
+  background: 'linear-gradient(135deg, #0F2A3F 0%, #0EA5A0 100%)',
+  padding: '20px 16px',
+}}>
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
           <div style={{
             display: 'flex', gap: 10, alignItems: 'center',

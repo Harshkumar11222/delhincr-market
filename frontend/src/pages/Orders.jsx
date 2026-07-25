@@ -60,7 +60,7 @@ export default function Orders() {
       )}
 
       {/* Header */}
-      <div style={{ background: 'linear-gradient(135deg, #1E0533, #3B0764, #6B21A8)', padding: '28px 16px 40px' }}>
+      <div style={{ background: 'linear-gradient(135deg, #0F2A3F, #0C8A85, #0EA5A0)', padding: '28px 16px 40px' }}>
         <div className="container">
           <h2 style={{ fontFamily: 'Baloo 2, cursive', fontSize: 26, fontWeight: 800, color: 'white', marginBottom: 4 }}>📦 My Orders</h2>
           <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>Track aur manage karo apne orders</p>
@@ -88,7 +88,7 @@ export default function Orders() {
       <div className="container" style={{ marginTop: -16, paddingBottom: 40 }}>
 
         {/* Tabs */}
-        <div style={{ background: 'white', borderRadius: 16, padding: 6, display: 'flex', gap: 4, marginBottom: 20, boxShadow: '0 4px 16px rgba(107,33,168,0.08)' }}>
+        <div style={{ background: 'white', borderRadius: 16, padding: 6, display: 'flex', gap: 4, marginBottom: 20, boxShadow: '0 4px 16px rgba(14,165,160,0.08)' }}>
           {[
             { id: 'bought', icon: '🛒', label: 'Purchased (' + orders.bought.length + ')' },
             { id: 'sold',   icon: '🏪', label: 'Sold (' + orders.sold.length + ')' },
@@ -97,10 +97,10 @@ export default function Orders() {
               <button key={t.id} onClick={() => setTab(t.id)} style={{
                 flex: 1, padding: '12px', borderRadius: 12, border: 'none', cursor: 'pointer',
                 fontFamily: 'Nunito, sans-serif', fontSize: 14, fontWeight: 700,
-                background: tab === t.id ? 'linear-gradient(135deg, #6B21A8, #7C3AED)' : 'transparent',
+                background: tab === t.id ? 'linear-gradient(135deg, #0EA5A0, #7C3AED)' : 'transparent',
                 color: tab === t.id ? 'white' : '#6B7280',
                 transition: 'all 0.2s',
-                boxShadow: tab === t.id ? '0 4px 12px rgba(107,33,168,0.3)' : 'none',
+                boxShadow: tab === t.id ? '0 4px 12px rgba(14,165,160,0.3)' : 'none',
               }}>
                 {t.icon} {t.label}
               </button>
@@ -116,10 +116,10 @@ export default function Orders() {
               <span key={s} onClick={() => setFilter(s)} style={{
                 padding: '6px 16px', borderRadius: 99, fontSize: 13, fontWeight: 700,
                 cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s',
-                background: filter === s ? '#6B21A8' : 'white',
+                background: filter === s ? '#0EA5A0' : 'white',
                 color: filter === s ? 'white' : '#374151',
-                border: '2px solid ' + (filter === s ? '#6B21A8' : '#E5E7EB'),
-                boxShadow: filter === s ? '0 4px 12px rgba(107,33,168,0.3)' : 'none',
+                border: '2px solid ' + (filter === s ? '#0EA5A0' : '#E5E7EB'),
+                boxShadow: filter === s ? '0 4px 12px rgba(14,165,160,0.3)' : 'none',
               }}>
                 {s === 'all' ? '📋 All' : sc.icon + ' ' + sc.label}
               </span>
@@ -147,7 +147,7 @@ export default function Orders() {
               return (
                 <div key={order._id} style={{
                   background: 'white', borderRadius: 20, overflow: 'hidden',
-                  boxShadow: '0 4px 16px rgba(107,33,168,0.06)',
+                  boxShadow: '0 4px 16px rgba(14,165,160,0.06)',
                   border: '2px solid ' + sc.border,
                   transition: 'all 0.2s',
                 }}>
@@ -172,7 +172,7 @@ export default function Orders() {
                       />
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 6 }}>{order.listingTitle}</div>
-                        <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 22, fontWeight: 800, color: '#6B21A8', marginBottom: 6 }}>
+                        <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 22, fontWeight: 800, color: '#0EA5A0', marginBottom: 6 }}>
                           ₹{(order.listingPrice || 0).toLocaleString('en-IN')}
                         </div>
                         <div style={{ display: 'flex', gap: 12, fontSize: 12, color: '#6B7280' }}>

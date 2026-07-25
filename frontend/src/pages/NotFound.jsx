@@ -25,7 +25,7 @@ export default function NotFound() {
   ]
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #1E0533 0%, #3B0764 40%, #6B21A8 70%, #F59E0B 100%)', padding: 16 }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #0F2A3F 0%, #076164 40%, #0EA5A0 70%, #0EA5A0 100%)', padding: 16 }}>
       <div style={{ textAlign: 'center', maxWidth: 560 }}>
 
         {/* Animated 404 */}
@@ -51,7 +51,7 @@ export default function NotFound() {
 
         {/* Countdown bar */}
         <div style={{ height: 4, background: 'rgba(255,255,255,0.2)', borderRadius: 99, maxWidth: 300, margin: '0 auto 32px', overflow: 'hidden' }}>
-          <div style={{ height: '100%', background: 'linear-gradient(135deg, #F59E0B, #D97706)', borderRadius: 99, width: (count / 10 * 100) + '%', transition: 'width 1s linear' }} />
+          <div style={{ height: '100%', background: 'linear-gradient(135deg, #0EA5A0, #D97706)', borderRadius: 99, width: (count / 10 * 100) + '%', transition: 'width 1s linear' }} />
         </div>
 
         {/* Quick navigation */}

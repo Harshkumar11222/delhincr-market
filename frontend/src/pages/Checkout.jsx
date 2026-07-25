@@ -64,16 +64,16 @@ export default function Checkout() {
   if (ordered) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC', paddingTop: 60, padding: 16 }}>
-        <div style={{ background: 'white', borderRadius: 28, padding: '48px 36px', textAlign: 'center', maxWidth: 480, width: '100%', boxShadow: '0 16px 48px rgba(107,33,168,0.12)' }}>
+        <div style={{ background: 'white', borderRadius: 28, padding: '48px 36px', textAlign: 'center', maxWidth: 480, width: '100%', boxShadow: '0 16px 48px rgba(14,165,160,0.12)' }}>
           <div style={{ fontSize: 72, marginBottom: 16, animation: 'bounce 0.6s ease' }}>🎉</div>
           <style>{`@keyframes bounce { 0%{transform:scale(0.5);opacity:0} 60%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }`}</style>
           <h2 style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 800, color: '#059669', marginBottom: 8 }}>Order Placed!</h2>
           <p style={{ color: '#6B7280', fontSize: 15, marginBottom: 20 }}>
             Seller ko notify kar diya gaya hai. Woh jaldi confirm karega.
           </p>
-          <div style={{ background: '#F5F3FF', borderRadius: 16, padding: '16px 20px', marginBottom: 24 }}>
-            <div style={{ fontSize: 12, color: '#6B21A8', fontWeight: 700, marginBottom: 4 }}>Order ID</div>
-            <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, color: '#6B21A8', letterSpacing: 1 }}>#{orderId.slice(-8).toUpperCase()}</div>
+          <div style={{ background: '#E6F7F7', borderRadius: 16, padding: '16px 20px', marginBottom: 24 }}>
+            <div style={{ fontSize: 12, color: '#0EA5A0', fontWeight: 700, marginBottom: 4 }}>Order ID</div>
+            <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 18, fontWeight: 800, color: '#0EA5A0', letterSpacing: 1 }}>#{orderId.slice(-8).toUpperCase()}</div>
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
             <button onClick={() => navigate('/orders')} className="btn btn-primary btn-lg" style={{ flex: 2 }}>📦 Track Order</button>
@@ -86,7 +86,7 @@ export default function Checkout() {
 
   return (
     <div style={{ background: '#F8FAFC', minHeight: '100vh', paddingTop: 60 }}>
-      <div style={{ background: 'linear-gradient(135deg, #1E0533, #3B0764, #6B21A8)', padding: '24px 16px 36px' }}>
+      <div style={{ background: 'linear-gradient(135deg, #0F2A3F, #0C8A85, #0EA5A0)', padding: '24px 16px 36px' }}>
         <div className="container">
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <button onClick={() => navigate(-1)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: 'white', width: 36, height: 36, borderRadius: '50%', cursor: 'pointer', fontSize: 18 }}>←</button>
@@ -111,25 +111,25 @@ export default function Checkout() {
 
             <form onSubmit={handleOrder}>
               {/* Payment Method */}
-              <div style={{ background: 'white', borderRadius: 20, padding: '20px', marginBottom: 16, boxShadow: '0 4px 16px rgba(107,33,168,0.06)' }}>
+              <div style={{ background: 'white', borderRadius: 20, padding: '20px', marginBottom: 16, boxShadow: '0 4px 16px rgba(14,165,160,0.06)' }}>
                 <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 17, fontWeight: 800, marginBottom: 16 }}>💳 Payment Method</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {paymentMethods.map(function(pm) {
                     return (
                       <label key={pm.id} onClick={() => setForm(f => ({ ...f, paymentMethod: pm.id }))} style={{
                         display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px',
-                        borderRadius: 14, border: '2px solid ' + (form.paymentMethod === pm.id ? '#6B21A8' : '#E5E7EB'),
-                        background: form.paymentMethod === pm.id ? '#F5F3FF' : 'white', cursor: 'pointer', transition: 'all 0.2s',
+                        borderRadius: 14, border: '2px solid ' + (form.paymentMethod === pm.id ? '#0EA5A0' : '#E5E7EB'),
+                        background: form.paymentMethod === pm.id ? '#E6F7F7' : 'white', cursor: 'pointer', transition: 'all 0.2s',
                       }}>
                         <div style={{ fontSize: 28 }}>{pm.icon}</div>
                         <div style={{ flex: 1 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: form.paymentMethod === pm.id ? '#6B21A8' : '#111827' }}>{pm.label}</span>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: form.paymentMethod === pm.id ? '#0EA5A0' : '#111827' }}>{pm.label}</span>
                             {pm.recommended && <span style={{ background: '#ECFDF5', color: '#059669', fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 99 }}>✓ Recommended</span>}
                           </div>
                           <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>{pm.desc}</div>
                         </div>
-                        <div style={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid ' + (form.paymentMethod === pm.id ? '#6B21A8' : '#D1D5DB'), background: form.paymentMethod === pm.id ? '#6B21A8' : 'white', flexShrink: 0 }} />
+                        <div style={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid ' + (form.paymentMethod === pm.id ? '#0EA5A0' : '#D1D5DB'), background: form.paymentMethod === pm.id ? '#0EA5A0' : 'white', flexShrink: 0 }} />
                       </label>
                     )
                   })}
@@ -137,7 +137,7 @@ export default function Checkout() {
               </div>
 
               {/* Address */}
-              <div style={{ background: 'white', borderRadius: 20, padding: '20px', marginBottom: 16, boxShadow: '0 4px 16px rgba(107,33,168,0.06)' }}>
+              <div style={{ background: 'white', borderRadius: 20, padding: '20px', marginBottom: 16, boxShadow: '0 4px 16px rgba(14,165,160,0.06)' }}>
                 <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 17, fontWeight: 800, marginBottom: 16 }}>📍 Meetup Location *</div>
                 <div className="form-group">
                   <textarea className="form-control" rows={3} placeholder="Meeting ki jagah ya address daalo — e.g. Sector 62 Metro Station, Noida" value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} />
@@ -151,10 +151,10 @@ export default function Checkout() {
               {/* Submit */}
               <button type="submit" disabled={ordering} style={{
                 width: '100%', padding: '16px', borderRadius: 99,
-                background: 'linear-gradient(135deg, #6B21A8, #7C3AED)',
+                background: 'linear-gradient(135deg, #0EA5A0, #7C3AED)',
                 color: 'white', border: 'none', fontWeight: 800,
                 fontSize: 17, cursor: 'pointer', fontFamily: 'Nunito, sans-serif',
-                boxShadow: '0 6px 20px rgba(107,33,168,0.4)',
+                boxShadow: '0 6px 20px rgba(14,165,160,0.4)',
                 transition: 'all 0.2s',
               }}
                 onMouseEnter={e => !ordering && (e.currentTarget.style.transform = 'translateY(-2px)')}
@@ -167,7 +167,7 @@ export default function Checkout() {
 
           {/* Right — Order Summary */}
           <div>
-            <div style={{ background: 'white', borderRadius: 20, padding: '20px', boxShadow: '0 4px 16px rgba(107,33,168,0.06)', position: 'sticky', top: 80 }}>
+            <div style={{ background: 'white', borderRadius: 20, padding: '20px', boxShadow: '0 4px 16px rgba(14,165,160,0.06)', position: 'sticky', top: 80 }}>
               <div style={{ fontFamily: 'Baloo 2, cursive', fontSize: 17, fontWeight: 800, marginBottom: 16 }}>📋 Order Summary</div>
 
               {listing && (
@@ -198,16 +198,16 @@ export default function Checkout() {
                     })}
                     <div style={{ borderTop: '2px solid #F3F4F6', paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontFamily: 'Baloo 2, cursive', fontSize: 17, fontWeight: 800 }}>Total</span>
-                      <span style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 800, color: '#6B21A8' }}>₹{(listing.price || 0).toLocaleString('en-IN')}</span>
+                      <span style={{ fontFamily: 'Baloo 2, cursive', fontSize: 28, fontWeight: 800, color: '#0EA5A0' }}>₹{(listing.price || 0).toLocaleString('en-IN')}</span>
                     </div>
                   </div>
 
                   {/* Seller */}
-                  <div style={{ marginTop: 16, padding: '14px 16px', background: '#F5F3FF', borderRadius: 14 }}>
+                  <div style={{ marginTop: 16, padding: '14px 16px', background: '#E6F7F7', borderRadius: 14 }}>
                     <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 6 }}>🏪 Seller</div>
                     <div style={{ fontWeight: 700, color: '#374151', marginBottom: 4 }}>{listing.sellerName}</div>
                     <div style={{ display: 'flex', gap: 8 }}>
-                      <a href={'tel:+91' + listing.sellerPhone} style={{ flex: 1, background: '#6B21A8', color: 'white', borderRadius: 8, padding: '8px', fontSize: 12, fontWeight: 700, textDecoration: 'none', textAlign: 'center' }}>📞 Call</a>
+                      <a href={'tel:+91' + listing.sellerPhone} style={{ flex: 1, background: '#0EA5A0', color: 'white', borderRadius: 8, padding: '8px', fontSize: 12, fontWeight: 700, textDecoration: 'none', textAlign: 'center' }}>📞 Call</a>
                       <a href={'https://wa.me/91' + listing.sellerPhone} target="_blank" rel="noopener noreferrer" style={{ flex: 1, background: '#059669', color: 'white', borderRadius: 8, padding: '8px', fontSize: 12, fontWeight: 700, textDecoration: 'none', textAlign: 'center' }}>💬 WhatsApp</a>
                     </div>
                   </div>
