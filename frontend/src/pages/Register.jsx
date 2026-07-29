@@ -77,14 +77,14 @@ export default function Register() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', background: 'linear-gradient(135deg, #1E0533 0%, #3B0764 40%, #6B21A8 70%, #F59E0B 100%)' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', background: 'linear-gradient(135deg, #0F2A3F 0%, #0C8A85 40%, #0EA5A0 70%, #F59E0B 100%)' }}>
 
       {/* Left Branding */}
       <div className="hide-mobile" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 60, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -60, right: -60, width: 300, height: 300, borderRadius: '50%', background: 'rgba(245,158,11,0.08)' }} />
         <div style={{ position: 'absolute', bottom: -80, left: -40, width: 240, height: 240, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-          <div style={{ width: 80, height: 80, background: 'linear-gradient(135deg, #F59E0B, #D97706)', borderRadius: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40, margin: '0 auto 24px', boxShadow: '0 12px 32px rgba(245,158,11,0.4)' }}>🏪</div>
+          <div style={{ width: 80, height: 80, background: 'linear-gradient(135deg, #0F2A3F 0%, #0EA5A0 100%)', borderRadius: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40, margin: '0 auto 24px', boxShadow: '0 12px 32px rgba(245,158,11,0.4)' }}>🏪</div>
           <h1 style={{ fontFamily: 'Baloo 2, cursive', fontSize: 38, fontWeight: 800, color: 'white', marginBottom: 6 }}>NukkadMarket</h1>
           <p style={{ fontSize: 18, fontWeight: 700, marginBottom: 40, background: 'linear-gradient(135deg, #FCD34D, #F59E0B)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Apna Nukkad, Apna Bazaar
@@ -114,16 +114,16 @@ export default function Register() {
             {['Your Details', 'Verify Email'].map(function(s, i) {
               return (
                 <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, background: step > i ? 'linear-gradient(135deg, #6B21A8, #7C3AED)' : step === i + 1 ? 'linear-gradient(135deg, #6B21A8, #7C3AED)' : '#E5E7EB', color: step >= i + 1 ? 'white' : '#9CA3AF' }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, background: step > i ? 'linear-gradient(135deg, #0EA5A0, #0C8A85)' : step === i + 1 ? 'linear-gradient(135deg, #0EA5A0, #0C8A85)' : '#E5E7EB', color: step >= i + 1 ? 'white' : '#9CA3AF' }}>
                     {step > i + 1 ? '✓' : i + 1}
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: step >= i + 1 ? '#6B21A8' : '#9CA3AF' }}>{s}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: step >= i + 1 ? '#0EA5A0' : '#9CA3AF' }}>{s}</span>
                 </div>
               )
             })}
           </div>
           <div style={{ height: 4, background: '#F3F4F6', borderRadius: 99, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: step === 1 ? '50%' : '100%', background: 'linear-gradient(135deg, #6B21A8, #7C3AED)', borderRadius: 99, transition: 'width 0.4s ease' }} />
+            <div style={{ height: '100%', width: step === 1 ? '50%' : '100%', background: 'linear-gradient(135deg, #0EA5A0, #0C8A85)', borderRadius: 99, transition: 'width 0.4s ease' }} />
           </div>
         </div>
 
@@ -231,8 +231,8 @@ export default function Register() {
 
         {step === 2 && (
           <form onSubmit={handleVerify}>
-            <div style={{ background: '#F5F3FF', borderRadius: 16, padding: '16px', textAlign: 'center', marginBottom: 24 }}>
-              <div style={{ fontSize: 13, color: '#6B21A8', fontWeight: 700 }}>OTP bheja gaya</div>
+            <div style={{ background: '#E6F7F7', borderRadius: 16, padding: '16px', textAlign: 'center', marginBottom: 24 }}>
+              <div style={{ fontSize: 13, color: '#0EA5A0', fontWeight: 700 }}>OTP bheja gaya</div>
               <div style={{ fontSize: 15, fontWeight: 800, color: '#111827' }}>{form.email}</div>
             </div>
 
@@ -251,10 +251,10 @@ export default function Register() {
                       onKeyDown={function(e) { handleOtpKey(i, e) }}
                       style={{
                         width: 48, height: 56, textAlign: 'center', fontSize: 24, fontWeight: 800,
-                        border: '2px solid ' + (digit ? '#6B21A8' : '#E5E7EB'), borderRadius: 12,
+                        border: '2px solid ' + (digit ? '#0EA5A0' : '#E5E7EB'), borderRadius: 12,
                         outline: 'none', fontFamily: 'Nunito, sans-serif',
-                        background: digit ? '#F5F3FF' : 'white',
-                        color: '#6B21A8', transition: 'all 0.2s',
+                        background: digit ? '#E6F7F7' : 'white',
+                        color: '#0EA5A0', transition: 'all 0.2s',
                       }}
                     />
                   )
@@ -272,7 +272,7 @@ export default function Register() {
                 ← Back
               </button>
               <button type="button" onClick={() => { setSending(true); api.post('/otp/send', { email: form.email }).then(() => setSending(false)) }}
-                style={{ background: 'none', border: 'none', color: '#6B21A8', cursor: 'pointer', fontSize: 13, fontWeight: 700 }}>
+                style={{ background: 'none', border: 'none', color: '#0EA5A0', cursor: 'pointer', fontSize: 13, fontWeight: 700 }}>
                 🔄 Resend OTP
               </button>
             </div>
@@ -280,7 +280,7 @@ export default function Register() {
         )}
 
         <p style={{ textAlign: 'center', marginTop: 20, fontSize: 14, color: '#6B7280' }}>
-          Already account hai? <Link to="/login" style={{ color: '#6B21A8', fontWeight: 800 }}>Login karo</Link>
+          Already account hai? <Link to="/login" style={{ color: '#0EA5A0', fontWeight: 800 }}>Login karo</Link>
         </p>
       </div>
     </div>

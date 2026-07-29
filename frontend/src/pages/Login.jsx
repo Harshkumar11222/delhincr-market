@@ -115,11 +115,13 @@ export default function Login() {
           <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
         </div>
 
-        {window.location.hostname === 'delhincr-market.vercel.app' && (
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
-            <GoogleLogin onSuccess={handleGoogle} onError={() => setError('Google login failed')} theme="outline" size="large" shape="pill" text="signin_with" />
-          </div>
-        )}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+  <GoogleLogin
+    onSuccess={handleGoogle}
+    onError={() => setError('Google login failed')}
+    theme="outline" size="large" shape="pill" text="signin_with"
+  />
+</div>
 
         <p style={{ textAlign: 'center', fontSize: 14, color: '#64748B' }}>
           Account nahi hai? <Link to="/register" style={{ color: '#0EA5A0', fontWeight: 700 }}>Register karo</Link>
